@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "llm-viz"
+version = "0.1.0"
+description = ""
+authors = ["lipecorradini <luizfelipecorradini@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.26.4"
+pandas = "^2.2.2"
+nltk = "^3.8.1"
+datasets = "^2.19.1"
+transformers = "^4.41.0"
+umap = "^0.1.1"
+sklearn-preprocessing = "^0.1.0"
+matplotlib = "^3.9.0"
+tensorflow = "^2.16.1"
+pydot = "^2.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
