@@ -16,17 +16,18 @@ dataset = handle.DfToHuggingFacesDataset(df, class_names=["true", "fake"]) # Tra
 
 # Beginning Visualization
 
-my_viz = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 
-my_viz.setDataset(my_viz.initialize_dataset()) # Initializing Encoded Dataset
+llm_mri.setDataset(llm_mri.initialize_dataset()) # Initializing Encoded Dataset
 
-my_viz.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality
+llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality
 
-my_viz.get_layer_image(layer = 1, category=0) # Getting the image for a specific layer and specific label category (Ex: label = 0)
+llm_mri.get_layer_image(layer = 1, category=0) # Getting the image for a specific layer and specific label category (Ex: label = 0)
 
-my_viz.get_graph_image(category=0) # Getting the graph image for a determined category
+llm_mri.get_graph_image(category=0) # Getting the graph image for a determined category
 
-my_viz.get_graph(category=0) # Getting the graph for a designed category
+g1 = llm_mri.get_graph(category=0) # Getting the graph for a designed category
 
-g = my_viz.get_all_graph() # Getting the image of the whole graph
+g = llm_mri.get_all_graph() # Getting the image of the whole graph
 
+llm_mri = llm_mri.get_all_graph_image()

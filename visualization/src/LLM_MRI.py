@@ -213,7 +213,43 @@ class LLM_MRI:
         '''
 
 
-        # g = self.get_graph(category)
+        g = self.get_graph(category)
+
+        widths = nx.get_edge_attributes(g, 'weight')
+        nodelist = g.nodes()
+
+        pos = graphviz_layout(g, prog="dot")
+        #make larger figure
+        plt.figure(figsize=(25,6))
+
+
+        nx.draw(g, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
+
+        nx.draw_networkx_nodes(g,pos,
+                            nodelist=nodelist,
+                            node_size=150,
+                            node_color='grey',
+                            alpha=0.8)
+
+        nx.draw_networkx_edges(g,pos,
+                            edgelist = widths.keys(),
+                            width=list(widths.values()),
+                            edge_color='lightblue',
+                            alpha=0.9)
+
+        nx.draw_networkx_labels(g, pos=pos,
+                                labels=dict(zip(nodelist,nodelist)),
+                                font_color='black')
+
+        plt.box(False)
+        plt.show()
+
+    def get_all_graph_image(self):
+        '''
+        Function that displays the pandas edgelist (graph representation) for the network region activations,
+         for a given label (category) passed as a parameter.
+        '''
+        
         g = self.get_all_graph()
         widths = nx.get_edge_attributes(g, 'weight')
         nodelist = g.nodes()
