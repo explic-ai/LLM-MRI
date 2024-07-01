@@ -21,32 +21,33 @@ class Treatment:
 
     def setModel(self, model):
         '''
-        Define o modelo guardado pela classe
+        Sets the model stored by the class.
         '''
+
         self.model = model
 
     def setDevice(self, device):
         '''
-        Define o dispositivo (device) que será utilizado pela classe
+        Sets the device that will be used by the class.
         '''
+
         self.device = device
     
     def setTokenizer(self, tokenizer):
         '''
-        Define o tokenizer que será utilizado pela classe
+        Sets the tokenizer that will be used by the class.
         '''
+
         self.tokenizer = tokenizer
 
     def le_documentos(self, directory_path):
         '''
-        Entrada: (string) Path para o diretório onde está o corpus a ser utilizado
-        Saída: (DataFrame) DataFrame correspondente ao corpus
+        Input: (string) Path to the directory where the corpus to be used is located.
+        Output: (DataFrame) DataFrame corresponding to the corpus.
 
-        Essa função itera pelas categorias presentes no documento,
-        e as guarda num dataframe, de modo a separar os arquivos presentes
-        em cada categoria
-        
+        This function iterates over the categories present in the document and stores them in a dataframe, separating the files present in each category.
         '''
+
         documentos = []
 
         for category in os.listdir(directory_path):
@@ -63,18 +64,20 @@ class Treatment:
 
     def remove_acentos(self, input_str):
         '''
-        Entrada: (string) String referente ao arquivo .txt no documento
-        Saída: (string) String da entrada, removendo os acentos, conforme o unicoe
+        Input: (string) String representing the .txt file in the document.
+        Output: (string) Input string with accents removed, according to Unicode.
         '''
+
         nfkd_form = unicodedata.normalize('NFKD', input_str)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
     def set_stopwords(self):
         '''
-        Saída: (list(string)) Stopwords, ou palavras que limitam a compreenão
-        do modelo, para a língua portuguesa
+        Output: (list(string)) Stopwords, or words that limit the model's understanding,
+        for the Portuguese language.
         '''
+
         stopwords = nltk.corpus.stopwords.words('portuguese')
         stopwords = [self.remove_acentos(palavra) for palavra in stopwords]
         return stopwords
@@ -82,28 +85,30 @@ class Treatment:
 
     def normaliza_texto(self, txt, stopwords):
         '''
-        Entradas: (string) String referente ao arquivo .txt a ser normalizado
-                  (list(string)) Stopwords em português previamente definidas
-        Saída: (string) Texto normalizado referente ao arquivo 
+        Inputs: (string) String representing the .txt file to be normalized.
+                (list(string)) Predefined stopwords in Portuguese.
+        Output: (string) Normalized text corresponding to the file.
         '''
+
         return ' '.join([word for word in word_tokenize(str.lower(self.remove_acentos(txt))) if word not in stopwords and word.isalpha()])
 
 
     def set_normalizado(self, df, stopwords):
         '''
-        Entradas: (DataFrame) DataFrame utilizado para guardar os documentos
-        Saída: adiciona uma coluna com o conteúdo normalizado ao DataFrame
+        Inputs: (DataFrame) DataFrame used to store the documents.
+        Output: Adds a column with the normalized content to the DataFrame.
         '''
+
         df['CONTENT_NORMALIZADO'] = df.apply(lambda linha: self.normaliza_texto(str(linha['CONTENT']), stopwords), axis = 1)
-        # print(df['CONTENT_NORMALIZADO'].head())
 
 
     def DfToHuggingFacesDataset(self, df, class_names):
         '''
-        Entrada: (DataFrame) DataFrame utilizado para guardar os documentos
-                 (list(string)) Lista com o nome das classes
-        Saída: (Dataset) DataFrame com formato de HuggingFace Dataset
+        Input: (DataFrame) DataFrame used to store the documents.
+            (list(string)) List with the names of the classes.
+        Output: (Dataset) DataFrame in the format of HuggingFace Dataset.
         '''
+
         # Pega os campos necessários
         df = df[['CONTENT_NORMALIZADO', 'CATEGORY']]
         df.columns = ['text', 'label']
@@ -115,47 +120,52 @@ class Treatment:
 
     def tokenize(self, batch):
         '''
-        Entrada: (Dataset) Dataset com texto para ser tokenizado
-        Saída: (Token) Tokenização do Dataset, com o padding ativado e tamanho máximo de 512
+        Input: (Dataset) Dataset with text to be tokenized.
+        Output: (Token) Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         '''
+
         return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
 
     def encodeDataset(self, dataset):
         '''
-        Entrada: (Dataset) Dataset com texto para ser tokenizado
-        Saída: (Token) Tokenização do Dataset, com o padding ativado e tamanho máximo de 512
+        Input: (Dataset) Dataset with text to be tokenized.
+        Output: (Token) Tokenization of the Dataset, with padding enabled and a maximum length of 512.
 
-        Mapeia por todos os itens do Dataset, e realiza a tokenização
+        Maps over all items in the Dataset and performs tokenization.
         '''
+
         dataset_encoded = dataset.map(self.tokenize, batched=True, batch_size=None)
         return dataset_encoded
 
 
     def saveDataset(self, dataset):
         '''
-        Entrada: (Dataset) Dataset tokenizado
+        Input: (Dataset) Tokenized Dataset.
 
-        Salva o Dataset no disco
+        Saves the Dataset to disk.
         '''
+
         dataset.save_to_disk("dataset_encoded.hf")
 
 
     def setEmbeddingsOnModel(self, model_ckpt):
         '''
-        Entrada: (Model) Modelo do Hugging faces
-        Saída: (Model) Modelo oriundo do passado como parâmetro
+        Input: (Model) Hugging Face model.
+        Output: (Model) Model passed as a parameter.
         '''
+
         model = AutoModel.from_pretrained(model_ckpt).to(self.device)
         return model
 
 
     def getHiddenStatesOutputs(self, text, model):
         '''
-        Entradas: (String) Texto para ser analisado
-                  (Model) Modelo utilizado
-        Saída:  (Tensor) Outputs da rede para o texto de entrada
+        Inputs: (String) Text to be analyzed.
+                (Model) Model used.
+        Output: (Tensor) Network outputs for the input text.
         '''
+
         inputs = self.tokenizer(text, return_tensors = "pt")
         inputs = {k:v.to(self.device) for k,v in inputs.items()}
         with torch.no_grad():
@@ -165,13 +175,12 @@ class Treatment:
 
     def extract_hidden_states(self, batch):
         '''
-        Entrada: (dict) Batch de dados com entradas do modelo
-        Saída: (dict) Dicionários contendo um tensor
-            referente aos pesos das camadas ocultas extraídas, 
-            e suas respectivas labels
+        Input: (dict) Batch of data with model inputs.
+        Output: (dict) Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
 
-        Essa função extrai apenas para a última camada do modelo
+        This function extracts only for the last layer of the model.
         '''
+
 
         inputs = {k:v.to(self.device) for k,v in batch.items() 
                 if k in self.tokenizer.model_input_names}
@@ -182,14 +191,12 @@ class Treatment:
 
     def extract_all_hidden_states(self, batch):
         '''
-        Entrada: (dict) Batch de dados com entradas do modelo
-        Saída: (dict) Dicionários contendo um tensor
-            referente aos pesos das camadas ocultas extraídas, 
-            e suas respectivas labels
+        Input: (dict) Batch of data with model inputs.
+        Output: (dict) Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
 
-        Essa função extrai para todas as camadas ocultas do modelo
+        This function extracts for all hidden layers of the model.
         '''
-        print("onde estamos?\n\n\n\n")
+
         model = self.setEmbeddingsOnModel(model_ckpt=self.model)
 
         inputs = {k:v.to(self.device) for k,v in batch.items() 
@@ -204,9 +211,10 @@ class Treatment:
 
     def setDatasetToTorch(self, dataset_encoded):
         '''
-        Entrada: (Dataset) Dataset tokenizado
-        Saída: (Dataset) Dataset formatado para PyTorch
+        Input: (Dataset) Tokenized Dataset.
+        Output: (Dataset) Dataset formatted for PyTorch.
         '''
+
         dataset_encoded.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])
         return dataset_encoded
@@ -214,10 +222,11 @@ class Treatment:
 
     def get_embeddings(self, X, y):
         '''
-        Entrada: (array) Matriz de embddings para features X
-                 (array) Vetor de embeddings para labels y
-        Saída: (DataFrame) DataFrame com as embeddings 2D
+        Input: (array) Matrix of embeddings for features X.
+            (array) Embeddings vector for labels y.
+        Output: (DataFrame) DataFrame with 2D embeddings.
         '''
+
         X_scaled = MinMaxScaler().fit_transform(X)
         mapper = UMAP(n_components=2, metric="cosine", random_state=42).fit(X_scaled)
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
@@ -227,11 +236,11 @@ class Treatment:
 
     def plot_map(self, dataset, hidden_state_label, map_dimension):
         '''
-        Entrada: (Dataset) Dataset contendo as camadas ocultas
-                 (string) Categorias das camadas ocultas a ser plotado
-        Saída: Exibe um gráfico de dispersão 2D das embeddings
+        Input: (Dataset) Dataset containing the hidden layers.
+            (string) Hidden layer categories to be plotted.
+        Output: Displays a 2D scatter plot of the embeddings.
         '''
-    
+
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
         df_emb = self.get_embeddings(X, y, map_dimension)
@@ -255,9 +264,10 @@ class Treatment:
    
     def plot_maps_all_hidden(self, dataset, dataset_all_hidden, map_dimension):
         '''
-        Entrada: (Dataset) Dataset contendo todas as camadas ocultas
-        Saída: Plota os mapas de todas as embeddings das camadas ocultas
+        Input: (Dataset) Dataset containing all hidden layers.
+        Output: Plots the maps of all hidden layer embeddings.
         '''
+
         for hs in [x for x in dataset_all_hidden.column_names if x.startswith("hidden_state")]:
             print(hs)
             self.plot_map(dataset, hs, map_dimension)
@@ -265,9 +275,8 @@ class Treatment:
    
     def hiddenStatesToNumpy(self, dataset_hidden):
         '''
-        Entrada: (Dataset) Dataset contendo todas as camadas ocultas
-        Saída:   (array, array) Arrays numpy com as embeddings das camadas
-                ocultas e labels
+        Input: (Dataset) Dataset containing all hidden layers.
+        Output: (array, array) Numpy arrays with the hidden layer embeddings and labels.
         '''
 
         X = np.array(dataset_hidden["hidden_state"])
@@ -276,9 +285,9 @@ class Treatment:
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         '''
-        Retornando o dataframe contendo os embeddings para cada 
-        camada oculta da rede
+        Returns a dataframe containing the embeddings for each hidden layer of the network.
         '''
+
         hidden_state = hidden_state_label.split("_")[-1]
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
@@ -293,6 +302,10 @@ class Treatment:
         return df_emb
     
     def plot_all_grids(self, dataset, gridsize):
+        '''
+        Plots the grids for all embeddings of the hidden layers.
+        '''
+
         for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
             print(hs)
             df_grid = self.get_grid(dataset, hs, gridsize)

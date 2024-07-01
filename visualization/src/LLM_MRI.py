@@ -5,9 +5,8 @@ import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 import pydot
-from networkx.drawing.nx_pydot import graphviz_layout
+from networkx.drawing.nx_agraph import graphviz_layout
 import torch
-
 class LLM_MRI:
 
     def __init__(self, model, device, dataset):
@@ -20,21 +19,23 @@ class LLM_MRI:
 
     def setDevice(self, device):
         '''
-        Define o dispositivo (device) que será utilizado pela classe
+        Sets the device that will be used by the class.
         '''
+
         self.device = torch.device(device)
 
     def setDataset(self, dataset):
         '''
-        Define o dataset que será utilizado pela classe
+        Sets the dataset that will be used by the class.
         '''
+
         self.dataset = dataset
 
     def initialize_dataset(self):
         '''
-        Inicializando o encoded Dataset a partir do modelo, 
-        e o transformando no tipo torch
+        Initializes the encoded dataset from the model and transforms it into the torch type.
         '''
+
         encodedDataset = self.base.encodeDataset(self.dataset)
 
         # Transformando o dataset para o formato Torch
@@ -43,60 +44,57 @@ class LLM_MRI:
 
     def process_activation_areas(self, map_dimension):
         '''
-        Entrada: (int) Tamanho do lado do quadrado que será mostrada
-        a visualização
+        Input: (int) Size of the side of the square that will show the visualization.
 
-        Saída: Plot do grid de ativações para cada uma das camadas 
-        do modelo
+        Output: Plot of the activation grid for each of the model's layers.
         '''
 
-        # Obtendo o encoded Dataset
+
+        # Obtaining the encoded Dataset
         encodedDataset = self.initialize_dataset()
-        print(type(encodedDataset), " TIPO DO ENCODED")
 
         # Adapting encodedDataset format
         encodedDataset.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])
 
-        # Obtendo as camadas ocultas do Dataset
+        # Getting encodedDataset Hidden Layers
         datasetHiddenStates = encodedDataset.map(self.base.extract_all_hidden_states, batched=True)
 
-        # Plotando as visualizações
+        # Plotting visualization
         self.base.plot_all_grids(datasetHiddenStates, map_dimension)
 
 
     def get_layer_image(self, layer, category):
         '''
-        Entrada: (int) Camada que será visualizada
-                 (int) Categoria cujas ativações serão visualizada
-        
-        Saída: Plot do grid de ativações para a camada e categoria desejada
+        Input: (int) Layer to be visualized
+            (int) Category whose activations will be visualized
+
+        Output: Plot of the activation grid for the desired layer and category.
         '''
-        
-        # Obtendo o encodede Dataset
+
         encodedDataset = self.initialize_dataset()
 
         # Adapting encodedDataset format
         encodedDataset.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])
 
-        # Obtendo o layer desejado
+        # Obtaining layer passed by parameter
         datasetHiddenStates = encodedDataset.map(self.base.extract_all_hidden_states, batched=True)
 
-        # Obtendo a string referente ao nome da camada
+        # Obtaining layer name string 
         hidden_name = f"hidden_state_{layer}"
 
-        # Selecionando apenas a camada passada por parâmetro
+        # Selecting layer passed as parameter
         datasetHiddenStates = datasetHiddenStates.remove_columns(
             [col for col in datasetHiddenStates.column_names 
             if col not in [hidden_name, 'text', 'label', 'input_ids', 'attention_mask']]
         )
         
         
-        # Selecionando as linhas que contém a label da categoria desejada
+        # Selecting only lines containing the desired layer
         exclude = list(map(lambda x: True if x == category else False, datasetHiddenStates['label']))
 
-        # Filtrando o Dataset com base nas labels obtidas
+        # Filtering the Dataset based on the desired label
         datasetByCategory = datasetHiddenStates.select(
             (
                 i for i in range(len(datasetHiddenStates)) 
@@ -104,17 +102,25 @@ class LLM_MRI:
             )
         )
 
-        # Plotando a visualização
+        # Plotting the grid
         self.base.plot_all_grids(datasetByCategory, 10)
 
 
     def get_all_graph(self):
         '''
-        Função que constrói o pandas edgelist (representação em grafos) para as ativações das regiões da rede. 
+        Function that builds the pandas edgelist (graph representation) for the network region activations.
         '''
 
-        # def make_graph(dataset, gridsize, min_corr=0.5):
-        hss = [x for x in self.dataset.column_names if x.startswith("hidden_state")]
+        # Obtaining the encoded Dataset
+        encodedDataset = self.initialize_dataset()
+
+        # Adapting encodedDataset format
+        encodedDataset.set_format("torch", 
+                            columns=["input_ids", "attention_mask", "label"])
+
+        datasetHiddenStates = encodedDataset.map(self.base.extract_all_hidden_states, batched=True)
+
+        hss = [x for x in datasetHiddenStates.column_names if x.startswith("hidden_state")]
 
         # crete an empty dataframe with columns up, down and corr
         df_graph = pd.DataFrame(columns=["cell_label_1", "cell_label_2", "weight", "level"])
@@ -123,10 +129,9 @@ class LLM_MRI:
             hs1 = hss[hs]
             hs2 = hss[hs+1]
 
-            print(hs1, hs2)
             
-            df_grid1 = self.base.get_grid(self.dataset, hs1, self.gridsize)
-            df_grid2 = self.base.get_grid(self.dataset, hs2, self.gridsize)
+            df_grid1 = self.base.get_grid(datasetHiddenStates, hs1, 10)
+            df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, 10)
 
             df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
 
@@ -146,17 +151,28 @@ class LLM_MRI:
 
     def get_graph(self, category):
         '''
-        Função que constrói o pandas edgelist (representação em grafos) para as ativações das regiões da 
-        rede, para uma determinada label (categoria) passada como parâmetro. 
+        Function that builds the pandas edgelist (graph representation) for the network region activations,
+        for a given label (category) passed as a parameter.
         '''
 
-        # Selecionando as linhas que contém a label da categoria desejada
-        exclude = list(map(lambda x: True if x == category else False, self.dataset['label']))
 
-        # Filtrando o Dataset com base nas labels obtidas
-        datasetByCategory = self.dataset.select(
+        # Obtaining the encoded Dataset
+        encodedDataset = self.initialize_dataset()
+
+        # Adapting encodedDataset format
+        encodedDataset.set_format("torch", 
+                            columns=["input_ids", "attention_mask", "label"])
+
+        # Obtaining desired layer
+        datasetHiddenStates = encodedDataset.map(self.base.extract_all_hidden_states, batched=True)
+        
+        # Selecting only lines containing the desired layer
+        exclude = list(map(lambda x: True if x == category else False, datasetHiddenStates['label']))
+
+        # Filtering the Dataset based on the desired label
+        datasetByCategory = datasetHiddenStates.select(
             (
-                i for i in range(len(self.dataset)) 
+                i for i in range(len(datasetHiddenStates)) 
                 if exclude[i] == True 
             )
         )
@@ -170,10 +186,9 @@ class LLM_MRI:
             hs1 = hss[hs]
             hs2 = hss[hs+1]
 
-            print(hs1, hs2)
             
-            df_grid1 = self.base.get_grid(datasetByCategory, hs1, self.gridsize)
-            df_grid2 = self.base.get_grid(datasetByCategory, hs2, self.gridsize)
+            df_grid1 = self.base.get_grid(datasetByCategory, hs1, 10)
+            df_grid2 = self.base.get_grid(datasetByCategory, hs2, 10)
 
             df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
 
@@ -193,11 +208,13 @@ class LLM_MRI:
 
     def get_graph_image(self, category):
         '''
-        Função que mostra na tela o pandas edgelist (representação em grafos) para as ativações das regiões da 
-        rede, para uma determinada label (categoria) passada como parâmetro. 
+        Function that displays the pandas edgelist (graph representation) for the network region activations,
+         for a given label (category) passed as a parameter.
         '''
 
-        g = self.get_graph(category)
+
+        # g = self.get_graph(category)
+        g = self.get_all_graph()
         widths = nx.get_edge_attributes(g, 'weight')
         nodelist = g.nodes()
 
@@ -206,7 +223,7 @@ class LLM_MRI:
         plt.figure(figsize=(25,6))
 
 
-        # nx.draw(g, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
+        nx.draw(g, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
 
         nx.draw_networkx_nodes(g,pos,
                             nodelist=nodelist,
