@@ -6,15 +6,15 @@ from LLM_MRI import LLM_MRI
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 handle = Treatment(model=model_ckpt, device="cpu")
 
-# Passos para transformar o Dataset em um Dataset do HuggingFaces
+# Turning Pandas DataFrame into HuggingFace Dataset (in case your Dataset is not HF already)
 df = handle.le_documentos("/home/lipecorradini/desktop/unicamp/ic/vizactv/fake-br-corpus-sample")
-stopwords = handle.set_stopwords() # Testando Função para definir as stopwords
+stopwords = handle.set_stopwords() # Defining stopwords
 
-handle.set_normalizado(df, stopwords) # Testar a normalização do texto
+handle.set_normalizado(df, stopwords) # Text Normalization
 
 dataset = handle.DfToHuggingFacesDataset(df, class_names=["true", "fake"]) # Transformando df em um Dataset do HuggingFace
 
-# Iniciando as Visualizações
+# Beginning Visualization
 
 my_viz = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 
