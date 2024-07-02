@@ -1,6 +1,6 @@
 # LLM-MRI
 
-### LLM-MRI: toolkit for visualizing activation region on Large Language Models neural networks
+## LLM-MRI: toolkit for visualizing activation region on Large Language Models neural networks
 
 As the everyday use of large language models (LLMs) grows, so does the necessity of understanding how LLMs achieve their designed outputs.
 
