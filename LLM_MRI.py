@@ -1,4 +1,5 @@
-from Treatment import Treatment
+import Treatment
+import sys
 from transformers import AutoTokenizer, AutoModel
 from datasets import load_dataset, Dataset, Features, Value, ClassLabel
 import networkx as nx
@@ -16,6 +17,7 @@ class LLM_MRI:
         self.dataset = dataset
         self.base = Treatment(model, device)
         self.gridzise = 10 # Padrão
+        self.dataset = self.initialize_dataset() 
 
     def setDevice(self, device):
         '''
@@ -49,17 +51,13 @@ class LLM_MRI:
         Output: Plot of the activation grid for each of the model's layers.
         '''
 
-
-        # Obtaining the encoded Dataset
-        encodedDataset = self.initialize_dataset()
-
         # Adapting encodedDataset format
-        encodedDataset.set_format("torch", 
+        self.dataset.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])
 
-        # Getting encodedDataset Hidden Layers
-        datasetHiddenStates = encodedDataset.map(self.base.extract_all_hidden_states, batched=True)
-
+        # Getting self.dataset Hidden Layers
+        datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
+        
         # Plotting visualization
         self.base.plot_all_grids(datasetHiddenStates, map_dimension)
 
@@ -279,3 +277,5 @@ class LLM_MRI:
 
         plt.box(False)
         plt.show()
+
+sys.modules['LLM_MRI'] = LLM_MRI

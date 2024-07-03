@@ -11,6 +11,7 @@ from sklearn.preprocessing import MinMaxScaler #
 import matplotlib.pyplot as plt
 import numpy as np #
 import seaborn as sns #
+import sys
 
 class Treatment:
 
@@ -201,11 +202,14 @@ class Treatment:
 
         inputs = {k:v.to(self.device) for k,v in batch.items() 
                 if k in self.tokenizer.model_input_names}
+        
         with torch.no_grad():
             hidden_states = model(**inputs, output_hidden_states=True).hidden_states
         all_hidden_states = {}
+        
         for i, hs in enumerate(hidden_states):
             all_hidden_states[f"hidden_state_{i}"] = hs[:,0].cpu().numpy()
+        
         return all_hidden_states
 
 
@@ -307,7 +311,7 @@ class Treatment:
         '''
 
         for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
-            print(hs)
+
             df_grid = self.get_grid(dataset, hs, gridsize)
             ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
 
@@ -317,3 +321,5 @@ class Treatment:
             #change figure title to hs
             plt.title(hs)
             plt.show()
+
+sys.modules['Treatment'] = Treatment
