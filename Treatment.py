@@ -247,7 +247,7 @@ class Treatment:
 
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
-        df_emb = self.get_embeddings(X, y, map_dimension)
+        df_emb = self.get_embeddings(X, y)
         fig, axes = plt.subplots(1, 2, figsize=(7,5))
         axes = axes.flatten()
         cmaps = ["Blues", "Reds"] # Depende do número de classes
@@ -256,17 +256,16 @@ class Treatment:
         for i, (label, cmap) in enumerate(zip(labels, cmaps)):
             df_emb_sub = df_emb.query(f"label == {i}")
             axes[i].hexbin(df_emb_sub["X"], df_emb_sub["Y"], cmap=cmap,
-                        gridsize=10, linewidths=(0,)) # 
+                        gridsize=map_dimension, linewidths=(0,)) # 
             axes[i].set_title(label)
             axes[i].set_xticks([]), axes[i].set_yticks([])
 
         fig.suptitle(hidden_state_label, fontsize=16)
 
-        plt.tight_layout()
-        plt.show()
+        return fig
 
    
-    def plot_maps_all_hidden(self, dataset, dataset_all_hidden, map_dimension):
+    def plot_maps_all_hidden(self, dataset_all_hidden, map_dimension):
         '''
         Input: (Dataset) Dataset containing all hidden layers.
         Output: Plots the maps of all hidden layer embeddings.
@@ -274,7 +273,7 @@ class Treatment:
 
         for hs in [x for x in dataset_all_hidden.column_names if x.startswith("hidden_state")]:
             print(hs)
-            self.plot_map(dataset, hs, map_dimension)
+            self.plot_map(dataset_all_hidden, hs, map_dimension)
     
    
     def hiddenStatesToNumpy(self, dataset_hidden):
