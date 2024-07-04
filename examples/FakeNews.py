@@ -1,7 +1,6 @@
 import sys
 sys.path.insert(1, '../')
 
-import Treatment 
 import LLM_MRI
 import matplotlib.pyplot as plt
 import os

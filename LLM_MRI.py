@@ -1,12 +1,12 @@
 import Treatment
 import sys
-from transformers import AutoTokenizer, AutoModel
-from datasets import load_dataset, Dataset, Features, Value, ClassLabel
+from transformers import AutoTokenizer
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 from networkx.drawing.nx_agraph import graphviz_layout
 import torch
+from datasets import features, ClassLabel
 class LLM_MRI:
 
     def __init__(self, model, device, dataset):
@@ -49,14 +49,10 @@ class LLM_MRI:
 
         Output: None, sets the self.hidden_states_dataset as the datasetHiddenStates
         '''
-        
-        # Adapting encodedDataset format
-        self.dataset.set_format("torch", 
-                            columns=["input_ids", "attention_mask", "label"])
 
         # Getting self.dataset Hidden Layers
         datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
-        
+
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
 

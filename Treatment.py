@@ -1,17 +1,12 @@
-import os #
 import pandas as pd
-import nltk #
-from nltk.tokenize import word_tokenize #
-import unicodedata #
-from datasets import Dataset, Features, Value, ClassLabel
 from transformers import AutoTokenizer, AutoModel
 import torch #
 from umap import UMAP #
 from sklearn.preprocessing import MinMaxScaler #
 import matplotlib.pyplot as plt
 import numpy as np #
-import seaborn as sns #
 import sys
+from datasets import ClassLabel
 
 class Treatment:
 
@@ -40,84 +35,6 @@ class Treatment:
         '''
 
         self.tokenizer = tokenizer
-
-    def le_documentos(self, directory_path):
-        '''
-        Input: (string) Path to the directory where the corpus to be used is located.
-        Output: (DataFrame) DataFrame corresponding to the corpus.
-
-        This function iterates over the categories present in the document and stores them in a dataframe, separating the files present in each category.
-        '''
-
-        documentos = []
-
-        for category in os.listdir(directory_path):
-            for doc in os.listdir(f'{directory_path}/{category}'):
-                name = doc.split('.')[0]
-                path = f'{directory_path}/{category}/{doc}'
-                content = open(path, "r", encoding="utf-8").read()
-                documento = {"CATEGORY": category, "NAME": name, "PATH": path, "CONTENT": content}
-                documentos.append(documento)
-
-        df = pd.DataFrame(documentos)
-        return df
-
-
-    def remove_acentos(self, input_str):
-        '''
-        Input: (string) String representing the .txt file in the document.
-        Output: (string) Input string with accents removed, according to Unicode.
-        '''
-
-        nfkd_form = unicodedata.normalize('NFKD', input_str)
-        return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-
-
-    def set_stopwords(self):
-        '''
-        Output: (list(string)) Stopwords, or words that limit the model's understanding,
-        for the Portuguese language.
-        '''
-
-        stopwords = nltk.corpus.stopwords.words('portuguese')
-        stopwords = [self.remove_acentos(palavra) for palavra in stopwords]
-        return stopwords
-
-
-    def normaliza_texto(self, txt, stopwords):
-        '''
-        Inputs: (string) String representing the .txt file to be normalized.
-                (list(string)) Predefined stopwords in Portuguese.
-        Output: (string) Normalized text corresponding to the file.
-        '''
-
-        return ' '.join([word for word in word_tokenize(str.lower(self.remove_acentos(txt))) if word not in stopwords and word.isalpha()])
-
-
-    def set_normalizado(self, df, stopwords):
-        '''
-        Inputs: (DataFrame) DataFrame used to store the documents.
-        Output: Adds a column with the normalized content to the DataFrame.
-        '''
-
-        df['CONTENT_NORMALIZADO'] = df.apply(lambda linha: self.normaliza_texto(str(linha['CONTENT']), stopwords), axis = 1)
-
-
-    def DfToHuggingFacesDataset(self, df, class_names):
-        '''
-        Input: (DataFrame) DataFrame used to store the documents.
-            (list(string)) List with the names of the classes.
-        Output: (Dataset) DataFrame in the format of HuggingFace Dataset.
-        '''
-
-        # Pega os campos necessários
-        df = df[['CONTENT_NORMALIZADO', 'CATEGORY']]
-        df.columns = ['text', 'label']
-        datasetFeatures = Features({'text': Value('string'), 'label': ClassLabel(names=class_names)})
-        dataset = Dataset.from_pandas(df, features = datasetFeatures)
-
-        return dataset
-
 
     def tokenize(self, batch):
         '''
@@ -158,36 +75,6 @@ class Treatment:
 
         model = AutoModel.from_pretrained(model_ckpt).to(self.device)
         return model
-
-
-    def getHiddenStatesOutputs(self, text, model):
-        '''
-        Inputs: (String) Text to be analyzed.
-                (Model) Model used.
-        Output: (Tensor) Network outputs for the input text.
-        '''
-
-        inputs = self.tokenizer(text, return_tensors = "pt")
-        inputs = {k:v.to(self.device) for k,v in inputs.items()}
-        with torch.no_grad():
-            outputs = model(**inputs, output_hidden_states = True)
-        return outputs
-
-
-    def extract_hidden_states(self, batch):
-        '''
-        Input: (dict) Batch of data with model inputs.
-        Output: (dict) Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
-
-        This function extracts only for the last layer of the model.
-        '''
-
-
-        inputs = {k:v.to(self.device) for k,v in batch.items() 
-                if k in self.tokenizer.model_input_names}
-        with torch.no_grad():
-            last_hidden_state = self.model(**inputs).last_hidden_state
-        return {"hidden_state": last_hidden_state[:,0].cpu().numpy()}
 
 
     def extract_all_hidden_states(self, batch):
@@ -232,7 +119,7 @@ class Treatment:
         '''
 
         X_scaled = MinMaxScaler().fit_transform(X)
-        mapper = UMAP(n_components=2, metric="cosine", random_state=42).fit(X_scaled)
+        mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
         df_emb["label"] = y
         return df_emb
@@ -248,9 +135,9 @@ class Treatment:
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
         df_emb = self.get_embeddings(X, y)
-        fig, axes = plt.subplots(1, 2, figsize=(7,5))
+        fig, axes = plt.subplots(1, 2, figsize=(7,5)) # gotta add more in case there are more than two features
         axes = axes.flatten()
-        cmaps = ["Blues", "Reds"] # Depende do número de classes
+        cmaps = ["Blues", "Reds"]
         labels = dataset.features["label"].names
 
         for i, (label, cmap) in enumerate(zip(labels, cmaps)):
@@ -263,28 +150,7 @@ class Treatment:
         fig.suptitle(hidden_state_label, fontsize=16)
 
         return fig
-
-   
-    def plot_maps_all_hidden(self, dataset_all_hidden, map_dimension):
-        '''
-        Input: (Dataset) Dataset containing all hidden layers.
-        Output: Plots the maps of all hidden layer embeddings.
-        '''
-
-        for hs in [x for x in dataset_all_hidden.column_names if x.startswith("hidden_state")]:
-            print(hs)
-            self.plot_map(dataset_all_hidden, hs, map_dimension)
     
-   
-    def hiddenStatesToNumpy(self, dataset_hidden):
-        '''
-        Input: (Dataset) Dataset containing all hidden layers.
-        Output: (array, array) Numpy arrays with the hidden layer embeddings and labels.
-        '''
-
-        X = np.array(dataset_hidden["hidden_state"])
-        y = np.array(dataset_hidden["label"])
-        return X, y
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         '''
@@ -303,22 +169,6 @@ class Treatment:
 
         df_emb['cell_label'] = hidden_state + "_" + df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         return df_emb
-    
-    def plot_all_grids(self, dataset, gridsize):
-        '''
-        Plots the grids for all embeddings of the hidden layers.
-        '''
 
-        for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
-
-            df_grid = self.get_grid(dataset, hs, gridsize)
-            ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
-
-            ct = ct.sort_index(ascending=False)
-            
-            sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
-            #change figure title to hs
-            plt.title(hs)
-            plt.show()
 
 sys.modules['Treatment'] = Treatment
