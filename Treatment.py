@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler #
 import matplotlib.pyplot as plt
 import numpy as np #
 import sys
-from datasets import ClassLabel
+import seaborn as sns
 
 class Treatment:
 
@@ -119,38 +119,11 @@ class Treatment:
         '''
 
         X_scaled = MinMaxScaler().fit_transform(X)
-        mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
+        mapper = UMAP(n_components=2, metric="cosine", random_state=42).fit(X_scaled) #, random_state=42
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
         df_emb["label"] = y
         return df_emb
 
-
-    def plot_map(self, dataset, hidden_state_label, map_dimension):
-        '''
-        Input: (Dataset) Dataset containing the hidden layers.
-            (string) Hidden layer categories to be plotted.
-        Output: Displays a 2D scatter plot of the embeddings.
-        '''
-
-        X = np.array(dataset[hidden_state_label])
-        y = np.array(dataset["label"])
-        df_emb = self.get_embeddings(X, y)
-        fig, axes = plt.subplots(1, 2, figsize=(7,5)) # gotta add more in case there are more than two features
-        axes = axes.flatten()
-        cmaps = ["Blues", "Reds"]
-        labels = dataset.features["label"].names
-
-        for i, (label, cmap) in enumerate(zip(labels, cmaps)):
-            df_emb_sub = df_emb.query(f"label == {i}")
-            axes[i].hexbin(df_emb_sub["X"], df_emb_sub["Y"], cmap=cmap,
-                        gridsize=map_dimension, linewidths=(0,)) # 
-            axes[i].set_title(label)
-            axes[i].set_xticks([]), axes[i].set_yticks([])
-
-        fig.suptitle(hidden_state_label, fontsize=16)
-
-        return fig
-    
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         '''
@@ -169,6 +142,25 @@ class Treatment:
 
         df_emb['cell_label'] = hidden_state + "_" + df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         return df_emb
+
+
+    def get_activations_grid(self, dataset, gridsize, hidden_layer_name, label):
+        '''
+        Reduces Dimensionality and return a NxN gridsize, each representing an activation region.
+        '''
+        hs = hidden_layer_name
+        df_grid = self.get_grid(dataset, hs, gridsize)
+        df_grid = df_grid.loc[df_grid['label'] == label]
+
+        ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
+
+        ct = ct.sort_index(ascending=False)
+        
+        fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
+        #change figure title to hs
+        plt.title(hs)
+        
+        return fig
 
 
 sys.modules['Treatment'] = Treatment

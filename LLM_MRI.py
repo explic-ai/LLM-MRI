@@ -76,21 +76,9 @@ class LLM_MRI:
             [col for col in datasetHiddenStates.column_names 
             if col not in [hidden_name, 'text', 'label', 'input_ids', 'attention_mask']]
         )
-        
-        # Selecting only lines containing the desired layer
-        exclude = list(map(lambda x: True if x == category else False, datasetHiddenStates['label']))
-
-        # Filtering the Dataset based on the desired label
-        datasetByCategory = datasetHiddenStates.select(
-            (
-                i for i in range(len(datasetHiddenStates)) 
-                if exclude[i] == True 
-            )
-        )
-
-        # returning figure for the grid
-        return self.base.plot_map(datasetByCategory, hidden_name, self.gridsize)
-
+       
+        return self.base.get_activations_grid(datasetHiddenStates, self.gridsize, hidden_name, category)
+       
 
 
     def get_graph(self, category:int = 2):
@@ -111,11 +99,11 @@ class LLM_MRI:
             hs1 = hss[hs]
             hs2 = hss[hs+1]
             
-            df_grid1 = self.base.get_grid(datasetHiddenStates, hs1, 10)
-            df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, 10)
+            df_grid1 = self.base.get_grid(datasetHiddenStates, hs1, self.gridsize)
+            df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, self.gridsize)
 
             # when no category is passed gets all values
-            if label == 2:
+            if category == 2:
                 df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
             # when category is passed filters values by category
             else:
@@ -132,7 +120,7 @@ class LLM_MRI:
         G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
 
         # when generating category graph, assigns category label to edges
-        if label != 2:
+        if category != 2:
             nx.set_edge_attributes(G, category, "label")
 
         return G
