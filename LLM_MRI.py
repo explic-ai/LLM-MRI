@@ -49,7 +49,7 @@ class LLM_MRI:
 
         Output: None, sets the self.hidden_states_dataset as the datasetHiddenStates
         '''
-
+        
         # Adapting encodedDataset format
         self.dataset.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])

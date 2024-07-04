@@ -4,19 +4,16 @@ sys.path.insert(1, '../')
 import Treatment 
 import LLM_MRI
 import matplotlib.pyplot as plt
+import os
+from datasets import load_from_disk
 
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
-handle = Treatment(model=model_ckpt, device="cpu")
 
-# Turning Pandas DataFrame into HuggingFace Dataset (in case your Dataset is not HF already)
-df = handle.le_documentos("/home/lipecorradini/desktop/unicamp/ic/vizactv/fake-br-corpus-sample")
-stopwords = handle.set_stopwords() # Defining stopwords
+dataset_folder = os.path.join(os.path.dirname(__file__), '..', 'dataset')
+dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
 
-handle.set_normalizado(df, stopwords) # Text Normalization
-
-dataset = handle.DfToHuggingFacesDataset(df, class_names=["true", "fake"]) # Transformando df em um Dataset do HuggingFace
-
-
+# Load the dataset using Hugging Face's `load_dataset` function
+dataset = load_from_disk(dataset_path)
 
 # Beginning Visualization
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
