@@ -93,7 +93,7 @@ class LLM_MRI:
 
 
 
-    def get_graph(self, category:int):
+    def get_graph(self, category:int = 2):
         '''
         Function that builds the pandas edgelist (graph representation) for the network region activations,
         for a given label (category) passed as a parameter.
@@ -102,18 +102,7 @@ class LLM_MRI:
         # Obtaining desired layer
         datasetHiddenStates = self.hidden_states_dataset
         
-        # Selecting only lines containing the desired layer
-        exclude = list(map(lambda x: True if x == category else False, datasetHiddenStates['label']))
-
-        # Filtering the Dataset based on the desired label
-        datasetByCategory = datasetHiddenStates.select(
-            (
-                i for i in range(len(datasetHiddenStates)) 
-                if exclude[i] == True 
-            )
-        )
-
-        hss = [x for x in datasetByCategory.column_names if x.startswith("hidden_state")]
+        hss = [x for x in datasetHiddenStates.column_names if x.startswith("hidden_state")]
 
         # crete an empty dataframe with columns up, down and corr
         df_graph = pd.DataFrame(columns=["cell_label_1", "cell_label_2", "weight", "level"])
@@ -122,10 +111,15 @@ class LLM_MRI:
             hs1 = hss[hs]
             hs2 = hss[hs+1]
             
-            df_grid1 = self.base.get_grid(datasetByCategory, hs1, 10)
-            df_grid2 = self.base.get_grid(datasetByCategory, hs2, 10)
+            df_grid1 = self.base.get_grid(datasetHiddenStates, hs1, 10)
+            df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, 10)
 
-            df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
+            # when no category is passed gets all values
+            if label == 2:
+                df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
+            # when category is passed filters values by category
+            else:
+                df_join = df_grid1.loc[df_grid1['label'] == category][['cell_label']].join(df_grid2.loc[df_grid2['label'] == category][['cell_label']], lsuffix='_1', rsuffix='_2')
 
             #group by and count the number of rows
             df_join_grouped = df_join.groupby(['cell_label_1', 'cell_label_2']).size().reset_index(name='weight')
@@ -136,6 +130,10 @@ class LLM_MRI:
 
             
         G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
+
+        # when generating category graph, assigns category label to edges
+        if label != 2:
+            nx.set_edge_attributes(G, category, "label")
 
         return G
 
