@@ -16,9 +16,10 @@ class LLM_MRI:
         self.dataset = dataset
         self.base = Treatment(model, device)
         self.gridsize = 10 # Padrão
+        self.class_names = self.dataset.features['label'].names
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
-
+        
     def setDevice(self, device):
         '''
         Sets the device that will be used by the class.
@@ -51,6 +52,7 @@ class LLM_MRI:
         '''
 
         # Getting self.dataset Hidden Layers
+    
         datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
 
         self.gridsize = map_dimension
@@ -76,8 +78,10 @@ class LLM_MRI:
             [col for col in datasetHiddenStates.column_names 
             if col not in [hidden_name, 'text', 'label', 'input_ids', 'attention_mask']]
         )
+
+        category_to_int = self.class_names.index(category)
        
-        return self.base.get_activations_grid(datasetHiddenStates, self.gridsize, hidden_name, category)
+        return self.base.get_activations_grid(datasetHiddenStates, self.gridsize, hidden_name, category_to_int, category)
        
 
 

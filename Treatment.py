@@ -84,7 +84,7 @@ class Treatment:
 
         This function extracts for all hidden layers of the model.
         '''
-
+        
         model = self.setEmbeddingsOnModel(model_ckpt=self.model)
 
         inputs = {k:v.to(self.device) for k,v in batch.items() 
@@ -144,11 +144,12 @@ class Treatment:
         return df_emb
 
 
-    def get_activations_grid(self, dataset, gridsize, hidden_layer_name, label):
+    def get_activations_grid(self, dataset, gridsize, hidden_layer_name, label, label_name):
         '''
         Reduces Dimensionality and return a NxN gridsize, each representing an activation region.
         '''
         hs = hidden_layer_name
+
         df_grid = self.get_grid(dataset, hs, gridsize)
         df_grid = df_grid.loc[df_grid['label'] == label]
 
@@ -158,7 +159,8 @@ class Treatment:
         
         fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
         #change figure title to hs
-        plt.title(hs)
+        full_name = f"{hidden_layer_name} : {label_name}"
+        plt.title(full_name)
         
         return fig
 
