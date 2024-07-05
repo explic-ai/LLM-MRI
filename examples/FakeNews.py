@@ -21,7 +21,11 @@ llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
 # Getting the layer's image for a designed category
-fig = llm_mri.get_layer_image(layer = 0, category=1) # Getting the image for a specific layer and specific label category (Ex: label = 0)
+fig = llm_mri.get_layer_image(layer = 0, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
+plt.tight_layout()
+plt.show()
+
+fig = llm_mri.get_layer_image(layer = 0, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
 plt.tight_layout()
 plt.show()
 
