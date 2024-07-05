@@ -9,3 +9,25 @@ One approach to analyzing LLM interpretability is to examine the neuron activati
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
 ## Instalation
+
+To see LLM-MRI in action on your own data:
+
+**1) Clone this repository on your machine**
+
+```
+git clone https://github.com/luizcelsojr/LLM-MRI
+```
+
+**2) Install Poetry**
+
+```
+pipx install poetry
+
+```
+
+**3) Install dependencies**
+
+```
+poetry install
+
+```
