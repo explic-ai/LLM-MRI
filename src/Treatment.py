@@ -151,6 +151,7 @@ class Treatment:
         hs = hidden_layer_name
 
         df_grid = self.get_grid(dataset, hs, gridsize)
+
         df_grid = df_grid.loc[df_grid['label'] == label]
 
         ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
