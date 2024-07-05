@@ -1,6 +1,4 @@
-# LLM-MRI
-
-## LLM-MRI: a brain scanner for LLMs
+# LLM-MRI: a brain scanner for LLMs
 
 As the everyday use of large language models (LLMs) grows, so does the necessity of understanding how LLMs achieve their designed outputs.
 
