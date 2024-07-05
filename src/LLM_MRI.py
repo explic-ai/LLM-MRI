@@ -4,6 +4,7 @@ from transformers import AutoTokenizer
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from networkx.drawing.nx_agraph import graphviz_layout
 import torch
 from datasets import features, ClassLabel
@@ -85,7 +86,7 @@ class LLM_MRI:
        
 
 
-    def get_graph(self, category:int = 2):
+    def get_graph(self, category:bool = false):
         '''
         Function that builds the pandas edgelist (graph representation) for the network region activations,
         for a given label (category) passed as a parameter.
@@ -145,6 +146,8 @@ class LLM_MRI:
 
         fig = plt.figure(figsize=(25,6))
 
+        edge_colors = generate_graph_edge_colors(g)
+
         nx.draw(g, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
 
         nx.draw_networkx_nodes(g,pos,
@@ -156,7 +159,7 @@ class LLM_MRI:
         nx.draw_networkx_edges(g,pos,
                             edgelist = widths.keys(),
                             width=list(widths.values()),
-                            edge_color='lightblue',
+                            edge_color=edge_colors,
                             alpha=0.9)
 
         nx.draw_networkx_labels(g, pos=pos,
@@ -164,5 +167,20 @@ class LLM_MRI:
                                 font_color='black')
 
         return fig
+
+    def generate_graph_edge_colors(G):
+        '''
+        Function that generates a list of colors based on the amount of labels in the graphs edges.
+        If no label is present, it returns a default value.
+        '''
+        edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
+        
+        if 'label' in edge_attributes:
+            labels = list(set(nx.to_pandas_edgelist(g_composed)['label']))
+
+            colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(len(labels))]
+            return colors
+        else:
+            return ['lightblue']
 
 sys.modules['LLM_MRI'] = LLM_MRI
