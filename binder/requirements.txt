@@ -1,0 +1,13 @@
+numpy
+pandas
+nltk
+datasets
+transformers
+umap
+sklearn-preprocessing
+matplotlib
+tensorflow
+pydot
+networkx
+graphviz
+pygraphviz
