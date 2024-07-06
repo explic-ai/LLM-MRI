@@ -130,7 +130,7 @@ class LLM_MRI:
 
         return G
 
-    def generate_graph_edge_colors(G):
+    def generate_graph_edge_colors(self, G):
         '''
         Function that generates a list of colors based on the amount of labels in the graphs edges.
         If no label is present, it returns a default value.
@@ -138,7 +138,7 @@ class LLM_MRI:
         edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
         
         if 'label' in edge_attributes:
-            labels = list(set(nx.to_pandas_edgelist(g_composed)['label']))
+            labels = list(set(nx.to_pandas_edgelist(G)['label']))
 
             colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(len(labels))]
             return colors

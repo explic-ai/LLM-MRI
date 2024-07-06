@@ -6,6 +6,12 @@ One approach to analyzing LLM interpretability is to examine the neuron activati
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
+## Online Example
+
+The link below runs an online example of our library, in the Jupyter platform running over the Binder server:
+
+[![launch @ mybinder.org][badge-jupyterlab-mybinder-org]](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.0?labpath=examples%2FEmotions.ipynb)
+
 ## Instalation
 
 To see LLM-MRI in action on your own data:
