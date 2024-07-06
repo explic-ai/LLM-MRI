@@ -138,7 +138,7 @@ class LLM_MRI:
         edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
         
         if 'label' in edge_attributes:
-            labels = list(set(nx.to_pandas_edgelist(g_composed)['label']))
+            labels = list(set(nx.to_pandas_edgelist(G)['label']))
 
             colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(len(labels))]
             return colors
