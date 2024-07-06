@@ -86,7 +86,7 @@ class LLM_MRI:
        
 
 
-    def get_graph(self, category:bool = false):
+    def get_graph(self, category:int = 2):
         '''
         Function that builds the pandas edgelist (graph representation) for the network region activations,
         for a given label (category) passed as a parameter.
