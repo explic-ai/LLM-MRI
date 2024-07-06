@@ -130,7 +130,7 @@ class LLM_MRI:
 
         return G
 
-    def generate_graph_edge_colors(G):
+    def generate_graph_edge_colors(self, G):
         '''
         Function that generates a list of colors based on the amount of labels in the graphs edges.
         If no label is present, it returns a default value.
