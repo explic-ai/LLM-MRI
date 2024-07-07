@@ -33,7 +33,20 @@ plt.show()
 g = llm_mri.get_graph(category=0) # Getting the graph for a designed category
 
 # Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(category=0) # Getting the graph image for a determined category
+g_img = llm_mri.get_graph_image(g) # Getting the graph image for a determined category
 plt.box(False)
 plt.show()
 
+# Getting activations of different times in a same Graphs
+g_false = llm_mri.get_graph(category=0)
+g_true = llm_mri.get_graph(category=1)
+g_composed = nx.compose(g_true, g_false)
+
+# Marking repeated edges
+duplicates = list(set(g_true.edges) & set(g_false.edges))
+for e in duplicates : g_composed.edges[e]['label'] = 2 
+
+# Generating image of composed graph
+g_composed_img = llm_mri.get_graph_image(g_composed)
+plt.box(False)
+plt.show()
