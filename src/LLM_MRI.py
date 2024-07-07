@@ -145,38 +145,36 @@ class LLM_MRI:
         else:
             return ['lightblue']
 
-    def get_graph_image(self, category:int):
+    def get_graph_image(self, G):
         '''
         Function that displays the pandas edgelist (graph representation) for the network region activations,
-         for a given label (category) passed as a parameter.
+         for a given graph passed as a parameter.
         '''
 
-        g = self.get_graph(category)
+        widths = nx.get_edge_attributes(G, 'weight')
+        nodelist = G.nodes()
 
-        widths = nx.get_edge_attributes(g, 'weight')
-        nodelist = g.nodes()
-
-        pos = graphviz_layout(g, prog="dot")
+        pos = graphviz_layout(G, prog="dot")
 
         fig = plt.figure(figsize=(25,6))
 
-        edge_colors = self.generate_graph_edge_colors(g)
+        edge_colors = self.generate_graph_edge_colors(G)
 
-        nx.draw(g, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
+        nx.draw(G, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
 
-        nx.draw_networkx_nodes(g,pos,
+        nx.draw_networkx_nodes(G,pos,
                             nodelist=nodelist,
                             node_size=150,
                             node_color='grey',
                             alpha=0.8)
 
-        nx.draw_networkx_edges(g,pos,
+        nx.draw_networkx_edges(G,pos,
                             edgelist = widths.keys(),
                             width=list(widths.values()),
                             edge_color=edge_colors,
                             alpha=0.9)
 
-        nx.draw_networkx_labels(g, pos=pos,
+        nx.draw_networkx_labels(Gz, pos=pos,
                                 labels=dict(zip(nodelist,nodelist)),
                                 font_color='black')
 
