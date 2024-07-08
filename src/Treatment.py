@@ -15,21 +15,21 @@ class Treatment:
         self.model = model
         self.device = device
 
-    def setModel(self, model):
+    def set_model(self, model):
         '''
         Sets the model stored by the class.
         '''
 
         self.model = model
 
-    def setDevice(self, device):
+    def set_device(self, device):
         '''
         Sets the device that will be used by the class.
         '''
 
         self.device = device
     
-    def setTokenizer(self, tokenizer):
+    def set_tokenizer(self, tokenizer):
         '''
         Sets the tokenizer that will be used by the class.
         '''
@@ -45,7 +45,7 @@ class Treatment:
         return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
 
-    def encodeDataset(self, dataset):
+    def encode_dataset(self, dataset):
         '''
         Input: (Dataset) Dataset with text to be tokenized.
         Output: (Token) Tokenization of the Dataset, with padding enabled and a maximum length of 512.
@@ -57,7 +57,7 @@ class Treatment:
         return dataset_encoded
 
 
-    def saveDataset(self, dataset):
+    def save_dataset(self, dataset):
         '''
         Input: (Dataset) Tokenized Dataset.
 
@@ -67,7 +67,7 @@ class Treatment:
         dataset.save_to_disk("dataset_encoded.hf")
 
 
-    def setEmbeddingsOnModel(self, model_ckpt):
+    def set_embeddings_on_model(self, model_ckpt):
         '''
         Input: (Model) Hugging Face model.
         Output: (Model) Model passed as a parameter.
@@ -85,7 +85,7 @@ class Treatment:
         This function extracts for all hidden layers of the model.
         '''
         
-        model = self.setEmbeddingsOnModel(model_ckpt=self.model)
+        model = self.set_embeddings_on_model(model_ckpt=self.model)
 
         inputs = {k:v.to(self.device) for k,v in batch.items() 
                 if k in self.tokenizer.model_input_names}
@@ -100,7 +100,7 @@ class Treatment:
         return all_hidden_states
 
 
-    def setDatasetToTorch(self, dataset_encoded):
+    def set_dataset_to_torch(self, dataset_encoded):
         '''
         Input: (Dataset) Tokenized Dataset.
         Output: (Dataset) Dataset formatted for PyTorch.

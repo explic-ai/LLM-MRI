@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from networkx.drawing.nx_agraph import graphviz_layout
 import torch
-from datasets import features, ClassLabel
+
 class LLM_MRI:
 
     def __init__(self, model, device, dataset):
@@ -21,14 +21,14 @@ class LLM_MRI:
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
         
-    def setDevice(self, device):
+    def set_device(self, device):
         '''
         Sets the device that will be used by the class.
         '''
 
         self.device = torch.device(device)
 
-    def setDataset(self, dataset):
+    def set_dataset(self, dataset):
         '''
         Sets the dataset that will be used by the class.
         '''
@@ -39,10 +39,10 @@ class LLM_MRI:
         '''
         Initializes the encoded dataset from the model and transforms it into the torch type.
         '''
-        encodedDataset = self.base.encodeDataset(self.dataset)
+        encodedDataset = self.base.encode_dataset(self.dataset)
 
         # Transformando o dataset para o formato Torch
-        encodedDataset = self.base.setDatasetToTorch(encodedDataset)
+        encodedDataset = self.base.set_dataset_to_torch(encodedDataset)
         return encodedDataset
 
     def process_activation_areas(self, map_dimension:int):

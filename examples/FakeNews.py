@@ -14,6 +14,7 @@ dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
 
 # Load the dataset using Hugging Face's `load_dataset` function
 dataset = load_from_disk(dataset_path)
+dataset.cleanup_cache_files()
 
 # Beginning Visualization
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
