@@ -5,6 +5,7 @@ import LLM_MRI
 import matplotlib.pyplot as plt
 import os
 from datasets import load_from_disk
+import networkx as nx
 
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 
@@ -30,7 +31,8 @@ plt.tight_layout()
 plt.show()
 
 # Getting activation's image as a Graph
-g = llm_mri.get_graph(category=0) # Getting the graph for a designed category
+g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
+g_full = llm_mri.get_graph() # Gets the graph for all categorys
 
 # Getting the image of Graph representation of activations
 g_img = llm_mri.get_graph_image(g) # Getting the graph image for a determined category
@@ -38,8 +40,8 @@ plt.box(False)
 plt.show()
 
 # Getting activations of different times in a same Graphs
-g_false = llm_mri.get_graph(category=0)
-g_true = llm_mri.get_graph(category=1)
+g_false = llm_mri.get_graph(category_name="true")
+g_true = llm_mri.get_graph(category_name="fake")
 g_composed = nx.compose(g_true, g_false)
 
 # Marking repeated edges
