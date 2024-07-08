@@ -86,12 +86,18 @@ class LLM_MRI:
        
 
 
-    def get_graph(self, category:int = 2):
+    def get_graph(self, category_name:str = ""):
         '''
         Function that builds the pandas edgelist (graph representation) for the network region activations,
         for a given label (category) passed as a parameter.
         '''
 
+        if(category_name != ""):
+            category = self.class_names.index(category_name)
+
+        else:
+            category = -1
+            
         # Obtaining desired layer
         datasetHiddenStates = self.hidden_states_dataset
         
@@ -108,7 +114,7 @@ class LLM_MRI:
             df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, self.gridsize)
 
             # when no category is passed gets all values
-            if category == 2:
+            if category == -1:
                 df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
             # when category is passed filters values by category
             else:
@@ -125,7 +131,7 @@ class LLM_MRI:
         G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
 
         # when generating category graph, assigns category label to edges
-        if category != 2:
+        if category != -1:
             nx.set_edge_attributes(G, category, "label")
 
         return G
@@ -174,7 +180,7 @@ class LLM_MRI:
                             edge_color=edge_colors,
                             alpha=0.9)
 
-        nx.draw_networkx_labels(Gz, pos=pos,
+        nx.draw_networkx_labels(G, pos=pos,
                                 labels=dict(zip(nodelist,nodelist)),
                                 font_color='black')
 
