@@ -16,22 +16,33 @@ The link below runs an online example of our library, in the Jupyter platform ru
 
 To see LLM-MRI in action on your own data:
 
-**1) Clone this repository on your machine**
+**Clone this repository on your machine**
 
 ```
 git clone https://github.com/luizcelsojr/LLM-MRI
 ```
 
-**2) Install Poetry**
+**Install Poetry**
 
 ```
 pipx install poetry
 
 ```
 
-**3) Install dependencies**
+**Install dependencies**
 
 ```
 poetry install
+
+```
+
+**Install Graphviz**
+
+```
+sudo apt install graphviz
+
+```
+```
+sudo apt install libgraphviz-dev
 
 ```
