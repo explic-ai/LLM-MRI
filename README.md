@@ -10,7 +10,7 @@ We encourage you to not only use this toolkit but also to extend it as you see f
 
 The link below runs an online example of our library, in the Jupyter platform running over the Binder server:
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.0?labpath=examples%2FEmotions.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.1?labpath=examples%2FEmotions.ipynb)
 
 ## Instalation
 
