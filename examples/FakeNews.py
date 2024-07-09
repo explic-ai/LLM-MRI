@@ -36,13 +36,13 @@ g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed c
 g_full = llm_mri.get_graph() # Gets the graph for all categorys
 
 # Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(g) # Getting the graph image for a determined category
+g_img = llm_mri.get_graph_image(g_full) # Getting the graph image for a determined category
 plt.box(False)
 plt.show()
 
-# Getting activations of different times in a same Graphs
-g_false = llm_mri.get_graph(category_name="true")
-g_true = llm_mri.get_graph(category_name="fake")
+# Getting activations of different times in the same Graphs
+g_true = llm_mri.get_graph(category_name="true")
+g_false = llm_mri.get_graph(category_name="fake")
 g_composed = nx.compose(g_true, g_false)
 
 # Marking repeated edges

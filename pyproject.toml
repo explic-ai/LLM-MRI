@@ -20,6 +20,8 @@ pydot = "^2.0.0"
 networkx = "^3.3"
 graphviz = "^0.20.3"
 pygraphviz = "^1.13"
+torch = "^2.3.1"
+seaborn = "^0.13.2"
 
 
 [build-system]
