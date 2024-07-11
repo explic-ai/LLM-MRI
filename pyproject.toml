@@ -12,7 +12,6 @@ pandas = "^2.2.2"
 nltk = "^3.8.1"
 datasets = "^2.19.1"
 transformers = "^4.41.0"
-umap = "^0.1.1"
 sklearn-preprocessing = "^0.1.0"
 matplotlib = "^3.9.0"
 tensorflow = "^2.16.1"
@@ -22,6 +21,8 @@ graphviz = "^0.20.3"
 pygraphviz = "^1.13"
 torch = "^2.3.1"
 seaborn = "^0.13.2"
+umap-learn = "^0.5.6"
+pyqt6 = "^6.7.0"
 
 
 [build-system]
