@@ -11,35 +11,51 @@ import torch
 class LLM_MRI:
 
     def __init__(self, model, device, dataset):
+        """
+        Initializes the LLM_MRI class.
+
+        Args:
+            model (str): The model to be used.
+            device (str): The device to be used (e.g., 'cpu' or 'cuda').
+            dataset (Dataset): The dataset to be used.
+        """
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.model = model
         self.device = torch.device(device)
         self.dataset = dataset
         self.base = Treatment(model, device)
-        self.gridsize = 10 # Padrão
+        self.gridsize = 10
         self.class_names = self.dataset.features['label'].names
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
         self.reduced_dataset = ""
         
     def set_device(self, device):
-        '''
+        """
         Sets the device that will be used by the class.
-        '''
 
+        Args:
+            device (str): The device to be used (e.g., 'cpu' or 'cuda').
+        """
         self.device = torch.device(device)
 
     def set_dataset(self, dataset):
-        '''
+        """
         Sets the dataset that will be used by the class.
-        '''
+
+        Args:
+            dataset (Dataset): The dataset to be used.
+        """
 
         self.dataset = dataset
 
     def initialize_dataset(self):
-        '''
+        """
         Initializes the encoded dataset from the model and transforms it into the torch type.
-        '''
+
+        Returns:
+            Dataset: The encoded dataset in torch format.
+        """
         encodedDataset = self.base.encode_dataset(self.dataset)
 
         # Transformando o dataset para o formato Torch
@@ -47,11 +63,12 @@ class LLM_MRI:
         return encodedDataset
 
     def process_activation_areas(self, map_dimension:int):
-        '''
-        Input: (int) Size of the side of the square that will show the visualization.
+        """
+        Processes the activation areas.
 
-        Output: None, sets the self.hidden_states_dataset as the datasetHiddenStates
-        '''
+        Args:
+            map_dimension (int): Size of the side of the square that will show the visualization.
+        """
 
         # Getting self.dataset Hidden Layers
     
@@ -63,12 +80,16 @@ class LLM_MRI:
 
 
     def get_layer_image(self, layer:int, category:int):
-        '''
-        Input: (int) Layer to be visualized
-            (int) Category whose activations will be visualized
+        """
+        Gets the activation grid for the desired layer and category.
 
-        Output: Plot of the activation grid for the desired layer and category.
-        '''
+        Args:
+            layer (int): The layer to be visualized.
+            category (int): The category whose activations will be visualized.
+
+        Returns:
+            figure (plt.figure): The activation grid plot for the specified layer and category.
+        """
 
         # Obtaining layer passed by parameter
         datasetHiddenStates = self.hidden_states_dataset
@@ -89,10 +110,16 @@ class LLM_MRI:
 
 
     def get_graph(self, category_name:str = ""):
-        '''
-        Function that builds the pandas edgelist (graph representation) for the network region activations,
+        """
+        Builds the pandas edgelist (graph representation) for the network region activations,
         for a given label (category) passed as a parameter.
-        '''
+
+        Args:
+            category_name (str): The name of the category. Default is an empty string.
+
+        Returns:
+            Graph: The networkx graph representing the activations.
+        """
 
         if(category_name != ""):
             category = self.class_names.index(category_name)
@@ -138,11 +165,17 @@ class LLM_MRI:
 
         return G
 
+
     def generate_graph_edge_colors(self, G):
-        '''
-        Function that generates a list of colors based on the amount of labels in the graphs edges.
-        If no label is present, it returns a default value.
-        '''
+        """
+        Generates a list of colors based on the amount of labels in the graph's edges.
+
+        Args:
+            G (Graph): The networkx graph.
+
+        Returns:
+            list: A list of colors for the graph's edges.
+        """
         edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
         
         if 'label' in edge_attributes:
@@ -153,11 +186,18 @@ class LLM_MRI:
         else:
             return ['lightblue']
 
+
     def get_graph_image(self, G):
-        '''
-        Function that displays the pandas edgelist (graph representation) for the network region activations,
-         for a given graph passed as a parameter.
-        '''
+        """
+        Displays the pandas edgelist (graph representation) for the network region activations,
+        for a given graph passed as a parameter.
+
+        Args:
+            G (Graph): The networkx graph.
+
+        Returns:
+            fig (plt.figure): The matplotlib figure representation of the graph.
+        """
 
         widths = nx.get_edge_attributes(G, 'weight')
         nodelist = G.nodes()
