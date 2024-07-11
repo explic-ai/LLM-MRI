@@ -50,7 +50,7 @@ poetry install --no-root
 
 ## Execution
 
-To enable poetry's shell:
+**Enable poetry's shell:**
 ```
 poetry shell
 ```
