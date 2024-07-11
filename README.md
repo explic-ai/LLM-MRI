@@ -25,7 +25,7 @@ git clone https://github.com/luizcelsojr/LLM-MRI
 **Install Poetry**
 
 ```
-pipx install poetry
+pip install poetry
 
 ```
 
