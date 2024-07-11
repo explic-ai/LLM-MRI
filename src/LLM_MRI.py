@@ -20,6 +20,7 @@ class LLM_MRI:
         self.class_names = self.dataset.features['label'].names
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
+        self.reduced_dataset = ""
         
     def set_device(self, device):
         '''
@@ -58,6 +59,7 @@ class LLM_MRI:
 
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
+        # self.reduced_dataset = self.base.get_grid(datasetHiddenStates, )
 
 
     def get_layer_image(self, layer:int, category:int):

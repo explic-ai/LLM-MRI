@@ -23,11 +23,11 @@ llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
 # Getting the layer's image for a designed category
-fig = llm_mri.get_layer_image(layer = 0, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
+fig = llm_mri.get_layer_image(layer = 1, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
 plt.tight_layout()
 plt.show()
 
-fig = llm_mri.get_layer_image(layer = 0, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
+fig = llm_mri.get_layer_image(layer = 1, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
 plt.tight_layout()
 plt.show()
 
@@ -36,7 +36,7 @@ g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed c
 g_full = llm_mri.get_graph() # Gets the graph for all categorys
 
 # Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(g_full) # Getting the graph image for a determined category
+g_img = llm_mri.get_graph_image(g) # Getting the graph image for a determined category
 plt.box(False)
 plt.show()
 
