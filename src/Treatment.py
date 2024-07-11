@@ -11,79 +11,80 @@ import seaborn as sns
 class Treatment:
 
     def __init__(self, model, device):
+        """
+        Initializes the Treatment class.
+
+        Args:
+            model (str): The model to be used.
+            device (str): The device to be used (e.g., 'cpu' or 'cuda').
+        """
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.model = model
         self.device = device
 
-    def set_model(self, model):
-        '''
-        Sets the model stored by the class.
-        '''
-
-        self.model = model
-
     def set_device(self, device):
-        '''
+        """
         Sets the device that will be used by the class.
-        '''
+
+        Args:
+            device (str): The device to be used (e.g., 'cpu' or 'cuda').
+        """
 
         self.device = device
     
-    def set_tokenizer(self, tokenizer):
-        '''
-        Sets the tokenizer that will be used by the class.
-        '''
-
-        self.tokenizer = tokenizer
-
     def tokenize(self, batch):
-        '''
-        Input: (Dataset) Dataset with text to be tokenized.
-        Output: (Token) Tokenization of the Dataset, with padding enabled and a maximum length of 512.
-        '''
+        """
+        Tokenizes a batch of text.
+
+        Args:
+            batch (Dataset): Dataset with column "text" to be tokenized.
+
+        Returns:
+            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
+        """
 
         return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
 
     def encode_dataset(self, dataset):
-        '''
-        Input: (Dataset) Dataset with text to be tokenized.
-        Output: (Token) Tokenization of the Dataset, with padding enabled and a maximum length of 512.
-
+        """
         Maps over all items in the Dataset and performs tokenization.
-        '''
+
+        Args:
+            dataset (Dataset): Dataset with text to be tokenized.
+
+        Returns:
+            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
+        """
 
         dataset_encoded = dataset.map(self.tokenize, batched=True, batch_size=None)
         return dataset_encoded
 
 
-    def save_dataset(self, dataset):
-        '''
-        Input: (Dataset) Tokenized Dataset.
-
-        Saves the Dataset to disk.
-        '''
-
-        dataset.save_to_disk("dataset_encoded.hf")
-
-
     def set_embeddings_on_model(self, model_ckpt):
-        '''
-        Input: (Model) Hugging Face model.
-        Output: (Model) Model passed as a parameter.
-        '''
+        """
+        Sets embeddings on the model.
 
+        Args:
+            model_ckpt (Model): Hugging Face model.
+
+        Returns:
+            Model: Model passed as a parameter.
+        """
         model = AutoModel.from_pretrained(model_ckpt).to(self.device)
         return model
 
 
     def extract_all_hidden_states(self, batch):
-        '''
-        Input: (dict) Batch of data with model inputs.
-        Output: (dict) Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
+        """
+        Extracts all hidden states for a batch of data.
 
-        This function extracts for all hidden layers of the model.
-        '''
+        Args:
+            batch (dict): Batch of data with model inputs.
+
+        Returns:
+            dict: Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
+        """
         
         model = self.set_embeddings_on_model(model_ckpt=self.model)
 
@@ -101,10 +102,15 @@ class Treatment:
 
 
     def set_dataset_to_torch(self, dataset_encoded):
-        '''
-        Input: (Dataset) Tokenized Dataset.
-        Output: (Dataset) Dataset formatted for PyTorch.
-        '''
+        """
+        Sets the dataset format to PyTorch.
+
+        Args:
+            dataset_encoded (Dataset): Tokenized Dataset.
+
+        Returns:
+            Dataset: Dataset formatted for PyTorch.
+        """
 
         dataset_encoded.set_format("torch", 
                             columns=["input_ids", "attention_mask", "label"])
@@ -112,11 +118,16 @@ class Treatment:
 
 
     def get_embeddings(self, X, y):
-        '''
-        Input: (array) Matrix of embeddings for features X.
-            (array) Embeddings vector for labels y.
-        Output: (DataFrame) DataFrame with 2D embeddings.
-        '''
+        """
+        Gets 2D embeddings by reducing the datasets dimensionalty for features and labels.
+
+        Args:
+            X (array): Matrix of embeddings for features.
+            y (array): Embeddings vector for labels.
+
+        Returns:
+            DataFrame: DataFrame with 2D embeddings.
+        """
 
         X_scaled = MinMaxScaler().fit_transform(X)
         mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
@@ -126,9 +137,17 @@ class Treatment:
 
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
-        '''
-        Returns a dataframe containing the embeddings for each hidden layer of the network.
-        '''
+        """
+        Returns a dataframe containing the embeddings for a specific layer of the network.
+
+        Args:
+            dataset (Dataset): The dataset to be used for the analysis.
+            hidden_state_label (str): The hidden state label, such as 'hidden_state_name'.
+            gridsize (int): The grid size.
+
+        Returns:
+            DataFrame: DataFrame containing the embeddings.
+        """
 
         hidden_state = hidden_state_label.split("_")[-1]
         X = np.array(dataset[hidden_state_label])
@@ -145,9 +164,19 @@ class Treatment:
 
 
     def get_activations_grid(self, dataset, gridsize, hidden_layer_name, label, label_name):
-        '''
-        Reduces Dimensionality and return a NxN gridsize, each representing an activation region.
-        '''
+        """
+        Reduces dimensionality and returns a NxN gridsize, each representing an activation region.
+
+        Args:
+            dataset (Dataset): The dataset to be used.
+            gridsize (int): The grid size.
+            hidden_layer_name (str): The hidden layer name, as 'hidden_layer_2'.
+            label (int): The label as an integer.
+            label_name (str): The label name.
+
+        Returns:
+            Figure: The activation grid plot for the specified layer and category.
+        """
         hs = hidden_layer_name
 
         df_grid = self.get_grid(dataset, hs, gridsize)
