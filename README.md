@@ -80,6 +80,6 @@ The library's functionality is divided into the following sections:
   
 - **Graph Representation of Activations**: Using the _get_graph_ function, the module connects regions from neighboring layers based on co-activations to form a graph representing the entire network. The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
    ```
-   graph = llm_mri.get_graph(category_name)
+   graph = llm_mri.get_graph(category)
    graph_image = llm_mri.get_graph_image(graph)
   ```
