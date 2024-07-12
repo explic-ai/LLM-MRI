@@ -163,7 +163,7 @@ class Treatment:
         return df_emb
 
 
-    def get_activations_grid(self, dataset, gridsize, hidden_layer_name, label, label_name):
+    def get_activations_grid(self, hidden_layer_name, label, label_name, df_grid):
         """
         Reduces dimensionality and returns a NxN gridsize, each representing an activation region.
 
@@ -177,9 +177,6 @@ class Treatment:
         Returns:
             Figure: The activation grid plot for the specified layer and category.
         """
-        hs = hidden_layer_name
-
-        df_grid = self.get_grid(dataset, hs, gridsize)
 
         df_grid = df_grid.loc[df_grid['label'] == label]
 
@@ -188,11 +185,20 @@ class Treatment:
         ct = ct.sort_index(ascending=False)
         
         fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
+        
         #change figure title to hs
         full_name = f"{hidden_layer_name} : {label_name}"
         plt.title(full_name)
         
         return fig
+
+    def get_all_grids(self, dataset, gridsize, buffer):
+        
+        for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
+            df_grid = self.get_grid(dataset, hs, gridsize)
+            buffer.append(df_grid) # ith grid
+        
+        return buffer
 
 
 sys.modules['Treatment'] = Treatment
