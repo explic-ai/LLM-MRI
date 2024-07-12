@@ -28,7 +28,7 @@ class LLM_MRI:
         self.class_names = self.dataset.features['label'].names
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
-        self.reduced_dataset = ""
+        self.reduced_dataset = []
         
     def set_device(self, device):
         """
@@ -69,14 +69,12 @@ class LLM_MRI:
         Args:
             map_dimension (int): Size of the side of the square that will show the visualization.
         """
-
-        # Getting self.dataset Hidden Layers
     
         datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
 
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
-        # self.reduced_dataset = self.base.get_grid(datasetHiddenStates, )
+        self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
 
 
     def get_layer_image(self, layer:int, category:int):
@@ -91,21 +89,12 @@ class LLM_MRI:
             figure (plt.figure): The activation grid plot for the specified layer and category.
         """
 
-        # Obtaining layer passed by parameter
-        datasetHiddenStates = self.hidden_states_dataset
-
         # Obtaining layer name string 
         hidden_name = f"hidden_state_{layer}"
 
-        # Selecting layer passed as parameter
-        datasetHiddenStates = datasetHiddenStates.remove_columns(
-            [col for col in datasetHiddenStates.column_names 
-            if col not in [hidden_name, 'text', 'label', 'input_ids', 'attention_mask']]
-        )
-
         category_to_int = self.class_names.index(category)
        
-        return self.base.get_activations_grid(datasetHiddenStates, self.gridsize, hidden_name, category_to_int, category)
+        return self.base.get_activations_grid(hidden_name, category_to_int, category, self.reduced_dataset[layer])
        
 
 
@@ -136,11 +125,9 @@ class LLM_MRI:
         df_graph = pd.DataFrame(columns=["cell_label_1", "cell_label_2", "weight", "level"])
 
         for hs in range(0, len(hss)-1):
-            hs1 = hss[hs]
-            hs2 = hss[hs+1]
             
-            df_grid1 = self.base.get_grid(datasetHiddenStates, hs1, self.gridsize)
-            df_grid2 = self.base.get_grid(datasetHiddenStates, hs2, self.gridsize)
+            df_grid1 = self.reduced_dataset[hs]
+            df_grid2 = self.reduced_dataset[hs+1]
 
             # when no category is passed gets all values
             if category == -1:
