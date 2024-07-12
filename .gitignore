@@ -540,4 +540,7 @@ MigrationBackup/
 # Updates on the Dataset
 *.arrow
 
+# Removing readthedocs
+.readthedocs.yaml
+
 # End of https://www.toptal.com/developers/gitignore/api/python,vs,jupyternotebooks
