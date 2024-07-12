@@ -16,13 +16,13 @@ extensions = [
     "sphinx.ext.autodoc"
 ]
 
-html_theme = "classic"  # Changed to a built-in theme
-
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+html_theme = "classic"
 html_static_path = ['_static']
 
-# Optional: Add theme options (specific to the theme you choose)
+# Include custom CSS file
+def setup(app):
+    app.add_css_file('custom.css')
+
 html_theme_options = {
     'rightsidebar': False,
     'relbarbgcolor': 'black'
