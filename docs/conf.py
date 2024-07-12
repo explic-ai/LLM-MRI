@@ -19,15 +19,28 @@ release = '01.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.todo", "sphinx.ext.viewcode", "sphinx.ext.autodoc"]
+extensions = [
+    "sphinx.ext.todo", 
+    "sphinx.ext.viewcode", 
+    "sphinx.ext.autodoc",
+    'sphinx_rtd_theme'  # Added sphinx_rtd_theme extension
+]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'  # Changed theme to sphinx_rtd_theme
+
+# Optional: Add theme options
+html_theme_options = {
+    'collapse_navigation': False,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+}
+
 html_static_path = ['_static']
