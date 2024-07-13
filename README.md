@@ -26,7 +26,6 @@ git clone https://github.com/luizcelsojr/LLM-MRI
 
 ```
 pip install poetry
-
 ```
 
 
@@ -34,15 +33,14 @@ pip install poetry
 
 ```
 sudo apt install graphviz
-sudo apt install libgraphviz-dev
 
+sudo apt install libgraphviz-dev
 ```
 
 **Install other dependencies**
 
 ```
 poetry install --no-root
-
 ```
 
 ## Execution
