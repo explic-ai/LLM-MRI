@@ -34,9 +34,6 @@ pip install poetry
 
 ```
 sudo apt install graphviz
-
-```
-```
 sudo apt install libgraphviz-dev
 
 ```
