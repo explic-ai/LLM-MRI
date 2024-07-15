@@ -6,9 +6,9 @@ By adopting this approach, the library examines the neuron activations produced 
 
 This model allows users to explore questions such as:
 
-    How do different categories of text in the corpus activate different neural regions?
-    What are the differences between the properties of graphs formed by activations from two distinct categories?
-    Are there regions of activation in the model more related to specific aspects of a category?
+- How do different categories of text in the corpus activate different neural regions?
+- What are the differences between the properties of graphs formed by activations from two distinct categories?
+- Are there regions of activation in the model more related to specific aspects of a category?
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
@@ -26,6 +26,7 @@ To see LLM-MRI in action on your own data:
 
 ```
 git clone https://github.com/luizcelsojr/LLM-MRI
+
 cd LLM-MRI
 ```
 
@@ -66,7 +67,35 @@ To run your jupyter notebook:
 ```
 poetry run jupyter notebook
 ```
+## Usage
 
+Firstly, the user needs to import the `LLM-MRI` and `matplotlib,pyplot` packages:
+
+```
+import LLM_MRI
+import matplotlib.pyplot as plt
+```
+The user also needs to specify the Hugging Face Dataset that will be used to process the model's activations. There are two ways to do this:
+
+
+- Load the Dataset from Hugging Face Hub: 
+  ```
+  dataset_url = "https://huggingface.co/datasets/dataset_link"
+  dataset = load_dataset("csv", data_files=dataset_url)
+  ```
+- If you already has the dataset loaded on your machine, you can use the _load_from_disk_ function:
+  ```
+  dataset = load_from_disk(dataset_path) # Specify the Dataset's path
+  ```
+
+Next, the user selects the model to be used as a string:
+```
+model_ckpt = "distilbert/distilbert-base-multilingual-cased"
+```
+Then, the user instantiates `LLM-MRI`, to apply the methods defined on Functions:
+```
+llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+```
 ## Functions
 The library's functionality is divided into the following sections:
 
