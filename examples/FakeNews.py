@@ -8,7 +8,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import LLM_MRI
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
-import networkx as nx
 
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 
