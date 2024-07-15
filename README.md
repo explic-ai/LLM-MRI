@@ -92,7 +92,8 @@ Using the _get_graph_ function, the module connects regions from neighboring lay
 
 The user is also able to get a composed visualization of two or more categories. By setting a category, each edge is colored based on the designed category, so the user is able to see which document label activated each region.
 ```
-
+g_composed = llm_mri.get_composed_graph("true", "fake")
+g_composed_img = llm_mri.get_graph_image(g_composed)
 ```
 
 ![new_colored_graph(2)](https://github.com/user-attachments/assets/05fee9a7-a3e3-4e67-92f8-d60175de6110)
