@@ -1,9 +1,10 @@
 # LLM-MRI: a brain scanner for LLMs
 
-As the everyday use of large language models (LLMs) grows, so does the necessity of understanding how LLMs achieve their designed outputs.
+As the everyday use of large language models (LLMs) grows, so does the necessity of understanding how LLMs achieve their designed outputs. Despite the focus of many approaches on LLM's interpretability on visualizing different attention mechanisms and methods focusing on explaining the model's architechture, LLM-MRI focus on the activations of the feed-forward layers of a transformer-based LLM. 
 
-One approach to analyzing LLM interpretability is to examine the neuron activations produced by the model for each different label. Accordingly, the objective of this library is to contribute to LLM interpretability research, as it allows users to explore various types of activation visualization methods, such as heatmaps and graph representation, to ensure the model's interpretability.
+By following this approach, the library focus on examine the neuron activations produced by the model for each different label. Through a series of steps, such as dimensionality reduction and each layer representation as a grid, the tool is able to obtain different types of visualization approaches to the feed-forward layers activation patterns. Accordingly, the objective of this library is to contribute to LLM interpretability research, as it allows users to explore visualization methods, such as heatmaps and graph representation of the hidden layers activations in transformer-based LLM's.
 
+This model allow users to explore questions, such as: how does different categories of text in the corpus activate different neural regions, difference between properties of graphs formesd by activations from two distinct categories
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
 ## Online Example
