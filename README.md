@@ -90,4 +90,10 @@ Using the _get_graph_ function, the module connects regions from neighboring lay
 ![Captura de tela de 2024-07-15 13-24-28](https://github.com/user-attachments/assets/327b8c94-1162-4e2b-8b1b-d1be2fb1163e)
 
 
+The user is also able to get a composed visualization of two or more categories. By setting a category, each edge is colored based on the designed category, so the user is able to see which document label activated each region.
+```
+
+```
+
+![new_colored_graph(2)](https://github.com/user-attachments/assets/05fee9a7-a3e3-4e67-92f8-d60175de6110)
 
