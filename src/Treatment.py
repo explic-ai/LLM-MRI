@@ -130,7 +130,7 @@ class Treatment:
         """
 
         X_scaled = MinMaxScaler().fit_transform(X)
-        mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
+        mapper = UMAP(n_components=2, metric="cosine", random_state=42, n_jobs=1).fit(X_scaled) #, random_state=42
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
         df_emb["label"] = y
         return df_emb
