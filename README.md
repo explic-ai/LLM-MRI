@@ -75,7 +75,8 @@ Firstly, the user needs to import the `LLM-MRI` and `matplotlib,pyplot` packages
 import LLM_MRI
 import matplotlib.pyplot as plt
 ```
-The user also needs to specify the Hugging Face Dataset that is going to be used to process the model's activations. There are two ways of doing that:
+The user also needs to specify the Hugging Face Dataset that will be used to process the model's activations. There are two ways to do this:
+
 
 - Load the Dataset from Hugging Face Hub: 
   ```
@@ -87,11 +88,11 @@ The user also needs to specify the Hugging Face Dataset that is going to be used
   dataset = load_from_disk(dataset_path) # Specify the Dataset's path
   ```
 
-Next, the user selects the model going to be used as a string:
+Next, the user selects the model to be used as a string:
 ```
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 ```
-Then, the user instantiates `LLM-MRI`, so that it can apply its visualization functions, defined on Functions:
+Then, the user instantiates `LLM-MRI`, to apply the methods defined on Functions:
 ```
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 ```
