@@ -91,7 +91,7 @@ Next, the user selects the model going to be used as a string:
 ```
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 ```
-Then, the user instantiates `LLM-MRI`, so that it can apply its visualization functions, defined on [link](#2-Functions)Functions:
+Then, the user instantiates `LLM-MRI`, so that it can apply its visualization functions, defined on [Functions](#2-Functions):
 ```
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 ```
