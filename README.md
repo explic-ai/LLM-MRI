@@ -1,10 +1,14 @@
 # LLM-MRI: a brain scanner for LLMs
 
-As the everyday use of large language models (LLMs) grows, so does the necessity of understanding how LLMs achieve their designed outputs. Despite the focus of many approaches on LLM's interpretability on visualizing different attention mechanisms and methods focusing on explaining the model's architechture, `LLM-MRI` focus on the activations of the feed-forward layers of a transformer-based LLM. 
+As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. While many approaches focus on the interpretability of LLMs through visualizing different attention mechanisms and methods that explain the model's architecture, `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM.
 
-By following this approach, the library focus on examine the neuron activations produced by the model for each different label. Through a series of steps, such as dimensionality reduction and each layer representation as a grid, the tool is able to obtain different types of visualization approaches to the feed-forward layers activation patterns. Accordingly, the objective of this library is to contribute to LLM interpretability research, as it allows users to explore visualization methods, such as heatmaps and graph representation of the hidden layers activations in transformer-based LLM's.
+By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. Through a series of steps, such as dimensionality reduction and representing each layer as a grid, the tool provides various visualization methods for the activation patterns in the feed-forward layers. Accordingly, the objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
 
-This model allow users to explore questions, such as: how does different categories of text in the corpus activate different neural regions, difference between properties of graphs formesd by activations from two distinct categories
+This model allows users to explore questions such as:
+
+    How do different categories of text in the corpus activate different neural regions?
+    What are the differences between the properties of graphs formed by activations from two distinct categories?
+    Are there regions of activation in the model more related to specific aspects of a category?
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
@@ -22,6 +26,7 @@ To see LLM-MRI in action on your own data:
 
 ```
 git clone https://github.com/luizcelsojr/LLM-MRI
+cd LLM-MRI
 ```
 
 **Install Poetry**
@@ -92,7 +97,7 @@ Using the _get_graph_ function, the module connects regions from neighboring lay
 ![Captura de tela de 2024-07-15 13-24-28](https://github.com/user-attachments/assets/327b8c94-1162-4e2b-8b1b-d1be2fb1163e)
 
 
-The user is also able to get a composed visualization of two different categories. By setting a category, each edge is colored based on the designed label, so the user is able to see which document label activated each region.
+The user is also able to obtain a composed visualization of two different categories using the _get_composed_graph_ function. By setting a category, each edge is colored based on the designated label, so the user is able to see which document label activated each region.
 ```
 g_composed = llm_mri.get_composed_graph("true", "fake")
 g_composed_img = llm_mri.get_graph_image(g_composed)
