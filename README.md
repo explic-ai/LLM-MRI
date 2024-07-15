@@ -1,5 +1,19 @@
 # LLM-MRI: a brain scanner for LLMs
 
+## Index
+
+- [Overview](#overview)
+- [Online Example](#online-example)
+- [Installation](#installation)
+- [Execution](#execution)
+- [Usage](#usage)
+- [Functions](#functions)
+  - [Activation Extraction](#activation-extraction)
+  - [Heatmap Representation of Activations](#heatmap-representation-of-activations)
+  - [Graph Representation of Activations](#graph-representation-of-activations)
+  - [Composed Graph Visualization](#composed-graph-visualization)
+
+## Overview
 As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. While many approaches focus on the interpretability of LLMs through visualizing different attention mechanisms and methods that explain the model's architecture, `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM.
 
 By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. Through a series of steps, such as dimensionality reduction and representing each layer as a grid, the tool provides various visualization methods for the activation patterns in the feed-forward layers. Accordingly, the objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
