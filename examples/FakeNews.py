@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, '../src')
+sys.path.insert(1, '../llm-mri')
 
 import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
@@ -43,14 +43,8 @@ g_img = llm_mri.get_graph_image(g) # Getting the graph image for a determined ca
 plt.box(False)
 plt.show()
 
-# Getting activations of different times in the same Graphs
-g_true = llm_mri.get_graph(category_name="true")
-g_false = llm_mri.get_graph(category_name="fake")
-g_composed = nx.compose(g_true, g_false)
-
-# Marking repeated edges
-duplicates = list(set(g_true.edges) & set(g_false.edges))
-for e in duplicates : g_composed.edges[e]['label'] = 2 
+# Getting activations of different labels in the same Graph
+g_composed = llm_mri.get_composed_graph("true", "fake")
 
 # Generating image of composed graph
 g_composed_img = llm_mri.get_graph_image(g_composed)

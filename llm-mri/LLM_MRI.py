@@ -215,4 +215,27 @@ class LLM_MRI:
 
         return fig
 
+    def get_composed_graph(self, category1, category2):
+        """
+        Displays the pandas edgelist (graph representation) for the network region activations,
+        being each label represented by a different edge color.
+
+        Args:
+            category1 (String): The first category.
+            category2 (String): The second category.
+
+        Returns:
+            fig (plt.figure): The matplotlib figure representation of the graph.
+        """
+        g1 = self.get_graph(category1)
+        g2 = self.get_graph(category2)
+
+        g_composed = nx.compose(g1, g2)
+
+        # Marking repeated edges
+        duplicates = list(set(g1.edges) & set(g2.edges))
+        for e in duplicates : g_composed.edges[e]['label'] = 2 
+        
+        return g_composed
+
 sys.modules['LLM_MRI'] = LLM_MRI
