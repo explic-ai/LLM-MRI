@@ -6,9 +6,9 @@ By adopting this approach, the library examines the neuron activations produced 
 
 This model allows users to explore questions such as:
 
-    How do different categories of text in the corpus activate different neural regions?
-    What are the differences between the properties of graphs formed by activations from two distinct categories?
-    Are there regions of activation in the model more related to specific aspects of a category?
+- How do different categories of text in the corpus activate different neural regions?
+- What are the differences between the properties of graphs formed by activations from two distinct categories?
+- Are there regions of activation in the model more related to specific aspects of a category?
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
