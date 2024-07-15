@@ -26,6 +26,7 @@ To see LLM-MRI in action on your own data:
 
 ```
 git clone https://github.com/luizcelsojr/LLM-MRI
+
 cd LLM-MRI
 ```
 
