@@ -67,7 +67,34 @@ To run your jupyter notebook:
 ```
 poetry run jupyter notebook
 ```
+## Usage
 
+Firstly, the user needs to import the `LLM-MRI` and `matplotlib,pyplot` packages:
+
+```
+import LLM_MRI
+import matplotlib.pyplot as plt
+```
+The user also needs to specify the Hugging Face Dataset that is going to be used to process the model's activations. There are two ways of doing that:
+
+- Load the Dataset from Hugging Face Hub: 
+  ```
+  dataset_url = "https://huggingface.co/datasets/dataset_link"
+  dataset = load_dataset("csv", data_files=dataset_url)
+  ```
+- If you already has the dataset loaded on your machine, you can use the _load_from_disk_ function:
+  ```
+  dataset = load_from_disk(dataset_path) # Specify the Dataset's path
+  ```
+
+Next, the user selects the model going to be used as a string:
+```
+model_ckpt = "distilbert/distilbert-base-multilingual-cased"
+```
+Then, the user instantiates `LLM-MRI`, so that it can apply its visualization functions, defined on [link](#2-Functions)Functions:
+```
+llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+```
 ## Functions
 The library's functionality is divided into the following sections:
 
