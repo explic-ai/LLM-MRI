@@ -1,7 +1,5 @@
-                   GNU LESSER GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
 
- Copyright (C) 2024: André Santanchè, Luiz Celso Jr, Luiz Felipe Costa and Mateus Figênio
+Copyright (C) 2024: André Santanchè, Luiz Celso Jr, Luiz Felipe Costa and Mateus Figênio
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
