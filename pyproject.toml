@@ -1,9 +1,13 @@
 [tool.poetry]
-name = "llm-viz"
+name = "llm-mri"
 version = "0.1.0"
 description = ""
 authors = ["lipecorradini <luizfelipecorradini@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "llm-mri" }
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
