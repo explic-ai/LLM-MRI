@@ -12,11 +12,23 @@ This model allows users to explore questions such as:
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
+## Index
+- [Online Example](#online-example)
+- [Installation](#installation)
+- [Execution](#execution)
+- [Usage](#usage)
+- [Functions](#functions)
+  - [Activation Extraction](#activation-extraction)
+  - [Heatmap Representation of Activations](#heatmap-representation-of-activations)
+  - [Graph Representation of Activations](#graph-representation-of-activations)
+  - [Composed Graph Visualization](#composed-graph-visualization)
+
+
 ## Online Example
 
 The link below runs an online example of our library, in the Jupyter platform running over the Binder server:
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.1?labpath=examples%2FEmotions.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.2?labpath=examples%2FEmotions.ipynb)
 
 ## Instalation
 
