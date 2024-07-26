@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="llm-mri",
-    version="0.1.1",
+    name="llm_mri",
+    version="0.1.3",
     author="Luiz Felipe Costa",
     author_email="luizfelipecorradini@gmail.com",
     description="Package to visualize LLM's Neural Networks activation regions",
