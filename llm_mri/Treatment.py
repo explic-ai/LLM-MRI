@@ -6,6 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import numpy as np 
 import seaborn as sns
+from progress.bar import Bar
 
 class Treatment:
 
@@ -203,9 +204,10 @@ class Treatment:
         Returns:
             buffer
         """
-        
-        for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
-            df_grid = self.get_grid(dataset, hs, gridsize)
-            buffer.append(df_grid) # ith grid
+        with Bar('Processing layers...', max=len([x for x in dataset.column_names if x.startswith("hidden_state")])) as bar:
+            for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
+                df_grid = self.get_grid(dataset, hs, gridsize)
+                bar.next()
+                buffer.append(df_grid) # ith grid
         
         return buffer
