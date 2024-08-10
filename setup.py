@@ -1,9 +1,9 @@
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+setup(
     name="llm_mri",
     version="0.1.3",
     author="Luiz Felipe Costa",
@@ -12,5 +12,6 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/luizcelsojr/LLM-MRI",
- 
+    packages=find_packages()
+
 )
