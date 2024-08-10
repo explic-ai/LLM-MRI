@@ -2,7 +2,7 @@ import os
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-from llm_mri.LLM_MRI import LLM_MRI
+from llm_mri import LLM_MRI
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
 
