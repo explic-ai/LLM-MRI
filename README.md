@@ -34,57 +34,16 @@ The link below runs an online example of our library, in the Jupyter platform ru
 
 To see LLM-MRI in action on your own data:
 
-**Clone this repository on your machine**
-
 ```
-git clone https://github.com/luizcelsojr/LLM-MRI
-
-cd LLM-MRI
+pip install llm_mri
 ```
 
-**Install Poetry**
-
-```
-pip install poetry
-```
-
-
-**Install Graphviz**
-
-```
-sudo apt install graphviz
-
-sudo apt install libgraphviz-dev
-```
-
-**Install other dependencies**
-
-```
-poetry install --no-root
-```
-
-## Execution
-
-**Enable poetry's shell:**
-```
-poetry shell
-```
-
-To run your python file:
-```
-python3 file.py
-```
-
-To run your jupyter notebook:
-```
-poetry run jupyter notebook
-```
 ## Usage
 
-Firstly, the user needs to import the `LLM-MRI` and `matplotlib,pyplot` packages:
+Firstly, the user needs to import the `LLM-MRI` and `matplotlib.pyplot` packages:
 
 ```
-import LLM_MRI
+from llm_mri import LLM_MRI
 import matplotlib.pyplot as plt
 ```
 The user also needs to specify the Hugging Face Dataset that will be used to process the model's activations. There are two ways to do this:
