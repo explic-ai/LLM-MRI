@@ -15,7 +15,6 @@ We encourage you to not only use this toolkit but also to extend it as you see f
 ## Index
 - [Online Example](#online-example)
 - [Installation](#installation)
-- [Execution](#execution)
 - [Usage](#usage)
 - [Functions](#functions)
   - [Activation Extraction](#activation-extraction)
