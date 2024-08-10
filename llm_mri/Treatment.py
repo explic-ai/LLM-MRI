@@ -1,11 +1,10 @@
 import pandas as pd
 from transformers import AutoTokenizer, AutoModel
-import torch #
-from umap import UMAP #
-from sklearn.preprocessing import MinMaxScaler #
+import torch 
+from umap import UMAP 
+from sklearn.preprocessing import MinMaxScaler 
 import matplotlib.pyplot as plt
-import numpy as np #
-import sys
+import numpy as np 
 import seaborn as sns
 
 class Treatment:
@@ -193,12 +192,20 @@ class Treatment:
         return fig
 
     def get_all_grids(self, dataset, gridsize, buffer):
+        """
+        Gets and stores all dimension-reduced grids on buffer 
+
+        Args:
+            dataset (Dataset): The dataset to be used.
+            gridsize (int): The grid size.
+            buffer (list): Buffer to store grids
+
+        Returns:
+            buffer
+        """
         
         for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
             df_grid = self.get_grid(dataset, hs, gridsize)
             buffer.append(df_grid) # ith grid
         
         return buffer
-
-
-sys.modules['Treatment'] = Treatment

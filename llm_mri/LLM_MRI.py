@@ -1,5 +1,4 @@
-import Treatment
-import sys
+from llm_mri.Treatment import Treatment
 from transformers import AutoTokenizer
 import networkx as nx
 import pandas as pd
@@ -238,4 +237,3 @@ class LLM_MRI:
         
         return g_composed
 
-sys.modules['LLM_MRI'] = LLM_MRI
