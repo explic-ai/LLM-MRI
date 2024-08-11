@@ -28,7 +28,8 @@ class LLM_MRI:
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
-        
+        self.label_names = []
+
     def set_device(self, device):
         """
         Sets the device that will be used by the class.
@@ -111,6 +112,7 @@ class LLM_MRI:
 
         if(category_name != ""):
             category = self.class_names.index(category_name)
+            self.label_names.append(category_name)
 
         else:
             category = -1
@@ -142,7 +144,6 @@ class LLM_MRI:
 
             df_graph = pd.concat([df_graph, df_join_grouped])
 
-            
         G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
 
         # when generating category graph, assigns category label to edges
@@ -186,6 +187,7 @@ class LLM_MRI:
         """
 
         widths = nx.get_edge_attributes(G, 'weight')
+
         nodelist = G.nodes()
 
         pos = graphviz_layout(G, prog="dot")
@@ -194,11 +196,17 @@ class LLM_MRI:
 
         edge_colors = self.generate_graph_edge_colors(G)
 
-        nx.draw(G, pos, with_labels=True, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
+        self.label_names.append("both")
+
+        # print(pos)
+        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in edge_colors]
+        plt.legend(legend_handles, self.label_names, loc='upper right')
+
+        nx.draw(G, pos, with_labels=False, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
 
         nx.draw_networkx_nodes(G,pos,
                             nodelist=nodelist,
-                            node_size=150,
+                            node_size=100,
                             node_color='grey',
                             alpha=0.8)
 
@@ -210,7 +218,11 @@ class LLM_MRI:
 
         nx.draw_networkx_labels(G, pos=pos,
                                 labels=dict(zip(nodelist,nodelist)),
-                                font_color='black')
+                                font_color='black',
+                                font_size=10,
+                                )
+
+        self.label_names = []
 
         return fig
 
