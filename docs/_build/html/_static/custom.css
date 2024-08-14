@@ -1,0 +1,10 @@
+/* Adjust the footer to stick to the bottom */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #f9f9f9;
+    padding: 10px 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}

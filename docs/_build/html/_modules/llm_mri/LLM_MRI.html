@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>llm_mri.LLM_MRI &mdash; LLM-MRI 01.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            LLM-MRI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">LLM-MRI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LLM-MRI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">llm_mri.LLM_MRI</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for llm_mri.LLM_MRI</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">llm_mri.Treatment</span> <span class="kn">import</span> <span class="n">Treatment</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
+<span class="kn">from</span> <span class="nn">networkx.drawing.nx_agraph</span> <span class="kn">import</span> <span class="n">graphviz_layout</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<div class="viewcode-block" id="LLM_MRI"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI">[docs]</a><span class="k">class</span> <span class="nc">LLM_MRI</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the LLM_MRI class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            model (str): The model to be used.</span>
+<span class="sd">            device (str): The device to be used (e.g., &#39;cpu&#39; or &#39;cuda&#39;).</span>
+<span class="sd">            dataset (Dataset): The dataset to be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">Treatment</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridsize</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_dataset</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_states_dataset</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="LLM_MRI.set_device"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.set_device">[docs]</a>    <span class="k">def</span> <span class="nf">set_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the device that will be used by the class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            device (str): The device to be used (e.g., &#39;cpu&#39; or &#39;cuda&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LLM_MRI.set_dataset"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.set_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">set_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the dataset that will be used by the class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset (Dataset): The dataset to be used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span></div>
+
+<div class="viewcode-block" id="LLM_MRI.initialize_dataset"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.initialize_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the encoded dataset from the model and transforms it into the torch type.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dataset: The encoded dataset in torch format.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">encodedDataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">encode_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="c1"># Transformando o dataset para o formato Torch</span>
+        <span class="n">encodedDataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">set_dataset_to_torch</span><span class="p">(</span><span class="n">encodedDataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">encodedDataset</span></div>
+
+<div class="viewcode-block" id="LLM_MRI.process_activation_areas"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.process_activation_areas">[docs]</a>    <span class="k">def</span> <span class="nf">process_activation_areas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map_dimension</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the activation areas.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            map_dimension (int): Size of the side of the square that will show the visualization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">datasetHiddenStates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">extract_all_hidden_states</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridsize</span> <span class="o">=</span> <span class="n">map_dimension</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_states_dataset</span> <span class="o">=</span> <span class="n">datasetHiddenStates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_all_grids</span><span class="p">(</span><span class="n">datasetHiddenStates</span><span class="p">,</span> <span class="n">map_dimension</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LLM_MRI.get_layer_image"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.get_layer_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_layer_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the activation grid for the desired layer and category.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            layer (int): The layer to be visualized.</span>
+<span class="sd">            category (int): The category whose activations will be visualized.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            figure (plt.figure): The activation grid plot for the specified layer and category.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Obtaining layer name string </span>
+        <span class="n">hidden_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hidden_state_</span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">category_to_int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+       
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">get_activations_grid</span><span class="p">(</span><span class="n">hidden_name</span><span class="p">,</span> <span class="n">category_to_int</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span><span class="p">[</span><span class="n">layer</span><span class="p">])</span></div>
+       
+
+
+<div class="viewcode-block" id="LLM_MRI.get_graph"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.get_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category_name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds the pandas edgelist (graph representation) for the network region activations,</span>
+<span class="sd">        for a given label (category) passed as a parameter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category_name (str): The name of the category. Default is an empty string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Graph: The networkx graph representing the activations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">category_name</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">category_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">category_name</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">category</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            
+        <span class="c1"># Obtaining desired layer</span>
+        <span class="n">datasetHiddenStates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hidden_states_dataset</span>
+        
+        <span class="n">hss</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">datasetHiddenStates</span><span class="o">.</span><span class="n">column_names</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;hidden_state&quot;</span><span class="p">)]</span>
+
+        <span class="c1"># crete an empty dataframe with columns up, down and corr</span>
+        <span class="n">df_graph</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cell_label_1&quot;</span><span class="p">,</span> <span class="s2">&quot;cell_label_2&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">hs</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">hss</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            
+            <span class="n">df_grid1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span><span class="p">[</span><span class="n">hs</span><span class="p">]</span>
+            <span class="n">df_grid2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduced_dataset</span><span class="p">[</span><span class="n">hs</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># when no category is passed gets all values</span>
+            <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">df_join</span> <span class="o">=</span> <span class="n">df_grid1</span><span class="p">[[</span><span class="s1">&#39;cell_label&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_grid2</span><span class="p">[[</span><span class="s1">&#39;cell_label&#39;</span><span class="p">]],</span> <span class="n">lsuffix</span><span class="o">=</span><span class="s1">&#39;_1&#39;</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s1">&#39;_2&#39;</span><span class="p">)</span>
+            <span class="c1"># when category is passed filters values by category</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df_join</span> <span class="o">=</span> <span class="n">df_grid1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_grid1</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span><span class="p">][[</span><span class="s1">&#39;cell_label&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df_grid2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_grid2</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span><span class="p">][[</span><span class="s1">&#39;cell_label&#39;</span><span class="p">]],</span> <span class="n">lsuffix</span><span class="o">=</span><span class="s1">&#39;_1&#39;</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s1">&#39;_2&#39;</span><span class="p">)</span>
+
+            <span class="c1">#group by and count the number of rows</span>
+            <span class="n">df_join_grouped</span> <span class="o">=</span> <span class="n">df_join</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;cell_label_1&#39;</span><span class="p">,</span> <span class="s1">&#39;cell_label_2&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+
+            <span class="n">df_join_grouped</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hs</span>
+
+            <span class="n">df_graph</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_graph</span><span class="p">,</span> <span class="n">df_join_grouped</span><span class="p">])</span>
+
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span><span class="n">df_graph</span><span class="p">,</span> <span class="s1">&#39;cell_label_1&#39;</span><span class="p">,</span> <span class="s1">&#39;cell_label_2&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+
+        <span class="c1"># when generating category graph, assigns category label to edges</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">nx</span><span class="o">.</span><span class="n">set_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">G</span></div>
+
+
+<div class="viewcode-block" id="LLM_MRI.generate_graph_edge_colors"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.generate_graph_edge_colors">[docs]</a>    <span class="k">def</span> <span class="nf">generate_graph_edge_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a list of colors based on the amount of labels in the graph&#39;s edges.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            G (Graph): The networkx graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of colors for the graph&#39;s edges.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edge_attributes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;label&#39;</span> <span class="ow">in</span> <span class="n">edge_attributes</span><span class="p">:</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">to_pandas_edgelist</span><span class="p">(</span><span class="n">G</span><span class="p">)[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">mcolors</span><span class="o">.</span><span class="n">TABLEAU_COLORS</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">))]</span>
+            <span class="k">return</span> <span class="n">colors</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;lightblue&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LLM_MRI.get_graph_image"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.get_graph_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_graph_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the pandas edgelist (graph representation) for the network region activations,</span>
+<span class="sd">        for a given graph passed as a parameter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            G (Graph): The networkx graph.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            fig (plt.figure): The matplotlib figure representation of the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+
+        <span class="n">nodelist</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">graphviz_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+
+        <span class="n">edge_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_graph_edge_colors</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+
+        <span class="c1"># print(pos)</span>
+        <span class="n">legend_handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">edge_colors</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">legend_handles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_names</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">,</span> <span class="n">node_shape</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="p">,</span>
+                            <span class="n">nodelist</span><span class="o">=</span><span class="n">nodelist</span><span class="p">,</span>
+                            <span class="n">node_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                            <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span>
+                            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">pos</span><span class="p">,</span>
+                            <span class="n">edgelist</span> <span class="o">=</span> <span class="n">widths</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                            <span class="n">width</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">widths</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+                            <span class="n">edge_color</span><span class="o">=</span><span class="n">edge_colors</span><span class="p">,</span>
+                            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span>
+                                <span class="n">labels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nodelist</span><span class="p">,</span><span class="n">nodelist</span><span class="p">)),</span>
+                                <span class="n">font_color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+                                <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="LLM_MRI.get_composed_graph"><a class="viewcode-back" href="../../llm_mri.html#llm_mri.LLM_MRI.LLM_MRI.get_composed_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_composed_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category1</span><span class="p">,</span> <span class="n">category2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the pandas edgelist (graph representation) for the network region activations,</span>
+<span class="sd">        being each label represented by a different edge color.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            category1 (String): The first category.</span>
+<span class="sd">            category2 (String): The second category.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            fig (plt.figure): The matplotlib figure representation of the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">g1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_graph</span><span class="p">(</span><span class="n">category1</span><span class="p">)</span>
+        <span class="n">g2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_graph</span><span class="p">(</span><span class="n">category2</span><span class="p">)</span>
+
+        <span class="n">g_composed</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">g1</span><span class="p">,</span> <span class="n">g2</span><span class="p">)</span>
+
+        <span class="c1"># Marking repeated edges</span>
+        <span class="n">duplicates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">g1</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">g2</span><span class="o">.</span><span class="n">edges</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">duplicates</span> <span class="p">:</span> <span class="n">g_composed</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> 
+        
+        <span class="k">return</span> <span class="n">g_composed</span></div></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Luiz Costa, Mateus Figenio, André Santanchè, Luiz Gomes-Jr.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
