@@ -4,7 +4,7 @@ llm\_mri package
 Submodules
 ----------
 
-llm\_mri.LLM\_MRI module
+LLM\_MRI module
 ------------------------
 
 .. automodule:: llm_mri.LLM_MRI
@@ -12,13 +12,13 @@ llm\_mri.LLM\_MRI module
    :undoc-members:
    :show-inheritance:
 
-llm\_mri.Treatment module
--------------------------
+.. Treatment module
+.. -------------------------
 
-.. automodule:: llm_mri.Treatment
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. .. automodule:: llm_mri.Treatment
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Module contents
 ---------------
