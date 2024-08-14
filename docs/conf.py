@@ -13,9 +13,10 @@ release = '01.0'
 extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinx.ext.autodoc"
+    "sphinx.ext.autodoc",
+    'sphinx_rtd_theme',
 ]
 
-html_theme = "classic"
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
