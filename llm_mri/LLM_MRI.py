@@ -4,7 +4,7 @@ import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from networkx.drawing.nx_agraph import graphviz_layout
+from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 import torch
 
 class LLM_MRI:
@@ -116,7 +116,7 @@ class LLM_MRI:
 
         else:
             category = -1
-            
+        
         # Obtaining desired layer
         datasetHiddenStates = self.hidden_states_dataset
         
@@ -144,11 +144,13 @@ class LLM_MRI:
 
             df_graph = pd.concat([df_graph, df_join_grouped])
 
+            
         G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
 
         # when generating category graph, assigns category label to edges
         if category != -1:
             nx.set_edge_attributes(G, category, "label")
+    
 
         return G
 
@@ -185,12 +187,20 @@ class LLM_MRI:
         Returns:
             fig (plt.figure): The matplotlib figure representation of the graph.
         """
+        nodelist = G.nodes()
 
         widths = nx.get_edge_attributes(G, 'weight')
 
-        nodelist = G.nodes()
-
         pos = graphviz_layout(G, prog="dot")
+        
+        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)        
+
+        new_pos = dict()
+        for key in pos:
+            new_pos[key] = (pos[key][0], heights[int(key[0])])
+
+        
+        pos = new_pos
 
         fig = plt.figure(figsize=(25,6))
 
@@ -198,7 +208,6 @@ class LLM_MRI:
 
         self.label_names.append("both")
 
-        # print(pos)
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in edge_colors]
         plt.legend(legend_handles, self.label_names, loc='upper right')
 
@@ -240,7 +249,7 @@ class LLM_MRI:
         """
         g1 = self.get_graph(category1)
         g2 = self.get_graph(category2)
-
+        
         g_composed = nx.compose(g1, g2)
 
         # Marking repeated edges
