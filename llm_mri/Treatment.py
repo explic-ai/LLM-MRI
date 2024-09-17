@@ -43,6 +43,12 @@ class Treatment:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
 
+        print(f"Type of batch['text']: {type(batch['text'])}")
+        if isinstance(batch['text'], list):
+            print(f"Sample texts: {batch['text'][:2]}")
+        else:
+            print(f"Batch 'text' content: {batch['text']}")
+
         return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
 
