@@ -178,62 +178,95 @@ class LLM_MRI:
 
     def get_graph_image(self, G):
         """
-        Displays the pandas edgelist (graph representation) for the network region activations,
-        for a given graph passed as a parameter.
+        Generates a matplotlib figure of the graph with node sizes proportional to their degree.
 
         Args:
-            G (Graph): The networkx graph.
+            G (networkx.Graph): The NetworkX graph.
 
         Returns:
-            fig (plt.figure): The matplotlib figure representation of the graph.
+            fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
-        nodelist = G.nodes()
+        # Get all nodes
+        nodelist = list(G.nodes())
 
+
+        # If your edges have a 'weight' attribute, otherwise this will be empty
         widths = nx.get_edge_attributes(G, 'weight')
 
+        # Use graphviz_layout for positioning
         pos = graphviz_layout(G, prog="dot")
         
-        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)        
+        # Adjust the y-coordinates based on node identifiers (assuming they start with a digit)
+        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)       
 
-        new_pos = dict()
-        for key in pos:
-            new_pos[key] = (pos[key][0], heights[int(key[0])])
+        new_pos = {}
+        for node in pos:
+            # Extract the first character to determine height index
+            height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
+            new_pos[node] = (pos[node][0], heights[height_index])
 
-        
         pos = new_pos
 
-        fig = plt.figure(figsize=(25,6))
+        # Create the matplotlib figure
+        fig = plt.figure(figsize=(25, 6))
 
+        # Generate edge colors (assuming this method exists and returns a list)
         edge_colors = self.generate_graph_edge_colors(G)
 
+        # Add legend labels
         self.label_names.append("both")
 
+        # Create legend handles based on edge colors
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in edge_colors]
         plt.legend(legend_handles, self.label_names, loc='upper right')
 
-        nx.draw(G, pos, with_labels=False, node_size=2, node_color="skyblue", node_shape="o", alpha=0.9, linewidths=20)
+        # Compute the degree of each node
+        degrees = dict(G.degree())
+        
+        # Scale node sizes (you can adjust the scaling factor as needed)
+        # For better visualization, you might want to use a larger scaling factor
+        max_degree = max(degrees.values())
+        node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
 
-        nx.draw_networkx_nodes(G,pos,
-                            nodelist=nodelist,
-                            node_size=100,
-                            node_color='grey',
-                            alpha=0.8)
-
-        nx.draw_networkx_edges(G,pos,
-                            edgelist = widths.keys(),
-                            width=list(widths.values()),
-                            edge_color=edge_colors,
-                            alpha=0.9)
-
-        nx.draw_networkx_labels(G, pos=pos,
-                                labels=dict(zip(nodelist,nodelist)),
-                                font_color='black',
-                                font_size=10,
-                                )
-
+        # Draw nodes with sizes proportional to their degree
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=nodelist,
+            node_size=node_sizes,
+            node_color='gray',
+            alpha=0.9,
+            linewidths=1,
+            edgecolors='black'  # Optional: Adds a border to nodes
+        )
+        
+        # Draw edges with specified widths and colors
+        nx.draw_networkx_edges(
+            G,
+            pos,
+            edgelist=widths.keys(),
+            width=[widths[edge] for edge in widths],
+            edge_color=edge_colors,
+            alpha=0.9
+        )
+        
+        # Draw labels for nodes
+        nx.draw_networkx_labels(
+            G,
+            pos,
+            labels={node: node for node in nodelist},
+            font_color='black',
+            font_size=10
+        )
+        
+        # Clear label names for future use
         self.label_names = []
 
+        # Remove axes for a cleaner look
+        plt.axis('off')
+
         return fig
+
 
     def get_composed_graph(self, category1, category2):
         """
