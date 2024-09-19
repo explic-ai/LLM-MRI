@@ -171,6 +171,14 @@ class LLM_MRI:
             labels = list(set(nx.to_pandas_edgelist(G)['label']))
 
             colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(len(labels))]
+
+            if(len(colors) > 1):
+                rgb1 = mcolors.to_rgb(colors[0])
+                rgb2 = mcolors.to_rgb(colors[1])
+                
+                # Calculate blended color
+                colors[2] = mcolors.to_hex(tuple(0.5 * c1 + (1 - 0.5) * c2 for c1, c2 in zip(rgb1, rgb2)))
+
             return colors
         else:
             return ['lightblue']
@@ -178,56 +186,63 @@ class LLM_MRI:
 
     def get_graph_image(self, G):
         """
-        Generates a matplotlib figure of the graph with node sizes proportional to their degree.
-
+        Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
-            G (networkx.Graph): The NetworkX graph.
-
+        G (networkx.Graph): The NetworkX graph.
         Returns:
-            fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
+        fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
         # Get all nodes
         nodelist = list(G.nodes())
-
-
+        
         # If your edges have a 'weight' attribute, otherwise this will be empty
         widths = nx.get_edge_attributes(G, 'weight')
-
+        
         # Use graphviz_layout for positioning
         pos = graphviz_layout(G, prog="dot")
         
         # Adjust the y-coordinates based on node identifiers (assuming they start with a digit)
-        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)       
-
+        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)
+        
         new_pos = {}
         for node in pos:
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             new_pos[node] = (pos[node][0], heights[height_index])
-
         pos = new_pos
-
+        
         # Create the matplotlib figure
-        fig = plt.figure(figsize=(25, 6))
-
+        fig, ax = plt.subplots(figsize=(25, 6))
+        
         # Generate edge colors (assuming this method exists and returns a list)
         edge_colors = self.generate_graph_edge_colors(G)
-
+        
         # Add legend labels
         self.label_names.append("both")
-
+        
         # Create legend handles based on edge colors
-        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in edge_colors]
+        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in set(edge_colors)]
         plt.legend(legend_handles, self.label_names, loc='upper right')
-
+        
         # Compute the degree of each node
         degrees = dict(G.degree())
         
         # Scale node sizes (you can adjust the scaling factor as needed)
-        # For better visualization, you might want to use a larger scaling factor
         max_degree = max(degrees.values())
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
-
+  
+        
+        # Draw edges with specified widths and colors
+        nx.draw_networkx_edges(
+            G,
+            pos,
+            edgelist=widths.keys(),
+            width=[widths[edge] for edge in widths],
+            edge_color=edge_colors,
+            alpha=0.9,
+            ax=ax
+        )
+        
         # Draw nodes with sizes proportional to their degree
         nx.draw_networkx_nodes(
             G,
@@ -240,31 +255,22 @@ class LLM_MRI:
             edgecolors='black'  # Optional: Adds a border to nodes
         )
         
-        # Draw edges with specified widths and colors
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=widths.keys(),
-            width=[widths[edge] for edge in widths],
-            edge_color=edge_colors,
-            alpha=0.9
-        )
-        
         # Draw labels for nodes
         nx.draw_networkx_labels(
             G,
             pos,
             labels={node: node for node in nodelist},
             font_color='black',
-            font_size=10
+            font_size=10,
+            ax=ax
         )
         
         # Clear label names for future use
         self.label_names = []
-
+        
         # Remove axes for a cleaner look
         plt.axis('off')
-
+        
         return fig
 
 
