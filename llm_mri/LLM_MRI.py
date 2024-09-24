@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 import torch
+from matplotlib.colors import LinearSegmentedColormap, Normalize
 
 class LLM_MRI:
 
@@ -150,7 +151,6 @@ class LLM_MRI:
         # when generating category graph, assigns category label to edges
         if category != -1:
             nx.set_edge_attributes(G, category, "label")
-    
 
         return G
 
@@ -179,7 +179,9 @@ class LLM_MRI:
                 # Calculate blended color
                 colors[2] = mcolors.to_hex(tuple(0.5 * c1 + (1 - 0.5) * c2 for c1, c2 in zip(rgb1, rgb2)))
 
+                
             return colors
+
         else:
             return ['lightblue']
 
@@ -192,6 +194,7 @@ class LLM_MRI:
         Returns:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
+
         # Get all nodes
         nodelist = list(G.nodes())
         
@@ -214,31 +217,50 @@ class LLM_MRI:
         # Create the matplotlib figure
         fig, ax = plt.subplots(figsize=(25, 6))
         
-        # Generate edge colors (assuming this method exists and returns a list)
+        # Generate edge colors
         edge_colors = self.generate_graph_edge_colors(G)
-        
+
+        ordered_edge_colors = edge_colors
+
+        # Create a mapping from label to color
+        if len(edge_colors) > 2:
+
+            # Define your custom color mapping for labels
+            custom_colors = {
+                0: edge_colors[0],  
+                1: edge_colors[1], 
+                2: edge_colors[2]  
+            }
+
+            # Generate edge_colors list aligned with the edgelist
+            ordered_edge_colors = [
+                custom_colors.get(G[u][v].get('label', 0), 'gray') 
+                for u, v in widths.keys()]
+            
         # Add legend labels
         self.label_names.append("both")
         
         # Create legend handles based on edge colors
-        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in set(edge_colors)]
+        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
         plt.legend(legend_handles, self.label_names, loc='upper right')
         
         # Compute the degree of each node
         degrees = dict(G.degree())
         
-        # Scale node sizes (you can adjust the scaling factor as needed)
+        # Scale node sizes
         max_degree = max(degrees.values())
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
-  
-        
+
+        # Coloring Nodes
+        node_colors = self.generate_node_colors(G, edge_colors)
+
         # Draw edges with specified widths and colors
         nx.draw_networkx_edges(
             G,
             pos,
             edgelist=widths.keys(),
             width=[widths[edge] for edge in widths],
-            edge_color=edge_colors,
+            edge_color=ordered_edge_colors,
             alpha=0.9,
             ax=ax
         )
@@ -249,7 +271,7 @@ class LLM_MRI:
             pos,
             nodelist=nodelist,
             node_size=node_sizes,
-            node_color='gray',
+            node_color=node_colors, # added
             alpha=0.9,
             linewidths=1,
             edgecolors='black'  # Optional: Adds a border to nodes
@@ -296,4 +318,64 @@ class LLM_MRI:
         for e in duplicates : g_composed.edges[e]['label'] = 2 
         
         return g_composed
+
+    
+    def generate_node_colors(self, G, edge_colors):
+
+        """
+        Generates a list of colors based on the amount of nodes in the graph's edges, being
+        each node color's proportional to the amount of times the node was activated by a label.
+
+        Args:
+            G (Graph): The networkx graph.
+            edge_colors (list): List containing the edge colors
+
+        Returns:
+            list: A list of colors for the graph's nodes.
+        """
+        
+        if len(self.label_names) > 2:
+
+            label_0_counts = {node: 0 for node in G.nodes()}
+            label_1_counts = {node: 0 for node in G.nodes()}
+
+            for u, v, data in G.edges(data=True):
+                label = data.get('label')
+                weight = data.get('weight', 1)
+
+                if label == 0:
+                    label_0_counts[u] += weight
+                    label_0_counts[v] += weight
+
+                elif label == 1:
+                    label_1_counts[u] += weight
+                    label_1_counts[v] += weight
+
+                elif label == 2:
+                    label_0_counts[u] += weight
+                    label_1_counts[u] += weight
+                    label_0_counts[v] += weight
+                    label_1_counts[v] += weight 
+            
+            cmap = LinearSegmentedColormap.from_list('custom_gradient', [edge_colors[0], edge_colors[1]])
+
+            # Normalize the ratios between 0 and 1
+            norm = Normalize(vmin=0, vmax=1)
+
+            # Calculate the proportion of label_1 edges for each node
+            proportions = []
+            for node in G.nodes():
+                label0 = label_0_counts.get(node, 0)
+                label1 = label_1_counts.get(node, 0)
+                total = label0 + label1
+                ratio = (label1 / total) if total > 0 else 0.5  # Neutral ratio if no edges
+                proportions.append(ratio)
+
+            # Map proportions to colors using the colormap
+            node_colors = [cmap(norm(ratio)) for ratio in proportions]
+        
+        else:
+            node_colors = 'gray'
+
+        return node_colors
 
