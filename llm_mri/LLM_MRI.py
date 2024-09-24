@@ -168,18 +168,18 @@ class LLM_MRI:
         edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
         
         if 'label' in edge_attributes:
+            
             labels = list(set(nx.to_pandas_edgelist(G)['label']))
 
-            colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(len(labels))]
+            colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(min(2, len(labels)))]
 
             if(len(colors) > 1):
                 rgb1 = mcolors.to_rgb(colors[0])
                 rgb2 = mcolors.to_rgb(colors[1])
                 
                 # Calculate blended color
-                colors[2] = mcolors.to_hex(tuple(0.5 * c1 + (1 - 0.5) * c2 for c1, c2 in zip(rgb1, rgb2)))
+                colors.append(mcolors.to_hex(tuple(0.5 * c1 + (1 - 0.5) * c2 for c1, c2 in zip(rgb1, rgb2))))
 
-                
             return colors
 
         else:
@@ -195,6 +195,7 @@ class LLM_MRI:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
 
+
         # Get all nodes
         nodelist = list(G.nodes())
         
@@ -209,6 +210,7 @@ class LLM_MRI:
         
         new_pos = {}
         for node in pos:
+
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             new_pos[node] = (pos[node][0], heights[height_index])
@@ -311,6 +313,12 @@ class LLM_MRI:
         g1 = self.get_graph(category1)
         g2 = self.get_graph(category2)
         
+        for u, v, data in g1.edges(data=True):
+            data['label'] = 0
+        
+        for u, v, data in g2.edges(data=True):
+            data['label'] = 1
+
         g_composed = nx.compose(g1, g2)
 
         # Marking repeated edges
@@ -333,6 +341,7 @@ class LLM_MRI:
         Returns:
             list: A list of colors for the graph's nodes.
         """
+        cont_2 = 0
         
         if len(self.label_names) > 2:
 
@@ -340,6 +349,7 @@ class LLM_MRI:
             label_1_counts = {node: 0 for node in G.nodes()}
 
             for u, v, data in G.edges(data=True):
+
                 label = data.get('label')
                 weight = data.get('weight', 1)
 
@@ -352,11 +362,14 @@ class LLM_MRI:
                     label_1_counts[v] += weight
 
                 elif label == 2:
+                    cont_2 += 1
                     label_0_counts[u] += weight
                     label_1_counts[u] += weight
                     label_0_counts[v] += weight
                     label_1_counts[v] += weight 
             
+    
+
             cmap = LinearSegmentedColormap.from_list('custom_gradient', [edge_colors[0], edge_colors[1]])
 
             # Normalize the ratios between 0 and 1
