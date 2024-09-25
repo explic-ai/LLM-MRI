@@ -53,7 +53,7 @@ The user also needs to specify the Hugging Face Dataset that will be used to pro
   dataset_url = "https://huggingface.co/datasets/dataset_link"
   dataset = load_dataset("csv", data_files=dataset_url)
   ```
-- If you already has the dataset loaded on your machine, you can use the _load_from_disk_ function:
+- If you already have the dataset loaded on your machine, you can use the _load_from_disk_ function:
   ```
   dataset = load_from_disk(dataset_path) # Specify the Dataset's path
   ```
