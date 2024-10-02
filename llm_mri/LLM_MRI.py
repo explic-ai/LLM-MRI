@@ -7,6 +7,7 @@ import matplotlib.colors as mcolors
 from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 import torch
 from matplotlib.colors import LinearSegmentedColormap, Normalize
+import numpy as np
 
 class LLM_MRI:
 
@@ -155,42 +156,53 @@ class LLM_MRI:
         return G
 
 
-    def generate_graph_edge_colors(self, G):
+    def generate_graph_edge_colors(self, G, colormap='coolwarm'):
         """
-        Generates a list of colors based on the amount of labels in the graph's edges.
+        Generates a list of colors based on the number of labels in the graph's edges.
 
         Args:
             G (Graph): The networkx graph.
+            colormap (str): The name of the Matplotlib colormap to use (default 'bwr').
 
         Returns:
-            list: A list of colors for the graph's edges.
+            list: A list of HEX color codes for the graph's edges.
         """
-        edge_attributes = list(list(G.edges(data=True))[0][-1].keys())
+        # extract edge attributes from the first edge
+        first_edge_attrs = list(G.edges(data=True))
+    
+        edge_attributes = list(first_edge_attrs[0][-1].keys())
+
+        # extract all labels from the edges
+        labels = [data['label'] for _, _, data in G.edges(data=True) if 'label' in data]
+        unique_labels = sorted(set(labels))
+        num_labels = min(2, len(unique_labels))  # handles up to two labels
+
+        # retrieve the specified continuous colormap
+        colormap_list = plt.get_cmap(colormap)
+
+        # generate evenly spaced values between 0 and 1 for sampling the colormap
+        color_values = np.linspace(0, 1, num_labels)
+
+        # sample the colormap
+        colors = [(colormap_list(value)) for value in color_values]
+
+        if len(self.label_names) > 1:
+
+                blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
+
+                colors.append(blended_rgb)
+
+        return colors
+
         
-        if 'label' in edge_attributes:
-            
-            labels = list(set(nx.to_pandas_edgelist(G)['label']))
 
-            colors = [list(mcolors.TABLEAU_COLORS.values())[i] for i in range(min(2, len(labels)))]
-
-            if(len(colors) > 1):
-                rgb1 = mcolors.to_rgb(colors[0])
-                rgb2 = mcolors.to_rgb(colors[1])
-                
-                # Calculate blended color
-                colors.append(mcolors.to_hex(tuple(0.5 * c1 + (1 - 0.5) * c2 for c1, c2 in zip(rgb1, rgb2))))
-
-            return colors
-
-        else:
-            return ['lightblue']
-
-
-    def get_graph_image(self, G):
+    def get_graph_image(self, G, colormap = 'coolwarm'):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
         G (networkx.Graph): The NetworkX graph.
+        colormap (string): A string referent to the desired colormap. default is set by 'bwr'.
+
         Returns:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
@@ -220,7 +232,7 @@ class LLM_MRI:
         fig, ax = plt.subplots(figsize=(25, 6))
         
         # Generate edge colors
-        edge_colors = self.generate_graph_edge_colors(G)
+        edge_colors = self.generate_graph_edge_colors(G, colormap)
 
         ordered_edge_colors = edge_colors
 
@@ -238,7 +250,10 @@ class LLM_MRI:
             ordered_edge_colors = [
                 custom_colors.get(G[u][v].get('label', 0), 'gray') 
                 for u, v in widths.keys()]
-            
+        
+        # Coloring Nodes
+        node_colors = self.generate_node_colors(G, colormap)
+        
         # Add legend labels
         self.label_names.append("both")
         
@@ -253,8 +268,7 @@ class LLM_MRI:
         max_degree = max(degrees.values())
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
 
-        # Coloring Nodes
-        node_colors = self.generate_node_colors(G, edge_colors)
+        
 
         # Draw edges with specified widths and colors
         nx.draw_networkx_edges(
@@ -328,7 +342,7 @@ class LLM_MRI:
         return g_composed
 
     
-    def generate_node_colors(self, G, edge_colors):
+    def generate_node_colors(self, G, colormap: str = 'coolwarm'):
 
         """
         Generates a list of colors based on the amount of nodes in the graph's edges, being
@@ -341,54 +355,65 @@ class LLM_MRI:
         Returns:
             list: A list of colors for the graph's nodes.
         """
-        cont_2 = 0
-        
-        if len(self.label_names) > 2:
 
-            label_0_counts = {node: 0 for node in G.nodes()}
-            label_1_counts = {node: 0 for node in G.nodes()}
+        if len(self.label_names) < 2:
+            # single feature being analyzed
+            return ['gray']
 
-            for u, v, data in G.edges(data=True):
+        # assign labels to variables for clarity
+        label1, label2 = [0, 1] # as previously defined
 
-                label = data.get('label')
-                weight = data.get('weight', 1)
+        # initialize dictionaries to count label activations per node
+        label1_counts = {node: 0 for node in G.nodes()}
+        label2_counts = {node: 0 for node in G.nodes()}
 
-                if label == 0:
-                    label_0_counts[u] += weight
-                    label_0_counts[v] += weight
+        # iterate over all edges to count label activations
+        for u, v, data in G.edges(data=True):
+            label = data.get('label')
+            weight = data.get('weight', 1)  # default weight is 1 if not specified
 
-                elif label == 1:
-                    label_1_counts[u] += weight
-                    label_1_counts[v] += weight
+            if label == label1:
+                label1_counts[u] += weight
+                label1_counts[v] += weight
 
-                elif label == 2:
-                    cont_2 += 1
-                    label_0_counts[u] += weight
-                    label_1_counts[u] += weight
-                    label_0_counts[v] += weight
-                    label_1_counts[v] += weight 
+            elif label == label2:
+                label2_counts[u] += weight
+                label2_counts[v] += weight
             
-    
+            else: # label == 2
 
-            cmap = LinearSegmentedColormap.from_list('custom_gradient', [edge_colors[0], edge_colors[1]])
+                label1_counts[u] += weight
+                label1_counts[v] += weight
+                label2_counts[u] += weight
+                label2_counts[v] += weight
 
-            # Normalize the ratios between 0 and 1
-            norm = Normalize(vmin=0, vmax=1)
+        # retrieve the specified divergent colormap
+        cmap = plt.get_cmap(colormap)
 
-            # Calculate the proportion of label_1 edges for each node
-            proportions = []
-            for node in G.nodes():
-                label0 = label_0_counts.get(node, 0)
-                label1 = label_1_counts.get(node, 0)
-                total = label0 + label1
-                ratio = (label1 / total) if total > 0 else 0.5  # Neutral ratio if no edges
-                proportions.append(ratio)
+        # initialize Normalize object to map ratios between 0 and 1
+        norm = Normalize(vmin=0, vmax=1)
 
-            # Map proportions to colors using the colormap
-            node_colors = [cmap(norm(ratio)) for ratio in proportions]
-        
-        else:
-            node_colors = 'gray'
+        # compute proportions and assign node colors
+        node_colors = []
+        for node in G.nodes():
+            count_label1 = label1_counts.get(node, 0)
+            count_label2 = label2_counts.get(node, 0)
+            total = count_label1 + count_label2
+
+            if total > 0:
+                ratio = count_label2 / total  # proportion of label2
+            else:
+                ratio = 0.5  # neutral ratio if no connected edges
+
+            # normalize the ratio
+            norm_ratio = norm(ratio)
+
+            # map the normalized ratio to a color using the colormap
+            color = cmap(norm_ratio)
+
+            # convert rgb to hex
+            color_hex = mcolors.to_hex(color)
+            node_colors.append(color_hex)
 
         return node_colors
 
