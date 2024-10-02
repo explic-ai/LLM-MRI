@@ -89,9 +89,12 @@ This includes the _get_layer_image_ function, which transforms the NxN grid for 
   
 ### Graph Representation of Activations:
 Using the _get_graph_ function, the module connects regions from neighboring layers based on co-activations to form a graph representing the entire network. The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
+
+**_colormap:_**  The default used colormap is the 'coolwarm'. More can be found on [matplotlib.colors](https://matplotlib.org/stable/users/explain/colors/colormaps.html). We recommend the use of a 'Divergent' colormap for better visualization.
+
    ```
    graph = llm_mri.get_graph(category)
-   graph_image = llm_mri.get_graph_image(graph)
+   graph_image = llm_mri.get_graph_image(graph, colormap)
   ```
 ![true_graph](https://github.com/user-attachments/assets/7e399202-9f00-42fe-8d31-a6efa252a64b)
 
