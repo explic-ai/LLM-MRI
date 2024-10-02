@@ -255,7 +255,7 @@ class LLM_MRI:
         node_colors = self.generate_node_colors(G, colormap)
         
         # Add legend labels
-        self.label_names.append("both")
+        # self.label_names.append("both")
         
         # Create legend handles based on edge colors
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
