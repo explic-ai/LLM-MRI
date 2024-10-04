@@ -31,6 +31,7 @@ class LLM_MRI:
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
         self.label_names = []
+        self.graph = ""
 
     def set_device(self, device):
         """
@@ -77,7 +78,7 @@ class LLM_MRI:
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
-
+        self.graph = self.get_graph()
 
     def get_layer_image(self, layer:int, category:int):
         """
@@ -172,30 +173,36 @@ class LLM_MRI:
     
         edge_attributes = list(first_edge_attrs[0][-1].keys())
 
-        # extract all labels from the edges
-        labels = [data['label'] for _, _, data in G.edges(data=True) if 'label' in data]
-        unique_labels = sorted(set(labels))
-        num_labels = min(2, len(unique_labels))  # handles up to two labels
+        
+        if 'label' in edge_attributes:
+            
 
-        # retrieve the specified continuous colormap
-        colormap_list = plt.get_cmap(colormap)
+            # extract all labels from the edges
+            labels = [data['label'] for _, _, data in G.edges(data=True) if 'label' in data]
+            unique_labels = sorted(set(labels))
+            num_labels = min(2, len(unique_labels))  # handles up to two labels
 
-        # generate evenly spaced values between 0 and 1 for sampling the colormap
-        color_values = np.linspace(0, 1, num_labels)
+            # retrieve the specified continuous colormap
+            colormap_list = plt.get_cmap(colormap)
 
-        # sample the colormap
-        colors = [(colormap_list(value)) for value in color_values]
+            # generate evenly spaced values between 0 and 1 for sampling the colormap
+            color_values = np.linspace(0, 1, num_labels)
 
-        if len(self.label_names) > 1:
+            # sample the colormap
+            colors = [(colormap_list(value)) for value in color_values]
 
-                blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
+            if len(self.label_names) > 1:
 
-                colors.append(blended_rgb)
+                    blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
 
-        return colors
+                    colors.append(blended_rgb)
+
+            return colors
+        
+        else:
+            return ['lightblue']
 
         
-
     def get_graph_image(self, G, colormap = 'coolwarm'):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
@@ -207,15 +214,26 @@ class LLM_MRI:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
 
+        # Getting the graph with all possible activations
+        full_graph = self.graph
 
-        # Get all nodes
+        # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
-        
+
         # If your edges have a 'weight' attribute, otherwise this will be empty
         widths = nx.get_edge_attributes(G, 'weight')
         
         # Use graphviz_layout for positioning
-        pos = graphviz_layout(G, prog="dot")
+        pos = graphviz_layout(full_graph, prog="dot")
+
+        # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
+        removed_nodes = []
+        for node in pos.keys():
+            if node not in nodelist:
+                removed_nodes.append(node)
+        
+        for node in removed_nodes:
+            pos.pop(node)
         
         # Adjust the y-coordinates based on node identifiers (assuming they start with a digit)
         heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)
@@ -254,9 +272,6 @@ class LLM_MRI:
         # Coloring Nodes
         node_colors = self.generate_node_colors(G, colormap)
         
-        # Add legend labels
-        # self.label_names.append("both")
-        
         # Create legend handles based on edge colors
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
         plt.legend(legend_handles, self.label_names, loc='upper right')
@@ -265,7 +280,7 @@ class LLM_MRI:
         degrees = dict(G.degree())
         
         # Scale node sizes
-        max_degree = max(degrees.values())
+        max_degree = max(max(degrees.values()), 4)
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
 
         
@@ -294,14 +309,14 @@ class LLM_MRI:
         )
         
         # Draw labels for nodes
-        nx.draw_networkx_labels(
-            G,
-            pos,
-            labels={node: node for node in nodelist},
-            font_color='black',
-            font_size=10,
-            ax=ax
-        )
+        # nx.draw_networkx_labels(
+        #     G,
+        #     pos,
+        #     labels={node: node for node in nodelist},
+        #     font_color='black',
+        #     font_size=10,
+        #     ax=ax
+        # )
         
         # Clear label names for future use
         self.label_names = []
