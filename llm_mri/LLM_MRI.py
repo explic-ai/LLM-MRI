@@ -203,7 +203,7 @@ class LLM_MRI:
             return ['lightblue']
 
         
-    def get_graph_image(self, G, colormap = 'coolwarm'):
+    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
@@ -214,8 +214,13 @@ class LLM_MRI:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
 
-        # Getting the graph with all possible activations
-        full_graph = self.graph
+        # By default, full_graph is the current graph
+        full_graph = G
+
+        if fix_node_positions: # If asked to fix, the graph of all categories will be considered
+
+            # Getting the graph with all possible activations
+            full_graph = self.graph
 
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
