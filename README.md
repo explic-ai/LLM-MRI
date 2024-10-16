@@ -91,12 +91,14 @@ This includes the _get_layer_image_ function, which transforms the NxN grid for 
 Using the _get_graph_ function, the module connects regions from neighboring layers based on co-activations to form a graph representing the entire network. The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
 
 > **_colormap:_**  The default used colormap is the 'coolwarm'. More can be found on [matplotlib.colors](https://matplotlib.org/stable/users/explain/colors/colormaps.html). We recommend the use of a 'Diverging' colormap for better visualization.
+> **_fix_node_positions:_**  'True' keeps the nodes and edges at the same positions, independently of the categories. Setting to 'False' does not allow this comparison, although the graph will be more easily visualized.
 
    ```
    graph = llm_mri.get_graph(category)
-   graph_image = llm_mri.get_graph_image(graph, colormap)
+   graph_image = llm_mri.get_graph_image(graph, colormap, fix_node_positions)
   ```
-![true_graph](https://github.com/user-attachments/assets/7e399202-9f00-42fe-8d31-a6efa252a64b)
+![true](https://github.com/user-attachments/assets/98b006ad-1e1a-40c1-9259-66e0496203b8)
+
 
 
 ### Composed Graph Visualization:
@@ -105,7 +107,8 @@ The user is also able to obtain a composed visualization of two different catego
 g_composed = llm_mri.get_composed_graph("true", "fake")
 g_composed_img = llm_mri.get_graph_image(g_composed)
 ```
-![full_graph](https://github.com/user-attachments/assets/acea6bb4-3014-40f8-90b9-ccaa49e9aa1e)
+
+![fake_and_true_graph](https://github.com/user-attachments/assets/7ca1c194-045f-45fd-a2a7-33941fe0dc86)
 
 
 
