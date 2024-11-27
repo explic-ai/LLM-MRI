@@ -26,22 +26,28 @@ llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas 
 # plt.tight_layout()
 # plt.show()
 
+# Getting full scatterplot
+fig_scatter = llm_mri.get_original_map(6)
+plt.tight_layout()
+plt.show()
+
 # fig = llm_mri.get_layer_image(layer = 1, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
 # plt.tight_layout()
 # plt.show()
 
-g = llm_mri.get_graph()
-_ = llm_mri.get_graph_image(g)
-plt.show()
+# g = llm_mri.get_graph()
+# _ = llm_mri.get_graph_image(g)
+# plt.show()
 
 # Getting activation's image as a Graph
-g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
-g_full = llm_mri.get_graph() # Gets the graph for all categories
+# g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
+# g_full = llm_mri.get_graph() # Gets the graph for all categories
 
 # Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(g, 'PiYG') # Getting the graph image for a determined category
-plt.box(False)
-plt.show()
+# g_img = llm_mri.get_graph_image(g, fix_node_positions=False) # Getting the graph image for a determined category
+
+# plt.box(False)
+# plt.show()
 
 # Getting activations of different labels in the same Graph
 g_composed = llm_mri.get_composed_graph("true", "fake")

@@ -8,6 +8,7 @@ from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 import torch
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 import numpy as np
+import matplotlib.cm as cm
 
 class LLM_MRI:
 
@@ -33,24 +34,6 @@ class LLM_MRI:
         self.label_names = []
         self.graph = ""
 
-    def set_device(self, device):
-        """
-        Sets the device that will be used by the class.
-
-        Args:
-            device (str): The device to be used (e.g., 'cpu' or 'cuda').
-        """
-        self.device = torch.device(device)
-
-    def set_dataset(self, dataset):
-        """
-        Sets the dataset that will be used by the class.
-
-        Args:
-            dataset (Dataset): The dataset to be used.
-        """
-
-        self.dataset = dataset
 
     def initialize_dataset(self):
         """
@@ -65,6 +48,7 @@ class LLM_MRI:
         encodedDataset = self.base.set_dataset_to_torch(encodedDataset)
         return encodedDataset
 
+
     def process_activation_areas(self, map_dimension:int):
         """
         Processes the activation areas.
@@ -77,8 +61,13 @@ class LLM_MRI:
 
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
+        print("Colunas: ", datasetHiddenStates.to_pandas().columns)
+
+        print("Dataset Hidden States: ", datasetHiddenStates.to_pandas())
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
+        print("Reduced Dataset: ", self.reduced_dataset)
         self.graph = self.get_graph()
+
 
     def get_layer_image(self, layer:int, category:int):
         """
@@ -96,9 +85,46 @@ class LLM_MRI:
         hidden_name = f"hidden_state_{layer}"
 
         category_to_int = self.class_names.index(category)
-       
+        print("Dataset reduzido: ", self.reduced_dataset[layer])
         return self.base.get_activations_grid(hidden_name, category_to_int, category, self.reduced_dataset[layer])
        
+    def get_original_map(self, layer:int, colormap:str = 'viridis'):
+        """
+        Returns a scatterplot with the grids from all categories distributions on the same graph.
+        """
+        # Selecting reduced dataset (grids)
+        data_points = self.reduced_dataset[layer]
+
+        # Defining colormap
+        num_categories = len(self.class_names)
+        cmap = plt.get_cmap(colormap, num_categories)  # Get the colormap
+        colors = [cmap(i) for i in range(num_categories)]
+
+        # Create the figure and axes
+        fig, ax = plt.subplots()
+
+        # Iterate over unique categories
+        for i, category in enumerate(data_points['label'].unique()):
+
+            # Filter the DataFrame for the current category
+            category_df = data_points[data_points['label'] == category]
+            X = category_df['X']
+            Y = category_df['Y']
+
+            # Plot scatter points on the axes
+            ax.scatter(X, Y, color=colors[i], label=self.class_names[category], alpha=0.9) 
+
+            # Annotate each point to its label
+            for x, y, label in zip(X, Y, category_df['cell_label']):
+                ax.annotate(label, (x, y), textcoords='offset points', xytext=(5, 5), ha='center')
+
+        # Add legend and labels (optional)
+        ax.legend()
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_title("Scatter Plot of Categories")
+        
+        return fig
 
 
     def get_graph(self, category_name:str = ""):
