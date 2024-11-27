@@ -61,11 +61,8 @@ class LLM_MRI:
 
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
-        print("Colunas: ", datasetHiddenStates.to_pandas().columns)
 
-        print("Dataset Hidden States: ", datasetHiddenStates.to_pandas())
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
-        print("Reduced Dataset: ", self.reduced_dataset)
         self.graph = self.get_graph()
 
 
@@ -85,7 +82,6 @@ class LLM_MRI:
         hidden_name = f"hidden_state_{layer}"
 
         category_to_int = self.class_names.index(category)
-        print("Dataset reduzido: ", self.reduced_dataset[layer])
         return self.base.get_activations_grid(hidden_name, category_to_int, category, self.reduced_dataset[layer])
        
     def get_original_map(self, layer:int, colormap:str = 'viridis'):
