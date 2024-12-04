@@ -84,12 +84,13 @@ class LLM_MRI:
         category_to_int = self.class_names.index(category)
         return self.base.get_activations_grid(hidden_name, category_to_int, category, self.reduced_dataset[layer])
        
+
     def get_original_map(self, layer:int, colormap:str = 'viridis'):
         """
         Returns a scatterplot with the grids from all categories distributions on the same graph.
         """
         # Selecting reduced dataset (grids)
-        data_points = self.reduced_dataset[layer]
+        data_points = self.base.get_embeddings_dataset()[layer]
 
         # Defining colormap
         num_categories = len(self.class_names)
@@ -98,7 +99,7 @@ class LLM_MRI:
 
         # Create the figure and axes
         fig, ax = plt.subplots()
-
+        
         # Iterate over unique categories
         for i, category in enumerate(data_points['label'].unique()):
 
@@ -110,17 +111,13 @@ class LLM_MRI:
             # Plot scatter points on the axes
             ax.scatter(X, Y, color=colors[i], label=self.class_names[category], alpha=0.9) 
 
-            # Annotate each point to its label
-            for x, y, label in zip(X, Y, category_df['cell_label']):
-                ax.annotate(label, (x, y), textcoords='offset points', xytext=(5, 5), ha='center')
-
-        # Add legend and labels (optional)
+        # Add legend and labels
         ax.legend()
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
-        ax.set_title("Scatter Plot of Categories")
+        ax.set_title(f"UMAP representation for hidden state: {layer}")
         
-        return fig
+        return ax
 
 
     def get_graph(self, category_name:str = ""):

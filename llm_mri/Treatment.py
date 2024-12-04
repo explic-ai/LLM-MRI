@@ -21,16 +21,14 @@ class Treatment:
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.model = model
         self.device = device
+        self.embeddings_dataset = []
 
-    def set_device(self, device):
+    
+    def get_embeddings_dataset(self):
         """
-        Sets the device that will be used by the class.
-
-        Args:
-            device (str): The device to be used (e.g., 'cpu' or 'cuda').
+        Returns the embeddings dataset
         """
-
-        self.device = device
+        return self.embeddings_dataset
     
     def tokenize(self, batch):
         """
@@ -138,7 +136,8 @@ class Treatment:
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         """
-        Returns a dataframe containing the embeddings for a specific layer of the network.
+        Gets a dataframe containing the embeddings for a specific layer of the network, and
+        cuts it to make the grid representation.
 
         Args:
             dataset (Dataset): The dataset to be used for the analysis.
@@ -146,19 +145,26 @@ class Treatment:
             gridsize (int): The grid size.
 
         Returns:
-            DataFrame: DataFrame containing the embeddings.
+            DataFrame: DataFrame containing the grid embeddings.
         """
-
+        # Defining HS Label
         hidden_state = hidden_state_label.split("_")[-1]
+
+        # Creating Documents and Target to beobtained the embeddings from
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
         df_emb = self.get_embeddings(X, y)
+
+        # Saving the embeddings of those documents
+        self.embeddings_dataset.append(df_emb)
+
+        # Turning into gridsize x gridsize
         df_emb = df_emb.assign(
         X=pd.cut(df_emb.X, gridsize, labels=False),
         Y=pd.cut(df_emb.Y, gridsize, labels=False)
         )
-        # create a new column with the concatenation of X and Y
 
+        # Adjusting Labels
         df_emb['cell_label'] = hidden_state + "_" + df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         return df_emb
 
