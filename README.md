@@ -57,6 +57,8 @@ The user also needs to specify the Hugging Face Dataset that will be used to pro
   ```
   dataset = load_from_disk(dataset_path) # Specify the Dataset's path
   ```
+> Make sure that the selected dataset is a HuggingFace Dataset, and contains the columns "text" and "label", the last one being "ClassLabel" type. For more instructions on how to make this conversion, check out some of the examples on the [GitHub documentation.](https://github.com/explic-ai/LLM-MRI/tree/main/examples)
+
 
 Next, the user selects the model to be used as a string:
 ```
@@ -78,7 +80,7 @@ As the user inputs the model and corpus to be analyzed, the dimensionality of th
 
   
 ### Heatmap representation of activations:
-This includes the _get_layer_image_ function, which transforms the NxN grid for a selected layer into a heatmap. In this heatmap, each cell represents the number of activations that different regions received for the provided corpus. Additionally, users can visualize activations for a specific label.
+This includes the _get_layer_image_ function, which transforms the NxN grid for a selected layer into a heatmap. In this heatmap, each cell represents the number of activations that different regions on a determined layer received for the provided corpus. Additionally, users can visualize activations for a specific label.
   ```
   fig = llm_mri.get_layer_image(layer, category)
   ```
@@ -91,7 +93,7 @@ This includes the _get_layer_image_ function, which transforms the NxN grid for 
 Using the _get_graph_ function, the module connects regions from neighboring layers based on co-activations to form a graph representing the entire network. The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
 
 > **_colormap:_**  The default used colormap is the 'coolwarm'. More can be found on [matplotlib.colors](https://matplotlib.org/stable/users/explain/colors/colormaps.html). We recommend the use of a 'Diverging' colormap for better visualization.
-> **_fix_node_positions:_**  'True' keeps the nodes and edges at the same positions, independently of the categories. Setting to 'False' does not allow this comparison, although the graph will be more easily visualized.
+> **_fix_node_positions:_**  'True' keeps the nodes and edges at the same positions, independently of the categories. This could be useful for comparing activations between distinct categories. Setting to 'False' does not allow this comparison, although the graph will be more easily visualized.
 
    ```
    graph = llm_mri.get_graph(category)
