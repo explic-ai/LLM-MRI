@@ -1,5 +1,5 @@
 import pandas as pd
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 import torch 
 from umap import UMAP 
 from sklearn.preprocessing import MinMaxScaler 
@@ -40,8 +40,11 @@ class Treatment:
         Returns:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
+        if self.tokenizer.pad_token is None: # Adding eos as pad token for decoders
+            self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
+        return self.tokenizer(batch["text"], padding = True, truncation=True, max_length=512)
+
 
 
     def encode_dataset(self, dataset):
@@ -69,7 +72,9 @@ class Treatment:
         Returns:
             Model: Model passed as a parameter.
         """
+
         model = AutoModel.from_pretrained(model_ckpt).to(self.device)
+
         return model
 
 
