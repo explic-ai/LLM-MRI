@@ -264,7 +264,6 @@ class LLM_MRI:
         
         new_pos = {}
         for node in pos:
-
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             new_pos[node] = (pos[node][0], heights[height_index])

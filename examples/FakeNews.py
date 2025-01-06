@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from datasets import load_from_disk
 
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
+# The model can also be an encoder, such as 'openai-community/gpt2'
 
 dataset_folder = os.path.join(os.path.dirname(__file__), '..', 'dataset')
 dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
