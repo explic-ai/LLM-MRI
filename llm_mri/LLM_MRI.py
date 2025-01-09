@@ -87,8 +87,18 @@ class LLM_MRI:
 
     def get_original_map(self, layer:int, colormap:str = 'viridis'):
         """
-        Returns a scatterplot with the grids from all categories distributions on the same graph.
+        Returns a scatterplot with the UMAP representation for every example on the corpus
+        passed by the user for a specific layer.
+
+        Args:
+            layer (int): The layer to be visualized.
+            colormap (int): The colormap to be used on the display.
+
+        Returns:
+            figure (plt.figure): Plot representing 2-dimension UMAP representation of documents
+            for a specific layer before turning it into a grid visualization.
         """
+        
         # Selecting reduced dataset (grids)
         data_points = self.base.get_embeddings_dataset()[layer]
 
