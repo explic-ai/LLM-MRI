@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="llm_mri",
-    version="0.1.8",
+    version="0.1.9",
     author="Luiz Felipe Costa",
     author_email="luizfelipecorradini@gmail.com",
     description="Package to visualize LLM's Neural Networks activation regions",
