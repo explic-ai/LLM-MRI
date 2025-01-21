@@ -12,6 +12,8 @@ This model allows users to explore questions such as:
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
+This repository contains the implementation from the paper [LLM-MRI Python module: a brain scanner for LLMs](https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/30782/30585)
+
 ## Index
 - [Online Example](#online-example)
 - [Installation](#installation)
@@ -111,6 +113,16 @@ g_composed_img = llm_mri.get_graph_image(g_composed)
 ```
 
 ![fake_and_true_graph](https://github.com/user-attachments/assets/7ca1c194-045f-45fd-a2a7-33941fe0dc86)
+
+
+### Reduced dimensionality representation of the documents
+It is also possible to analyze where documents are disposed on a 2D space (after the dimensionality reduction) for a certain layer, divided by category. This could be essentialy more useful to visualize the impact of the DR algorithm on the activations disposal on the 2D space.
+
+> For comparison purpouses, this method differs from the heatmap representation of activations only by the cut of the 2D representation into a grid. With this approach, it is also posible to compare all documents on a single graph.
+```
+fig_scatter = llm_mri.get_original_map(layer=6)
+```
+![activations_fake_and_true](https://github.com/user-attachments/assets/5a1e9cb2-737e-4814-9dc0-819264649034)
 
 
 
