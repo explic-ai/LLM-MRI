@@ -70,6 +70,7 @@ Then, the user instantiates `LLM-MRI`, to apply the methods defined on Functions
 ```
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 ```
+> For now, we recommend to use "cpu" as device. Further tests are going to be executed to ensure full "gpu" compatibility.
 ## Functions
 The library's functionality is divided into the following sections:
 
