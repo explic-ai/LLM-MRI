@@ -1,5 +1,7 @@
 # LLM-MRI: a brain scanner for LLMs
 
+This repository contains the implementation from the paper [LLM-MRI Python module: a brain scanner for LLMs](https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/30782/30585)
+
 As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. While many approaches focus on the interpretability of LLMs through visualizing different attention mechanisms and methods that explain the model's architecture, `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM.
 
 By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. Through a series of steps, such as dimensionality reduction and representing each layer as a grid, the tool provides various visualization methods for the activation patterns in the feed-forward layers. Accordingly, the objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
@@ -11,6 +13,7 @@ This model allows users to explore questions such as:
 - Are there regions of activation in the model more related to specific aspects of a category?
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
+
 
 ## Index
 - [Online Example](#online-example)
@@ -68,6 +71,7 @@ Then, the user instantiates `LLM-MRI`, to apply the methods defined on Functions
 ```
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
 ```
+> For now, we recommend to use "cpu" as device. Further tests are going to be executed to ensure full "gpu" compatibility.
 ## Functions
 The library's functionality is divided into the following sections:
 
@@ -111,6 +115,16 @@ g_composed_img = llm_mri.get_graph_image(g_composed)
 ```
 
 ![fake_and_true_graph](https://github.com/user-attachments/assets/7ca1c194-045f-45fd-a2a7-33941fe0dc86)
+
+
+### Reduced dimensionality representation of the documents
+It is also possible to analyze where documents are disposed on a 2D space (after the dimensionality reduction) for a certain layer, divided by category. This could be essentialy more useful to visualize the impact of the DR algorithm on the activations disposal on the 2D space.
+
+> For comparison purpouses, this method differs from the heatmap representation of activations only by the cut of the 2D representation into a grid. With this approach, it is also posible to compare all documents on a single graph.
+```
+fig_scatter = llm_mri.get_original_map(layer=6)
+```
+![activations_fake_and_true](https://github.com/user-attachments/assets/5a1e9cb2-737e-4814-9dc0-819264649034)
 
 
 
