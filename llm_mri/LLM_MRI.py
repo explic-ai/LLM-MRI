@@ -33,6 +33,7 @@ class LLM_MRI:
         self.reduced_dataset = []
         self.label_names = []
         self.graph = ""
+        self.svd_graph = ''
 
 
     def initialize_dataset(self):
@@ -62,8 +63,16 @@ class LLM_MRI:
         self.gridsize = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
 
+        # Getting the grid dataset
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
-        self.graph = self.get_graph()
+        
+        # Performing the SVD for hidden states
+        self.svd_graph = self.base.svd_graph(datasetHiddenStates)
+        print(self.svd_graph)
+        print('\n\n\n')
+
+        # Getting the original graph
+        self.graph = self.get_graph() # To be altered
 
 
     def get_layer_image(self, layer:int, category:int):
@@ -165,11 +174,12 @@ class LLM_MRI:
             # when no category is passed gets all values
             if category == -1:
                 df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
+            
             # when category is passed filters values by category
             else:
                 df_join = df_grid1.loc[df_grid1['label'] == category][['cell_label']].join(df_grid2.loc[df_grid2['label'] == category][['cell_label']], lsuffix='_1', rsuffix='_2')
 
-            #group by and count the number of rows
+            # group by and count the number of rows
             df_join_grouped = df_join.groupby(['cell_label_1', 'cell_label_2']).size().reset_index(name='weight')
 
             df_join_grouped['level'] = hs
@@ -185,6 +195,9 @@ class LLM_MRI:
 
         return G
 
+    def get_svd_graph(self):
+        return self.svd_graph
+        
 
     def generate_graph_edge_colors(self, G, colormap='coolwarm'):
         """
@@ -259,6 +272,7 @@ class LLM_MRI:
         
         # Use graphviz_layout for positioning
         pos = graphviz_layout(full_graph, prog="dot")
+        print("pos: ", pos)
 
         # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
         removed_nodes = []
@@ -270,7 +284,7 @@ class LLM_MRI:
             pos.pop(node)
         
         # Adjust the y-coordinates based on node identifiers (assuming they start with a digit)
-        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True)
+        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True) # TO BE CHANGED
         
         new_pos = {}
         for node in pos:
@@ -317,7 +331,6 @@ class LLM_MRI:
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
 
         
-
         # Draw edges with specified widths and colors
         nx.draw_networkx_edges(
             G,

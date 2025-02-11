@@ -42,10 +42,10 @@ plt.show()
 
 # Getting activation's image as a Graph
 # g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
-# g_full = llm_mri.get_graph() # Gets the graph for all categories
+g_full = llm_mri.get_svd_graph() # Gets the graph for all categories
 
 # Getting the image of Graph representation of activations
-# g_img = llm_mri.get_graph_image(g, fix_node_positions=False) # Getting the graph image for a determined category
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False) # Getting the graph image for a determined category
 
 # plt.box(False)
 # plt.show()
