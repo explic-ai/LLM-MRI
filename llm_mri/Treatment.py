@@ -161,6 +161,7 @@ class Treatment:
             print((s_k))
             # Multiplying to obtain the reduced dataset
             reduced_hs = U_k @ torch.diag(s_k)
+            print(type(reduced_hs))
             reduced_hs_list.append(reduced_hs)
             print("reduced_shape: ", reduced_hs.shape)
         
@@ -204,7 +205,8 @@ class Treatment:
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows(): # Iterating though rows
                 for col_name, weight in row_data.items(): # Iterating through columns
-                    G.add_edge(col_name, row_name, weight=weight, label=0) # Adding edges
+                    if weight > 0.3:
+                        G.add_edge(col_name, row_name, weight=weight * 3, label=0) # Adding edges
         
         # Returning the full graph developed
         return G

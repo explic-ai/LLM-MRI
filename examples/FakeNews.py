@@ -51,9 +51,9 @@ g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False) # Getting the 
 # plt.show()
 
 # Getting activations of different labels in the same Graph
-g_composed = llm_mri.get_composed_graph("true", "fake")
+# g_composed = llm_mri.get_composed_graph("true", "fake")
 
 # Generating image of composed graph
-g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
+# g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
 plt.box(False)
 plt.show()

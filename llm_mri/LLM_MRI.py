@@ -290,7 +290,8 @@ class LLM_MRI:
         for node in pos:
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
-            new_pos[node] = (pos[node][0], heights[height_index])
+            width_index = int(node.split('_')[-1])
+            new_pos[node] = (width_index * 2, heights[height_index])
         pos = new_pos
         
         # Create the matplotlib figure
@@ -354,15 +355,6 @@ class LLM_MRI:
             edgecolors='black'  # Optional: Adds a border to nodes
         )
         
-        # Draw labels for nodes
-        # nx.draw_networkx_labels(
-        #     G,
-        #     pos,
-        #     labels={node: node for node in nodelist},
-        #     font_color='black',
-        #     font_size=10,
-        #     ax=ax
-        # )
         
         # Clear label names for future use
         self.label_names = []
