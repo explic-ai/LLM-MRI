@@ -1,13 +1,14 @@
 import pandas as pd
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
-import torch 
-from umap import UMAP 
-from sklearn.preprocessing import MinMaxScaler 
+import torch
+from umap import UMAP
+from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-import numpy as np 
+import numpy as np
 import seaborn as sns
 from progress.bar import Bar
 import networkx as nx
+
 
 class Treatment:
 
@@ -24,13 +25,12 @@ class Treatment:
         self.device = device
         self.embeddings_dataset = []
 
-    
     def get_embeddings_dataset(self):
         """
         Returns the embeddings dataset
         """
         return self.embeddings_dataset
-    
+
     def tokenize(self, batch):
         """
         Tokenizes a batch of text.
@@ -41,12 +41,10 @@ class Treatment:
         Returns:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
-        if self.tokenizer.pad_token is None: # Adding eos as pad token for decoders
+        if self.tokenizer.pad_token is None:  # Adding eos as pad token for decoders
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        return self.tokenizer(batch["text"], padding = True, truncation=True, max_length=512)
-
-
+        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
     def encode_dataset(self, dataset):
         """
@@ -59,9 +57,9 @@ class Treatment:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
 
-        dataset_encoded = dataset.map(self.tokenize, batched=True, batch_size=None)
+        dataset_encoded = dataset.map(
+            self.tokenize, batched=True, batch_size=None)
         return dataset_encoded
-
 
     def set_embeddings_on_model(self, model_ckpt):
         """
@@ -78,7 +76,6 @@ class Treatment:
 
         return model
 
-
     def extract_all_hidden_states(self, batch):
         """
         Extracts all hidden states for a batch of data.
@@ -89,21 +86,21 @@ class Treatment:
         Returns:
             dict: Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
         """
-        
+
         model = self.set_embeddings_on_model(model_ckpt=self.model)
 
-        inputs = {k:v.to(self.device) for k,v in batch.items() 
-                if k in self.tokenizer.model_input_names}
-        
-        with torch.no_grad():
-            hidden_states = model(**inputs, output_hidden_states=True).hidden_states
-        all_hidden_states = {}
-        
-        for i, hs in enumerate(hidden_states):
-            all_hidden_states[f"hidden_state_{i}"] = hs[:,0].cpu().numpy()
-        
-        return all_hidden_states
+        inputs = {k: v.to(self.device) for k, v in batch.items()
+                  if k in self.tokenizer.model_input_names}
 
+        with torch.no_grad():
+            hidden_states = model(
+                **inputs, output_hidden_states=True).hidden_states
+        all_hidden_states = {}
+
+        for i, hs in enumerate(hidden_states):
+            all_hidden_states[f"hidden_state_{i}"] = hs[:, 0].cpu().numpy()
+
+        return all_hidden_states
 
     def set_dataset_to_torch(self, dataset_encoded):
         """
@@ -116,58 +113,58 @@ class Treatment:
             Dataset: Dataset formatted for PyTorch.
         """
 
-        dataset_encoded.set_format("torch", 
-                            columns=["input_ids", "attention_mask", "label"])
+        dataset_encoded.set_format("torch",
+                                   columns=["input_ids", "attention_mask", "label"])
         return dataset_encoded
+
+    def spearman_correlation(self, first_layer, second_layer):
+        """
+        Compute Spearman correlation between the components of two different layers.
+        Args: 
+            first_layer (tensor): the first layer to be used in the correlation
+            second_layer (tensor): the second layer to be used in the correlation
+        """
+        # Rank the columns of each tensor
+        rank1 = first_layer.argsort(dim=0).argsort(dim=0).float()
+        rank2 = second_layer.argsort(dim=0).argsort(dim=0).float()
+
+        # Center the ranks
+        rank1 -= rank1.mean(dim=0, keepdim=True)
+        rank2 -= rank2.mean(dim=0, keepdim=True)
+
+        # Compute the covariance and standard deviations
+        cov = (rank1.T @ rank2) / first_layer.size(0)
+        std1 = rank1.std(dim=0, keepdim=True)
+        std2 = rank2.std(dim=0, keepdim=True)
+
+        # Compute the correlation matrix
+        correlation_matrix = cov / (std1.T @ std2)
+        
+        # Write me a program that returns the first two lines of the tensor
+        return correlation_matrix
 
     def svd_graph(self, dataset_hidden_states, dim=40):
 
-        #1) Para cada hidden state: (dicionário de tensores)
-        #   Reduzir a dimensionalidade para 100 dimensões
-
-        # Criar um grafo do networkx
-
-        #2) Para cada conexão de hidden state:
-        #   Calcular a matriz de correlação, e salvar como df em outra variável da classe
-        #   Salvar cada coluna / linha com um nome específico identificável
-        #   (corr_matrix = pd.DataFrame(data, columns=column_names, index=row_names))
-        #   Adicionar cada linha e coluna como nó no grafo
-
-        #3) Para cada matriz de correlação: 
-        #   Para cada par i, j em linha, coluna:
-        #       Criar uma aresta entre o primeiro e segundo nó, com peso = correlação
-        #       Colocar 'label' = 0 como atributo da aresta, por enquanto
-
-        # Retornar o grafo
-
         reduced_hs_list = []
-        
+
         # 1) Reducing dimensionality through SVD
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
 
             # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
-            U, s, Vt = torch.linalg.svd(dataset_hidden_states[hs_name], full_matrices = False)
-            print("Dataset shape: ", dataset_hidden_states[hs_name].shape)
-            print("U shape: ", U.shape)
-            print("s shape: ", s.shape)
-            print("Vt shape: ", Vt.shape)
-            print('---------------------------------------------------------')
+            U, s, Vt = torch.linalg.svd(
+                dataset_hidden_states[hs_name], full_matrices=False)
 
             # Choosing the "dim" main components
             U_k = U[:, :dim]  # Keep first k columns of U (40 x 100)
             s_k = s[:dim]
 
-            print("s_k shape: ", s_k.shape)
-            print((s_k))
             # Multiplying to obtain the reduced dataset
             reduced_hs = U_k @ torch.diag(s_k)
-            print(type(reduced_hs))
+
             reduced_hs_list.append(reduced_hs)
-            print("reduced_shape: ", reduced_hs.shape)
-        
+
         # Creating the graph
         G = nx.Graph()
-        print("reduced list: ", len(reduced_hs_list))
 
         # Variable to store the correlation matrices
         correlation_reduced_hs = []
@@ -177,15 +174,8 @@ class Treatment:
             first_layer = reduced_hs_list[index]
             second_layer = reduced_hs_list[index+1]
 
-            # Compute the dot product between X and Y
-            dot_product = first_layer.T @ second_layer
-
-            # Compute the norms of X and Y
-            norm_X = torch.norm(first_layer, p=2, dim=0, keepdim=True)
-            norm_Y = torch.norm(second_layer, p=2, dim=0, keepdim=True)
-
-            # Compute the cosine similarity matrix
-            cosine_similarity_matrix = dot_product / (norm_X.T @ norm_Y)
+            correlation_matrix = self.spearman_correlation(
+                first_layer, second_layer)
 
             # Generating names for columns and rows (hs{x}_{index})
             column_names = [f'{index}_{x}' for x in range(dim)]
@@ -196,22 +186,23 @@ class Treatment:
             G.add_nodes_from(row_names)
 
             # Turning matrix into DataFrame, so that components can be named
-            cosine_matrix_df = pd.DataFrame(cosine_similarity_matrix.detach().numpy(), columns=column_names, index=row_names)
+            cosine_matrix_df = pd.DataFrame(
+                correlation_matrix.detach().numpy(), columns=column_names, index=row_names)
 
             # Storing matrix
             correlation_reduced_hs.append(cosine_matrix_df)
-        
+
         # 3) Adding edges to the graph
         for corr_matrix in correlation_reduced_hs:
-            for row_name, row_data in corr_matrix.iterrows(): # Iterating though rows
-                for col_name, weight in row_data.items(): # Iterating through columns
+            for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
+                for col_name, weight in row_data.items():  # Iterating through columns
                     if weight > 0.3:
-                        G.add_edge(col_name, row_name, weight=weight * 3, label=0) # Adding edges
-        
+                        # Adding edges
+                        G.add_edge(col_name, row_name,
+                                   weight=weight * 3, label=0)
+
         # Returning the full graph developed
         return G
-
-        
 
     def get_embeddings(self, X, y):
         """
@@ -226,11 +217,11 @@ class Treatment:
         """
         X_scaled = MinMaxScaler().fit_transform(X)
 
-        mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
+        mapper = UMAP(n_components=2, metric="cosine").fit(
+            X_scaled)  # , random_state=42
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
         df_emb["label"] = y
         return df_emb
-
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         """
@@ -258,14 +249,14 @@ class Treatment:
 
         # Turning into gridsize x gridsize
         df_emb = df_emb.assign(
-        X=pd.cut(df_emb.X, gridsize, labels=False),
-        Y=pd.cut(df_emb.Y, gridsize, labels=False)
+            X=pd.cut(df_emb.X, gridsize, labels=False),
+            Y=pd.cut(df_emb.Y, gridsize, labels=False)
         )
 
         # Adjusting Labels
-        df_emb['cell_label'] = hidden_state + "_" + df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
+        df_emb['cell_label'] = hidden_state + "_" + \
+            df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         return df_emb
-
 
     def get_activations_grid(self, hidden_layer_name, label, label_name, df_grid):
         """
@@ -287,13 +278,13 @@ class Treatment:
         ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
 
         ct = ct.sort_index(ascending=False)
-        
+
         fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
-        
-        #change figure title to hs
+
+        # change figure title to hs
         full_name = f"{hidden_layer_name} : {label_name}"
         plt.title(full_name)
-        
+
         return fig
 
     def get_all_grids(self, dataset, gridsize, buffer):
@@ -312,6 +303,6 @@ class Treatment:
             for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
                 df_grid = self.get_grid(dataset, hs, gridsize)
                 bar.next()
-                buffer.append(df_grid) # ith grid
-        
+                buffer.append(df_grid)  # ith grid
+
         return buffer
