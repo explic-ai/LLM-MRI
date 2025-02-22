@@ -28,9 +28,9 @@ llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas 
 # plt.show()
 
 # Getting full scatterplot
-fig_scatter = llm_mri.get_original_map(6)
-plt.tight_layout()
-plt.show()
+# fig_scatter = llm_mri.get_original_map(6)
+# plt.tight_layout()
+# plt.show()
 
 # fig = llm_mri.get_layer_image(layer = 1, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
 # plt.tight_layout()
@@ -51,9 +51,9 @@ g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False) # Getting the 
 # plt.show()
 
 # Getting activations of different labels in the same Graph
-# g_composed = llm_mri.get_composed_graph("true", "fake")
+g_composed = llm_mri.get_composed_graph("true", "fake")
 
 # Generating image of composed graph
-# g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
+g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
 plt.box(False)
 plt.show()
