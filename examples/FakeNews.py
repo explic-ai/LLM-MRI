@@ -57,3 +57,10 @@ g_composed = llm_mri.get_composed_graph("true", "fake")
 g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
 plt.box(False)
 plt.show()
+
+# Generating image of svd composed graph
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
+
+svd_full_img = llm_mri.get_graph_image(svd_composed)
+plt.box(False)
+plt.show()
