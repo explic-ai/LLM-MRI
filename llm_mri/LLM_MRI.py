@@ -242,7 +242,7 @@ class LLM_MRI:
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
                 for col_name, weight in row_data.items():  # Iterating through columns
-                    if weight > 0.3:
+                    if weight > 0.3: # Threshold
                         # Adding edges
                         G.add_edge(col_name, row_name,
                                    weight=weight, label=self.current_category)
@@ -297,14 +297,12 @@ class LLM_MRI:
 
         """
 
-        filtered_dataset = self.dataset['label']
-
         reduced_hidden_states = self.get_svd_reduction(dim=dim)
         return self.get_spearman_graph(reduced_hidden_states, dim)
 
 
         
-    def get_composed_svd_graph(self, category1, category2):
+    def get_composed_svd_graph(self, category1, category2, dim:int=40):
         
         # 1) Generate graph of only requested labels
         
@@ -319,7 +317,7 @@ class LLM_MRI:
         filtered_hidden_states = self.hidden_states_dataset.select(indices) 
         
         # Select only rows with selected categories from hidden state
-        full_svd_hs = self.get_svd_reduction(filtered_hidden_states)
+        full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
 
 
         # 2) Select specific hidden states to compute spearman correlation
@@ -338,13 +336,13 @@ class LLM_MRI:
             c2_hidden_states.append(layer[indices_categ2])
 
         # Generate graph for first category
-        c1_graph = self.get_spearman_graph(c1_hidden_states)
+        c1_graph = self.get_spearman_graph(c1_hidden_states, dim)
 
         # Updating category
         self.current_category = 1
 
         # Generate graph for the second category
-        c2_graph = self.get_spearman_graph(c2_hidden_states)
+        c2_graph = self.get_spearman_graph(c2_hidden_states, dim)
 
         # Reseting category
         self.current_category = 0
@@ -504,7 +502,7 @@ class LLM_MRI:
             G,
             pos,
             edgelist=G.edges(),
-            # width=[widths[edge] for edge in widths],
+            width=[edge[-1]['weight'] * 2 for edge in G.edges(data=True)],
             edge_color=ordered_edge_colors,
             alpha=0.9,
             ax=ax
@@ -519,7 +517,7 @@ class LLM_MRI:
             node_color=node_colors, # added
             alpha=0.9,
             linewidths=1,
-            edgecolors='black'  # Optional: Adds a border to nodes
+            edgecolors='black'
         )
         
         # Clear label names for future use

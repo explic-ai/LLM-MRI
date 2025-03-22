@@ -59,7 +59,7 @@ plt.box(False)
 plt.show()
 
 # Generating image of svd composed graph
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=15)
 
 svd_full_img = llm_mri.get_graph_image(svd_composed)
 plt.box(False)
