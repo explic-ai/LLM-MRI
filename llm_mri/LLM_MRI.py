@@ -34,6 +34,7 @@ class LLM_MRI:
         self.label_names = []
         self.graph = ""
         self.svd_graph = ''
+        self.current_category = 0
 
 
     def initialize_dataset(self):
@@ -67,9 +68,7 @@ class LLM_MRI:
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
         
         # Performing the SVD for hidden states
-        self.svd_graph = self.base.svd_graph(datasetHiddenStates)
-        print(self.svd_graph)
-        print('\n\n\n')
+        self.svd_graph = self.get_svd_graph()
 
         # Getting the original graph
         self.graph = self.get_graph() # To be altered
@@ -193,11 +192,180 @@ class LLM_MRI:
         if category != -1:
             nx.set_edge_attributes(G, category, "label")
 
+        # Setting dimensionality reduction type to UMAP
+        G.graph['dimensionality_reduction'] = "UMAP"
+
         return G
 
-    def get_svd_graph(self):
-        return self.svd_graph
+
+    def get_spearman_graph(self, reduced_hs_list, dim:int=40):
+        """
+        Returns the networkx graph to represent the activations, using the Spearman correlation
+
+        Args:
+            reduced_hs_list (list): List of reduced hidden states.
+            dim (int): The number of dimensions to reduce the activations to (default 40).
         
+        Returns:
+            Graph: The networkx graph representing the activations.
+        """
+        # Creating the graph
+        G = nx.Graph()
+
+        # Variable to store the correlation matrices
+        correlation_reduced_hs = []
+
+        # 2) Calculating correlation for every hidden state intersection
+        for index in range(len(reduced_hs_list) - 1):
+            first_layer = reduced_hs_list[index]
+            second_layer = reduced_hs_list[index+1]
+
+            correlation_matrix = self.base.spearman_correlation(
+                first_layer, second_layer)
+
+            # Generating names for columns and rows (hs{x}_{index})
+            column_names = [f'{index}_{x}' for x in range(dim)]
+            row_names = [f'{index+1}_{x}' for x in range(dim)]
+
+            # Adding all different nodes to the graph
+            G.add_nodes_from(column_names)
+            G.add_nodes_from(row_names)
+
+            # Turning matrix into DataFrame, so that components can be named
+            spearman_matrix_df = pd.DataFrame(
+                correlation_matrix.detach().numpy(), columns=column_names, index=row_names)
+
+            # Storing matrix
+            correlation_reduced_hs.append(spearman_matrix_df)
+
+        # 3) Adding edges to the graph
+        for corr_matrix in correlation_reduced_hs:
+            for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
+                for col_name, weight in row_data.items():  # Iterating through columns
+                    if weight > 0.3:
+                        # Adding edges
+                        G.add_edge(col_name, row_name,
+                                   weight=weight, label=self.current_category)
+
+        # Setting dimensionality reduction type to SVD
+        G.graph['dimensionality_reduction'] = "SVD"
+
+        # Returning the full graph developed
+        return G
+
+
+    def get_svd_reduction(self, dataset_hidden_states=None, dim:int=40, category:str = ""):
+        """
+        Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
+
+        Args:
+            dim (int): The number of dimensions to reduce the activations to (default 40).
+
+        Returns:
+            Graph: The networkx graph representing the activations.
+        """
+        
+        reduced_hs_list = []
+
+        if dataset_hidden_states is None:
+            dataset_hidden_states = self.hidden_states_dataset
+        
+
+        # 1) Reducing dimensionality through SVD
+        for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
+
+            # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
+            U, s, Vt = torch.linalg.svd(
+                dataset_hidden_states[hs_name], full_matrices=False)
+
+            # Choosing the "dim" main components
+            U_k = U[:, :dim]  # Keep first k columns of U (40 x 100)
+            s_k = s[:dim]
+
+            # Multiplying to obtain the reduced dataset
+            reduced_hs = U_k @ torch.diag(s_k) 
+            reduced_hs_list.append(reduced_hs)
+
+        return reduced_hs_list
+
+    def get_svd_graph(self, dim:int=40):
+        """
+        Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
+
+        Args:
+            dim (int): The number of dimensions to reduce the activations to (default 40).
+
+        """
+
+        filtered_dataset = self.dataset['label']
+
+        reduced_hidden_states = self.get_svd_reduction(dim=dim)
+        return self.get_spearman_graph(reduced_hidden_states, dim)
+
+
+        
+    def get_composed_svd_graph(self, category1, category2):
+        
+        # 1) Generate graph of only requested labels
+        
+        # Get the category index
+        category1_index = self.class_names.index(category1)
+        category2_index = self.class_names.index(category2)
+
+        # Filter the dataset to get the indices of rows with the given category
+        indices = [i for i, label in enumerate(self.dataset['label']) if label == category1_index or label == category2_index]
+
+        # Extract the rows from the hidden_states_dataset tensor
+        filtered_hidden_states = self.hidden_states_dataset.select(indices) 
+        
+        # Select only rows with selected categories from hidden state
+        full_svd_hs = self.get_svd_reduction(filtered_hidden_states)
+
+
+        # 2) Select specific hidden states to compute spearman correlation
+        category1_index = self.class_names.index(category1)
+        category2_index = self.class_names.index(category2)
+        
+        # Obtain indices from each category
+        indices_categ1 = [i for i, label in enumerate(self.dataset['label']) if label == category1_index]
+        indices_categ2 = [i for i, label in enumerate(self.dataset['label']) if label == category2_index]
+
+        # Extract full hidden state list from indices
+        c1_hidden_states = []
+        c2_hidden_states = []
+        for layer in full_svd_hs:
+            c1_hidden_states.append(layer[indices_categ1])
+            c2_hidden_states.append(layer[indices_categ2])
+
+        # Generate graph for first category
+        c1_graph = self.get_spearman_graph(c1_hidden_states)
+
+        # Updating category
+        self.current_category = 1
+
+        # Generate graph for the second category
+        c2_graph = self.get_spearman_graph(c2_hidden_states)
+
+        # Reseting category
+        self.current_category = 0
+
+        # Since nodes are the same, full graph are going to contain the same nodes
+        G_composed = nx.Graph()
+        G_composed.add_nodes_from(c1_graph.nodes())
+        
+        # For the edges, we need to concatenate the edges from the two obtained graph
+        G_composed.add_edges_from(c1_graph.edges(data=True))
+        G_composed.add_edges_from(c2_graph.edges(data=True))
+
+        # Defining dimensionality reduction attribute
+        G_composed.graph['dimensionality_reduction'] = "SVD"
+
+        # Adding Label names to assigned variable
+        self.label_names.append(category1)
+        self.label_names.append(category2)
+        
+        return G_composed
+
 
     def generate_graph_edge_colors(self, G, colormap='coolwarm'):
         """
@@ -215,9 +383,7 @@ class LLM_MRI:
     
         edge_attributes = list(first_edge_attrs[0][-1].keys())
 
-        
         if 'label' in edge_attributes:
-            
 
             # extract all labels from the edges
             labels = [data['label'] for _, _, data in G.edges(data=True) if 'label' in data]
@@ -267,31 +433,33 @@ class LLM_MRI:
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
 
-        # If your edges have a 'weight' attribute, otherwise this will be empty
-        widths = nx.get_edge_attributes(G, 'weight')
-        
         # Use graphviz_layout for positioning
         pos = graphviz_layout(full_graph, prog="dot")
-        print("pos: ", pos)
 
         # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
         removed_nodes = []
         for node in pos.keys():
             if node not in nodelist:
                 removed_nodes.append(node)
-        
+
+        # Removing nodes
         for node in removed_nodes:
             pos.pop(node)
-        
-        # Adjust the y-coordinates based on node identifiers (assuming they start with a digit)
-        heights = sorted(list(set([x[1] for x in pos.values()])), reverse=True) # TO BE CHANGED
-        
+
+        # Fixing node positions        
         new_pos = {}
-        for node in pos:
+        for node in nodelist:
+
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             width_index = int(node.split('_')[-1])
-            new_pos[node] = (width_index * 2, heights[height_index])
+
+            if G.graph['dimensionality_reduction'] == "SVD":
+                new_pos[node] = (width_index, height_index)
+            
+            else: # Dimensionality reduction is UMAP
+                new_pos[node] = (pos[node][0], height_index)
+
         pos = new_pos
         
         # Create the matplotlib figure
@@ -315,7 +483,7 @@ class LLM_MRI:
             # Generate edge_colors list aligned with the edgelist
             ordered_edge_colors = [
                 custom_colors.get(G[u][v].get('label', 0), 'gray') 
-                for u, v in widths.keys()]
+                for u, v in G.edges().keys()]
         
         # Coloring Nodes
         node_colors = self.generate_node_colors(G, colormap)
@@ -330,14 +498,13 @@ class LLM_MRI:
         # Scale node sizes
         max_degree = max(max(degrees.values()), 4)
         node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
-
         
         # Draw edges with specified widths and colors
         nx.draw_networkx_edges(
             G,
             pos,
-            edgelist=widths.keys(),
-            width=[widths[edge] for edge in widths],
+            edgelist=G.edges(),
+            # width=[widths[edge] for edge in widths],
             edge_color=ordered_edge_colors,
             alpha=0.9,
             ax=ax
@@ -354,7 +521,6 @@ class LLM_MRI:
             linewidths=1,
             edgecolors='black'  # Optional: Adds a border to nodes
         )
-        
         
         # Clear label names for future use
         self.label_names = []

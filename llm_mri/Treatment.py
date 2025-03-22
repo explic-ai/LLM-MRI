@@ -140,69 +140,9 @@ class Treatment:
         # Compute the correlation matrix
         correlation_matrix = cov / (std1.T @ std2)
         
-        # Write me a program that returns the first two lines of the tensor
         return correlation_matrix
 
-    def svd_graph(self, dataset_hidden_states, dim=40):
 
-        reduced_hs_list = []
-
-        # 1) Reducing dimensionality through SVD
-        for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
-
-            # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
-            U, s, Vt = torch.linalg.svd(
-                dataset_hidden_states[hs_name], full_matrices=False)
-
-            # Choosing the "dim" main components
-            U_k = U[:, :dim]  # Keep first k columns of U (40 x 100)
-            s_k = s[:dim]
-
-            # Multiplying to obtain the reduced dataset
-            reduced_hs = U_k @ torch.diag(s_k)
-
-            reduced_hs_list.append(reduced_hs)
-
-        # Creating the graph
-        G = nx.Graph()
-
-        # Variable to store the correlation matrices
-        correlation_reduced_hs = []
-
-        # 2) Calculating correlation for every hidden state intersection
-        for index in range(len(reduced_hs_list) - 1):
-            first_layer = reduced_hs_list[index]
-            second_layer = reduced_hs_list[index+1]
-
-            correlation_matrix = self.spearman_correlation(
-                first_layer, second_layer)
-
-            # Generating names for columns and rows (hs{x}_{index})
-            column_names = [f'{index}_{x}' for x in range(dim)]
-            row_names = [f'{index+1}_{x}' for x in range(dim)]
-
-            # Adding all different nodes to the graph
-            G.add_nodes_from(column_names)
-            G.add_nodes_from(row_names)
-
-            # Turning matrix into DataFrame, so that components can be named
-            cosine_matrix_df = pd.DataFrame(
-                correlation_matrix.detach().numpy(), columns=column_names, index=row_names)
-
-            # Storing matrix
-            correlation_reduced_hs.append(cosine_matrix_df)
-
-        # 3) Adding edges to the graph
-        for corr_matrix in correlation_reduced_hs:
-            for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
-                for col_name, weight in row_data.items():  # Iterating through columns
-                    if weight > 0.3:
-                        # Adding edges
-                        G.add_edge(col_name, row_name,
-                                   weight=weight * 3, label=0)
-
-        # Returning the full graph developed
-        return G
 
     def get_embeddings(self, X, y):
         """
