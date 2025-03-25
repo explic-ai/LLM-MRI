@@ -35,6 +35,7 @@ class LLM_MRI:
         self.graph = ""
         self.svd_graph = ''
         self.current_category = 0
+        self.dim = 2
 
 
     def initialize_dataset(self):
@@ -242,7 +243,7 @@ class LLM_MRI:
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
                 for col_name, weight in row_data.items():  # Iterating through columns
-                    if weight > 0.3: # Threshold
+                    if weight > 0.4: # Threshold
                         # Adding edges
                         G.add_edge(col_name, row_name,
                                    weight=weight, label=self.current_category)
@@ -278,9 +279,12 @@ class LLM_MRI:
             U, s, Vt = torch.linalg.svd(
                 dataset_hidden_states[hs_name], full_matrices=False)
 
+            
             # Choosing the "dim" main components
-            U_k = U[:, :dim]  # Keep first k columns of U (40 x 100)
+            U_k = U[:, :dim] 
             s_k = s[:dim]
+
+            # If we want to allow multiple dimensions, we should add 0s on rows and columns of s
 
             # Multiplying to obtain the reduced dataset
             reduced_hs = U_k @ torch.diag(s_k) 
@@ -288,7 +292,7 @@ class LLM_MRI:
 
         return reduced_hs_list
 
-    def get_svd_graph(self, dim:int=40):
+    def get_svd_graph(self, dim:int=16):
         """
         Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
 
@@ -301,8 +305,7 @@ class LLM_MRI:
         return self.get_spearman_graph(reduced_hidden_states, dim)
 
 
-        
-    def get_composed_svd_graph(self, category1, category2, dim:int=40):
+    def get_composed_svd_graph(self, category1, category2, dim:int=16):
         
         # 1) Generate graph of only requested labels
         
@@ -319,19 +322,19 @@ class LLM_MRI:
         # Select only rows with selected categories from hidden state
         full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
 
-
         # 2) Select specific hidden states to compute spearman correlation
         category1_index = self.class_names.index(category1)
         category2_index = self.class_names.index(category2)
         
-        # Obtain indices from each category
-        indices_categ1 = [i for i, label in enumerate(self.dataset['label']) if label == category1_index]
-        indices_categ2 = [i for i, label in enumerate(self.dataset['label']) if label == category2_index]
+        # The first indices are going to be equivalent to the first categories, the next ones to the second
+        indices_categ1 = list(range(int(len(full_svd_hs[0])/2)))
+        indices_categ2 = list(range(int(len(full_svd_hs[0])/2), int(len(full_svd_hs[0]))))
 
         # Extract full hidden state list from indices
         c1_hidden_states = []
         c2_hidden_states = []
-        for layer in full_svd_hs:
+
+        for i, layer in enumerate(full_svd_hs):
             c1_hidden_states.append(layer[indices_categ1])
             c2_hidden_states.append(layer[indices_categ2])
 
