@@ -36,6 +36,7 @@ class LLM_MRI:
         self.svd_graph = ''
         self.current_category = 0
         self.dim = 2
+        self.threshold = 0.3
 
 
     def initialize_dataset(self):
@@ -243,7 +244,7 @@ class LLM_MRI:
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
                 for col_name, weight in row_data.items():  # Iterating through columns
-                    if weight > 0.4: # Threshold
+                    if weight > self.threshold: # Threshold
                         # Adding edges
                         G.add_edge(col_name, row_name,
                                    weight=weight, label=self.current_category)
@@ -305,8 +306,19 @@ class LLM_MRI:
         return self.get_spearman_graph(reduced_hidden_states, dim)
 
 
-    def get_composed_svd_graph(self, category1, category2, dim:int=16):
-        
+    def get_composed_svd_graph(self, category1, category2, dim:int=16, threshold:float=0.3):
+        """
+        Returns a composed graph for two categories, using the SVD dimensionality reduction.
+
+        Args:
+            category1 (str): The first category from the passed documents to be displaced on the graph.
+            category2 (str): The second category from the passed documents to be displayed on the graph.
+            dim (int): The number of dimensions to reduce the activations to (default 16).
+            threshold (float): The threshold of the spearman correlation between components (default 0.3). The greater the threshold, the fewer edges will be displayed. 
+            Threshold of 0 means that every edge is being displayed, and the threshold of 1 means that no edge is being displayed.
+        """
+        self.threshold = threshold
+
         # 1) Generate graph of only requested labels
         
         # Get the category index
@@ -412,7 +424,7 @@ class LLM_MRI:
             return ['lightblue']
 
         
-    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True):
+    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True, fix_node_dimensions:bool = False):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
@@ -427,9 +439,13 @@ class LLM_MRI:
         full_graph = G
 
         if fix_node_positions: # If asked to fix, the graph of all categories will be considered
+            
+            if G.graph['dimensionality_reduction'] == "SVD":
+                full_graph = self.svd_graph
 
+            else:
             # Getting the graph with all possible activations
-            full_graph = self.graph
+                full_graph = self.graph
 
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
@@ -449,6 +465,7 @@ class LLM_MRI:
 
         # Fixing node positions        
         new_pos = {}
+
         for node in nodelist:
 
             # Extract the first character to determine height index
@@ -456,7 +473,12 @@ class LLM_MRI:
             width_index = int(node.split('_')[-1])
 
             if G.graph['dimensionality_reduction'] == "SVD":
-                new_pos[node] = (width_index, height_index)
+
+                if fix_node_dimensions:
+                    new_pos[node] = (pos[node][0], height_index)
+                
+                else:
+                    new_pos[node] = (width_index, height_index)
             
             else: # Dimensionality reduction is UMAP
                 new_pos[node] = (pos[node][0], height_index)
