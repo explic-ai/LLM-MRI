@@ -272,10 +272,16 @@ class LLM_MRI:
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
         
+        # print(dataset_hidden_states['hidden_state_5'].numpy())
 
+        torch.set_printoptions(profile="full")
+        print(dataset_hidden_states['hidden_state_5'])
+        torch.set_printoptions(profile="default")  # reset to default
+        
+        print(dataset_hidden_states['hidden_state_5'].shape)
         # 1) Reducing dimensionality through SVD
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
-
+        
             # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
             U, s, Vt = torch.linalg.svd(
                 dataset_hidden_states[hs_name], full_matrices=False)
@@ -467,14 +473,14 @@ class LLM_MRI:
         new_pos = {}
 
         for node in nodelist:
-
+            
             # Extract the first character to determine height index
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             width_index = int(node.split('_')[-1])
 
             if G.graph['dimensionality_reduction'] == "SVD":
 
-                if fix_node_dimensions:
+                if fix_node_dimensions == False:
                     new_pos[node] = (pos[node][0], height_index)
                 
                 else:
