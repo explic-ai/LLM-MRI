@@ -197,6 +197,8 @@ class LLM_MRI:
         # Setting dimensionality reduction type to UMAP
         G.graph['dimensionality_reduction'] = "UMAP"
 
+        G.graph['label_names'] = self.label_names
+
         return G
 
 
@@ -227,11 +229,12 @@ class LLM_MRI:
 
             # Generating names for columns and rows (hs{x}_{index})
             column_names = [f'{index}_{x}' for x in range(dim)]
-            row_names = [f'{index+1}_{x}' for x in range(dim)]
-
+            row_names = [f'{index+1}_{x}' for x in range(dim)] # Number of instances
+            
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
             G.add_nodes_from(row_names)
+
 
             # Turning matrix into DataFrame, so that components can be named
             spearman_matrix_df = pd.DataFrame(
@@ -248,9 +251,14 @@ class LLM_MRI:
                         # Adding edges
                         G.add_edge(col_name, row_name,
                                    weight=weight, label=self.current_category)
+                    
+                    # TODO: Add percentile as a parameter
 
         # Setting dimensionality reduction type to SVD
         G.graph['dimensionality_reduction'] = "SVD"
+
+        # Setting label names previously defined
+        G.graph['label_names'] = self.label_names
 
         # Returning the full graph developed
         return G
@@ -266,21 +274,20 @@ class LLM_MRI:
         Returns:
             Graph: The networkx graph representing the activations.
         """
-        
+
         reduced_hs_list = []
 
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
         
-        # print(dataset_hidden_states['hidden_state_5'].numpy())
-
-        torch.set_printoptions(profile="full")
-        print(dataset_hidden_states['hidden_state_5'])
-        torch.set_printoptions(profile="default")  # reset to default
-        
-        print(dataset_hidden_states['hidden_state_5'].shape)
         # 1) Reducing dimensionality through SVD
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
+            
+            if hs_name == "hidden_state_5":
+                torch.save(dataset_hidden_states[hs_name], "full_hs_5.pt")
+            
+            elif hs_name == "hidden_state_6":
+                torch.save(dataset_hidden_states[hs_name], "full_hs_6.pt")
         
             # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
             U, s, Vt = torch.linalg.svd(
@@ -290,12 +297,14 @@ class LLM_MRI:
             # Choosing the "dim" main components
             U_k = U[:, :dim] 
             s_k = s[:dim]
+            Vt_k = Vt[:dim, :dim]
 
             # If we want to allow multiple dimensions, we should add 0s on rows and columns of s
 
             # Multiplying to obtain the reduced dataset
-            reduced_hs = U_k @ torch.diag(s_k) 
+            reduced_hs = U_k @ torch.diag(s_k) @ Vt_k
             reduced_hs_list.append(reduced_hs)
+            
 
         return reduced_hs_list
 
@@ -382,6 +391,11 @@ class LLM_MRI:
         # Adding Label names to assigned variable
         self.label_names.append(category1)
         self.label_names.append(category2)
+
+        # Adding labels to graph property
+        G_composed.graph['label_names'] = self.label_names
+
+        self.svd_graph = G_composed
         
         return G_composed
 
@@ -430,7 +444,7 @@ class LLM_MRI:
             return ['lightblue']
 
         
-    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True, fix_node_dimensions:bool = False):
+    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True, fix_node_dimensions:bool = True):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
@@ -464,7 +478,7 @@ class LLM_MRI:
         for node in pos.keys():
             if node not in nodelist:
                 removed_nodes.append(node)
-
+        
         # Removing nodes
         for node in removed_nodes:
             pos.pop(node)
@@ -519,7 +533,7 @@ class LLM_MRI:
         
         # Create legend handles based on edge colors
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
-        plt.legend(legend_handles, self.label_names, loc='upper right')
+        plt.legend(legend_handles, G.graph['label_names'], loc='upper right')
         
         # Compute the degree of each node
         degrees = dict(G.degree())
@@ -604,7 +618,7 @@ class LLM_MRI:
             list: A list of colors for the graph's nodes.
         """
 
-        if len(self.label_names) < 2:
+        if len(G.graph['label_names']) < 2:
             # single feature being analyzed
             return ['gray']
 

@@ -45,7 +45,7 @@ llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas 
 g_full = llm_mri.get_svd_graph() # Gets the graph for all categories
 
 # Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False) # Getting the graph image for a determined category
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True, fix_node_dimensions=False) # Getting the graph image for a determined category
 
 # plt.box(False)
 # plt.show()
@@ -55,12 +55,14 @@ g_composed = llm_mri.get_composed_graph("true", "fake")
 
 # Generating image of composed graph
 g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
-plt.box(False)
-plt.show()
+# plt.box(False)
+# plt.show()
 
 # Generating image of svd composed graph
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=15)
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=50)
 
-svd_full_img = llm_mri.get_graph_image(svd_composed)
+svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=False, fix_node_dimensions=True)
+svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
+
 plt.box(False)
 plt.show()
