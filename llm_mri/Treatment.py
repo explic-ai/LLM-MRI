@@ -1,12 +1,14 @@
 import pandas as pd
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
-import torch 
-from umap import UMAP 
-from sklearn.preprocessing import MinMaxScaler 
+import torch
+from umap import UMAP
+from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-import numpy as np 
+import numpy as np
 import seaborn as sns
 from progress.bar import Bar
+import networkx as nx
+
 
 class Treatment:
 
@@ -23,13 +25,12 @@ class Treatment:
         self.device = device
         self.embeddings_dataset = []
 
-    
     def get_embeddings_dataset(self):
         """
         Returns the embeddings dataset
         """
         return self.embeddings_dataset
-    
+
     def tokenize(self, batch):
         """
         Tokenizes a batch of text.
@@ -40,12 +41,10 @@ class Treatment:
         Returns:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
-        if self.tokenizer.pad_token is None: # Adding eos as pad token for decoders
+        if self.tokenizer.pad_token is None:  # Adding eos as pad token for decoders
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        return self.tokenizer(batch["text"], padding = True, truncation=True, max_length=512)
-
-
+        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
 
     def encode_dataset(self, dataset):
         """
@@ -58,9 +57,9 @@ class Treatment:
             Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
         """
 
-        dataset_encoded = dataset.map(self.tokenize, batched=True, batch_size=None)
+        dataset_encoded = dataset.map(
+            self.tokenize, batched=True, batch_size=None)
         return dataset_encoded
-
 
     def set_embeddings_on_model(self, model_ckpt):
         """
@@ -77,7 +76,6 @@ class Treatment:
 
         return model
 
-
     def extract_all_hidden_states(self, batch):
         """
         Extracts all hidden states for a batch of data.
@@ -88,21 +86,21 @@ class Treatment:
         Returns:
             dict: Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
         """
-        
+
         model = self.set_embeddings_on_model(model_ckpt=self.model)
 
-        inputs = {k:v.to(self.device) for k,v in batch.items() 
-                if k in self.tokenizer.model_input_names}
-        
-        with torch.no_grad():
-            hidden_states = model(**inputs, output_hidden_states=True).hidden_states
-        all_hidden_states = {}
-        
-        for i, hs in enumerate(hidden_states):
-            all_hidden_states[f"hidden_state_{i}"] = hs[:,0].cpu().numpy()
-        
-        return all_hidden_states
+        inputs = {k: v.to(self.device) for k, v in batch.items()
+                  if k in self.tokenizer.model_input_names}
 
+        with torch.no_grad():
+            hidden_states = model(
+                **inputs, output_hidden_states=True).hidden_states
+        all_hidden_states = {}
+
+        for i, hs in enumerate(hidden_states):
+            all_hidden_states[f"hidden_state_{i}"] = hs[:, 0].cpu().numpy()
+
+        return all_hidden_states
 
     def set_dataset_to_torch(self, dataset_encoded):
         """
@@ -115,9 +113,38 @@ class Treatment:
             Dataset: Dataset formatted for PyTorch.
         """
 
-        dataset_encoded.set_format("torch", 
-                            columns=["input_ids", "attention_mask", "label"])
+        dataset_encoded.set_format("torch",
+                                   columns=["input_ids", "attention_mask", "label"])
         return dataset_encoded
+
+    def spearman_correlation(self, first_layer, second_layer):
+        """
+        Compute Spearman correlation between the components of two different layers.
+        Args: 
+            first_layer (tensor): the first layer to be used in the correlation
+            second_layer (tensor): the second layer to be used in the correlation
+        """
+        first_layer = first_layer.T
+        second_layer = second_layer.T
+        
+        # Rank the columns of each tensor
+        rank1 = first_layer.argsort(dim=0).argsort(dim=0).float()
+        rank2 = second_layer.argsort(dim=0).argsort(dim=0).float()
+
+        # Center the ranks
+        rank1 -= rank1.mean(dim=0, keepdim=True)
+        rank2 -= rank2.mean(dim=0, keepdim=True)
+
+        # Compute the covariance and standard deviations
+        cov = (rank1.T @ rank2) / first_layer.size(0)
+        std1 = rank1.std(dim=0, keepdim=True)
+        std2 = rank2.std(dim=0, keepdim=True)
+
+        # Compute the correlation matrix
+        correlation_matrix = cov / (std1.T @ std2)
+        
+        return correlation_matrix
+
 
 
     def get_embeddings(self, X, y):
@@ -131,13 +158,13 @@ class Treatment:
         Returns:
             DataFrame: DataFrame with 2D embeddings.
         """
-
         X_scaled = MinMaxScaler().fit_transform(X)
-        mapper = UMAP(n_components=2, metric="cosine").fit(X_scaled) #, random_state=42
+
+        mapper = UMAP(n_components=2, metric="cosine").fit(
+            X_scaled)  # , random_state=42
         df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
         df_emb["label"] = y
         return df_emb
-
 
     def get_grid(self, dataset, hidden_state_label, gridsize):
         """
@@ -155,7 +182,7 @@ class Treatment:
         # Defining HS Label
         hidden_state = hidden_state_label.split("_")[-1]
 
-        # Creating Documents and Target to beobtained the embeddings from
+        # Creating Documents and Target to be obtained the embeddings from
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
         df_emb = self.get_embeddings(X, y)
@@ -165,14 +192,14 @@ class Treatment:
 
         # Turning into gridsize x gridsize
         df_emb = df_emb.assign(
-        X=pd.cut(df_emb.X, gridsize, labels=False),
-        Y=pd.cut(df_emb.Y, gridsize, labels=False)
+            X=pd.cut(df_emb.X, gridsize, labels=False),
+            Y=pd.cut(df_emb.Y, gridsize, labels=False)
         )
 
         # Adjusting Labels
-        df_emb['cell_label'] = hidden_state + "_" + df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
+        df_emb['cell_label'] = hidden_state + "_" + \
+            df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         return df_emb
-
 
     def get_activations_grid(self, hidden_layer_name, label, label_name, df_grid):
         """
@@ -194,13 +221,13 @@ class Treatment:
         ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
 
         ct = ct.sort_index(ascending=False)
-        
+
         fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
-        
-        #change figure title to hs
+
+        # change figure title to hs
         full_name = f"{hidden_layer_name} : {label_name}"
         plt.title(full_name)
-        
+
         return fig
 
     def get_all_grids(self, dataset, gridsize, buffer):
@@ -219,6 +246,6 @@ class Treatment:
             for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
                 df_grid = self.get_grid(dataset, hs, gridsize)
                 bar.next()
-                buffer.append(df_grid) # ith grid
-        
+                buffer.append(df_grid)  # ith grid
+
         return buffer
