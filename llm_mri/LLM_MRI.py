@@ -227,7 +227,6 @@ class LLM_MRI:
 
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
-            print("Correlation matrix shape: ", correlation_matrix.shape)
 
             # Generating names for columns and rows (hs{x}_{index})
             column_names = [f'{index}_{x}' for x in range(min(dim,first_layer[0].shape[0]))] # Number of neurons
@@ -288,7 +287,6 @@ class LLM_MRI:
             reduced_hs = PCA(n_components=dim).fit_transform(dataset_hidden_states[hs_name])
             reduced_hs_list.append(reduced_hs)
             
-        print(f"Shape com redução para {dim} dimensões: ", reduced_hs_list[0].shape)
 
         return reduced_hs_list
 
@@ -320,7 +318,6 @@ class LLM_MRI:
         self.threshold = threshold
 
         # 1) Generate graph of only requested labels
-        print("Dimensões: ", dim)
         # Get the category index
         category1_index = self.class_names.index(category1)
         category2_index = self.class_names.index(category2)
@@ -334,7 +331,6 @@ class LLM_MRI:
         # Select only rows with selected categories from hidden state
         full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
 
-        print("Full Hidden states dimensions: ", full_svd_hs[0].shape)
         
         # 2) Select specific hidden states to compute spearman correlation
         category1_index = self.class_names.index(category1)
@@ -454,7 +450,6 @@ class LLM_MRI:
             # Getting the graph with all possible activations
                 full_graph = self.graph
 
-        print("Is G full graph: ", G == full_graph)
 
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
