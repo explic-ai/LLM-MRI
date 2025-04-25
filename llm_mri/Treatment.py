@@ -124,8 +124,6 @@ class Treatment:
             first_layer (tensor): the first layer to be used in the correlation
             second_layer (tensor): the second layer to be used in the correlation
         """
-        first_layer = first_layer.T
-        second_layer = second_layer.T
         
         # Rank the columns of each tensor
         rank1 = first_layer.argsort(dim=0).argsort(dim=0).float()

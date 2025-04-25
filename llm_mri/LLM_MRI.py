@@ -227,10 +227,10 @@ class LLM_MRI:
 
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
-            
+
             # Generating names for columns and rows (hs{x}_{index})
-            column_names = [f'{index}_{x}' for x in range(first_layer.shape[0])]
-            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[0])] # Number of instances
+            column_names = [f'{index}_{x}' for x in range(min(dim,first_layer[0].shape[0]))] # Number of neurons
+            row_names = [f'{index+1}_{x}' for x in range(min(dim,first_layer[0].shape[0]))] # Number of instances
             
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
@@ -318,7 +318,6 @@ class LLM_MRI:
         self.threshold = threshold
 
         # 1) Generate graph of only requested labels
-        
         # Get the category index
         category1_index = self.class_names.index(category1)
         category2_index = self.class_names.index(category2)
@@ -332,6 +331,7 @@ class LLM_MRI:
         # Select only rows with selected categories from hidden state
         full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
 
+        
         # 2) Select specific hidden states to compute spearman correlation
         category1_index = self.class_names.index(category1)
         category2_index = self.class_names.index(category2)
@@ -437,7 +437,7 @@ class LLM_MRI:
         Returns:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
-
+        
         # By default, full_graph is the current graph
         full_graph = G
 
@@ -449,6 +449,7 @@ class LLM_MRI:
             else:
             # Getting the graph with all possible activations
                 full_graph = self.graph
+
 
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())

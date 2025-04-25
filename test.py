@@ -1,26 +1,13 @@
 import torch
 import matplotlib.pyplot as plt
+from torchdr import PCA
 
 dimensions = 100
 
 def svd(tensor_data):
     # Create a random tensor of shape (40, 768)
-
-    # Perform SVD
-    U, s, Vt = torch.linalg.svd(tensor_data, full_matrices=False)
-
-    # Select the top 100 components
-    U_k = U[:, :dimensions]  # Take the first dimensions columns of U
-    s_k = s[:dimensions]     # Take the first dimensions singular values
-    Vt_k = Vt[:dimensions, :dimensions]  # Take the first 100 rows of Vt
-
-    print("U shape:", U_k.shape)
-    print("s shape:", s_k.shape)
-    print("Vt shape:", Vt_k.shape)
-
-    # Reconstruct the reduced tensor
-    reduced_tensor = U_k @ torch.diag(s_k) @ Vt_k
-
+    print("Dimensions: ", dimensions)
+    reduced_tensor = PCA(n_components=dimensions).fit_transform(tensor_data)
     print("Original shape:", tensor_data.shape)
     print("Reduced shape:", reduced_tensor.shape)
 
