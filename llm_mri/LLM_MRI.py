@@ -9,6 +9,7 @@ import torch
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 import numpy as np
 import matplotlib.cm as cm
+from torchdr import PCA
 
 class LLM_MRI:
 
@@ -226,10 +227,10 @@ class LLM_MRI:
 
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
-
+            
             # Generating names for columns and rows (hs{x}_{index})
-            column_names = [f'{index}_{x}' for x in range(dim)]
-            row_names = [f'{index+1}_{x}' for x in range(dim)] # Number of instances
+            column_names = [f'{index}_{x}' for x in range(first_layer.shape[0])]
+            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[0])] # Number of instances
             
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
@@ -280,33 +281,15 @@ class LLM_MRI:
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
         
-        # 1) Reducing dimensionality through SVD
+        # 1) Reducing dimensionality through PCA
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
-            
-            if hs_name == "hidden_state_5":
-                torch.save(dataset_hidden_states[hs_name], "full_hs_5.pt")
-            
-            elif hs_name == "hidden_state_6":
-                torch.save(dataset_hidden_states[hs_name], "full_hs_6.pt")
-        
-            # dataset_hidden_states[hs_name] = dataset_hidden_states[hs_name].to(self.device)
-            U, s, Vt = torch.linalg.svd(
-                dataset_hidden_states[hs_name], full_matrices=False)
 
-            
-            # Choosing the "dim" main components
-            U_k = U[:, :dim] 
-            s_k = s[:dim]
-            Vt_k = Vt[:dim, :dim]
-
-            # If we want to allow multiple dimensions, we should add 0s on rows and columns of s
-
-            # Multiplying to obtain the reduced dataset
-            reduced_hs = U_k @ torch.diag(s_k) @ Vt_k
+            reduced_hs = PCA(n_components=dim).fit_transform(dataset_hidden_states[hs_name])
             reduced_hs_list.append(reduced_hs)
             
 
         return reduced_hs_list
+
 
     def get_svd_graph(self, dim:int=16):
         """
