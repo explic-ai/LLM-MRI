@@ -53,24 +53,26 @@ llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas 
 # plt.show()
 
 # Getting activations of different labels in the same Graph
+print("Reduzindo por UMAP:")
 g_composed = llm_mri.get_composed_graph("true", "fake")
-# plt.title("Full graph using UMAP as dimensionality reduction")
 
 # Generating image of composed graph
 g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
+plt.title("Full graph using UMAP as dimensionality reduction")
 plt.box(False)
 # plt.show()
 
+print("Reduzindo por PCA com 50 componentes:")
 # Generating image of svd composed graph
 svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=50)
 
-svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
+svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=False)
 plt.title("Dimensionality Reduction to 50 dimensions of distinct categories by PCA")
-print("================================================================")
 
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=8)
+print("Reduzindo por PCA com 8 componentes:")
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=25)
 
 svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction to 8 dimensions of distinct categories by PCA")
+plt.title("Dimensionality Reduction to 25 dimensions of distinct categories by PCA")
 plt.box(False)
 plt.show()
