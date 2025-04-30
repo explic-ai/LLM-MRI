@@ -280,13 +280,13 @@ class LLM_MRI:
 
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
-        
+
         # 1) Reducing dimensionality through PCA
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
 
-            reduced_hs = PCA(n_components=dim).fit_transform(dataset_hidden_states[hs_name])
+            pca = PCA(n_components=dim)
+            reduced_hs = pca.fit_transform(dataset_hidden_states[hs_name])
             reduced_hs_list.append(reduced_hs)
-            
 
         return reduced_hs_list
 
@@ -331,7 +331,7 @@ class LLM_MRI:
         # Select only rows with selected categories from hidden state
         full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
 
-        
+
         # 2) Select specific hidden states to compute spearman correlation
         category1_index = self.class_names.index(category1)
         category2_index = self.class_names.index(category2)
