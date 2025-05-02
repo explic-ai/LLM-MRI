@@ -27,7 +27,7 @@ class LLM_MRI:
         self.device = torch.device(device)
         self.dataset = dataset
         self.base = Treatment(model, device)
-        self.gridsize = 10
+        self.dimension = 10
         self.class_names = self.dataset.features['label'].names
         self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
@@ -64,14 +64,14 @@ class LLM_MRI:
     
         datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
 
-        self.gridsize = map_dimension
+        self.dimension = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
 
         # Getting the grid dataset
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
         
         # Performing the SVD for hidden states
-        self.svd_graph = self.get_svd_graph()
+        self.svd_graph = self.get_svd_reduction()
 
         # Getting the original graph
         self.graph = self.get_graph() # To be altered
@@ -189,7 +189,7 @@ class LLM_MRI:
             df_graph = pd.concat([df_graph, df_join_grouped])
 
             
-        G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
+        G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'], create_using=nx.MultiGraph())
 
         # when generating category graph, assigns category label to edges
         if category != -1:
@@ -203,19 +203,21 @@ class LLM_MRI:
         return G
 
 
-    def get_spearman_graph(self, reduced_hs_list, dim:int=40):
+    def get_spearman_graph(self, reduced_hs_list):
         """
         Returns the networkx graph to represent the activations, using the Spearman correlation
 
         Args:
             reduced_hs_list (list): List of reduced hidden states.
-            dim (int): The number of dimensions to reduce the activations to (default 40).
         
         Returns:
             Graph: The networkx graph representing the activations.
         """
         # Creating the graph
-        G = nx.Graph()
+        G = nx.MultiGraph()
+
+        # Getting the dimensionality to be reduced to
+        dim = self.dimension
 
         # Variable to store the correlation matrices
         correlation_reduced_hs = []
@@ -228,14 +230,13 @@ class LLM_MRI:
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
 
-            # Generating names for columns and rows (hs{x}_{index})
+            # Generating names for columns and rows
             column_names = [f'{index}_{x}' for x in range(min(dim,first_layer[0].shape[0]))] # Number of neurons
             row_names = [f'{index+1}_{x}' for x in range(min(dim,first_layer[0].shape[0]))] # Number of instances
             
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
             G.add_nodes_from(row_names)
-
 
             # Turning matrix into DataFrame, so that components can be named
             spearman_matrix_df = pd.DataFrame(
@@ -265,18 +266,19 @@ class LLM_MRI:
         return G
 
 
-    def get_svd_reduction(self, dataset_hidden_states=None, dim:int=40, category:str = ""):
+    def get_svd_reduction(self, dataset_hidden_states=None):
         """
         Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
 
         Args:
-            dim (int): The number of dimensions to reduce the activations to (default 40).
-
+            
         Returns:
             Graph: The networkx graph representing the activations.
         """
 
         reduced_hs_list = []
+
+        dim = self.dimension
 
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
@@ -291,20 +293,19 @@ class LLM_MRI:
         return reduced_hs_list
 
 
-    def get_svd_graph(self, dim:int=16):
+    def get_svd_graph(self, category:str = None):
         """
         Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
 
         Args:
-            dim (int): The number of dimensions to reduce the activations to (default 40).
 
         """
 
-        reduced_hidden_states = self.get_svd_reduction(dim=dim)
-        return self.get_spearman_graph(reduced_hidden_states, dim)
+        reduced_hidden_states = self.get_svd_reduction()
+        return self.get_spearman_graph(reduced_hidden_states)
 
 
-    def get_composed_svd_graph(self, category1, category2, dim:int=16, threshold:float=0.3):
+    def get_composed_svd_graph(self, category1, category2, threshold:float=0.3):
         """
         Returns a composed graph for two categories, using the SVD dimensionality reduction.
 
@@ -315,7 +316,9 @@ class LLM_MRI:
             threshold (float): The threshold of the spearman correlation between components (default 0.3). The greater the threshold, the fewer edges will be displayed. 
             Threshold of 0 means that every edge is being displayed, and the threshold of 1 means that no edge is being displayed.
         """
+        # Defining threshold and dimensions
         self.threshold = threshold
+        dim = self.dimension
 
         # 1) Generate graph of only requested labels
         # Get the category index
@@ -323,18 +326,20 @@ class LLM_MRI:
         category2_index = self.class_names.index(category2)
 
         # Filter the dataset to get the indices of rows with the given category
-        indices = [i for i, label in enumerate(self.dataset['label']) if label == category1_index or label == category2_index]
-
-        # Extract the rows from the hidden_states_dataset tensor
-        filtered_hidden_states = self.hidden_states_dataset.select(indices) 
+        indices = [i for i, label in enumerate(self.dataset['label']) if label == category1_index]
+        for i, label in enumerate(self.dataset['label']):
+            if label == category2_index:
+                indices.append(i)
         
+        # Extract the rows from the hidden_states_dataset tensor
+        filtered_hidden_states = [self.svd_graph[i][indices] for i in range(len(self.svd_graph))]
+        # Convert the filtered hidden states to a tensor
+
         # Select only rows with selected categories from hidden state
-        full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
+        full_svd_hs = filtered_hidden_states
 
 
         # 2) Select specific hidden states to compute spearman correlation
-        category1_index = self.class_names.index(category1)
-        category2_index = self.class_names.index(category2)
         
         # The first indices are going to be equivalent to the first categories, the next ones to the second
         indices_categ1 = list(range(int(len(full_svd_hs[0])/2)))
@@ -343,33 +348,35 @@ class LLM_MRI:
         # Extract full hidden state list from indices
         c1_hidden_states = []
         c2_hidden_states = []
-
         for i, layer in enumerate(full_svd_hs):
             c1_hidden_states.append(layer[indices_categ1])
             c2_hidden_states.append(layer[indices_categ2])
 
         # Generate graph for first category
-        c1_graph = self.get_spearman_graph(c1_hidden_states, dim)
+        c1_graph = self.get_spearman_graph(c1_hidden_states)
 
         # Updating category
         self.current_category = 1
 
         # Generate graph for the second category
-        c2_graph = self.get_spearman_graph(c2_hidden_states, dim)
+        c2_graph = self.get_spearman_graph(c2_hidden_states)
 
         # Reseting category
         self.current_category = 0
 
         # Since nodes are the same, full graph are going to contain the same nodes
-        G_composed = nx.Graph()
+        G_composed = nx.MultiGraph()
         G_composed.add_nodes_from(c1_graph.nodes())
+
+        print("first edges: ", len(c1_graph.edges()))
+        print("second edges: ",len(c2_graph.edges()))
         
         # For the edges, we need to concatenate the edges from the two obtained graph
         G_composed.add_edges_from(c1_graph.edges(data=True))
         G_composed.add_edges_from(c2_graph.edges(data=True))
 
         # Defining dimensionality reduction attribute
-        G_composed.graph['dimensionality_reduction'] = "SVD"
+        G_composed.graph['dimensionality_reduction'] = "PCA"
 
         # Adding Label names to assigned variable
         self.label_names.append(category1)
@@ -378,8 +385,6 @@ class LLM_MRI:
         # Adding labels to graph property
         G_composed.graph['label_names'] = self.label_names
 
-        self.svd_graph = G_composed
-        
         return G_composed
 
 
@@ -441,14 +446,15 @@ class LLM_MRI:
         # By default, full_graph is the current graph
         full_graph = G
 
-        if fix_node_positions: # If asked to fix, the graph of all categories will be considered
+        # Manter apenas se não for desistir do UMAP
+        # if fix_node_positions: # If asked to fix, the graph of all categories will be considered
             
-            if G.graph['dimensionality_reduction'] == "SVD":
-                full_graph = self.svd_graph
+        #     if G.graph['dimensionality_reduction'] == "SVD":
+        #         full_graph = self.svd_graph
 
-            else:
-            # Getting the graph with all possible activations
-                full_graph = self.graph
+        #     else:
+        #     # Getting the graph with all possible activations
+        #         full_graph = self.graph
 
 
         # Get all nodes from the defined category(ies) graph
@@ -476,7 +482,7 @@ class LLM_MRI:
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             width_index = int(node.split('_')[-1])
 
-            if G.graph['dimensionality_reduction'] == "SVD":
+            if G.graph['dimensionality_reduction'] == "PCA":
 
                 if fix_node_dimensions == False:
                     new_pos[node] = (pos[node][0], height_index)
@@ -497,6 +503,7 @@ class LLM_MRI:
 
         ordered_edge_colors = edge_colors
 
+        print(type(G))
         # Create a mapping from label to color
         if len(edge_colors) > 2:
 
@@ -509,8 +516,8 @@ class LLM_MRI:
 
             # Generate edge_colors list aligned with the edgelist
             ordered_edge_colors = [
-                custom_colors.get(G[u][v].get('label', 0), 'gray') 
-                for u, v in G.edges().keys()]
+                custom_colors.get(G[u][v][key].get('label', 0), 'gray') 
+                for u, v, key in G.edges(keys=True)]
         
         # Coloring Nodes
         node_colors = self.generate_node_colors(G, colormap)
