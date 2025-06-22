@@ -28,6 +28,7 @@ progress = "^1.6"
 pyqt6 = "^6.7.1"
 ipykernel = "^6.29.5"
 torchdr = "^0.2"
+scipy = "^1.15.2"
 
 
 [build-system]

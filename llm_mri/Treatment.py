@@ -8,6 +8,7 @@ import numpy as np
 import seaborn as sns
 from progress.bar import Bar
 import networkx as nx
+from scipy import stats
 
 
 class Treatment:
@@ -124,23 +125,22 @@ class Treatment:
             first_layer (tensor): the first layer to be used in the correlation
             second_layer (tensor): the second layer to be used in the correlation
         """
-        
-        # Rank the columns of each tensor
-        rank1 = first_layer.argsort(dim=0).argsort(dim=0).float()
-        rank2 = second_layer.argsort(dim=0).argsort(dim=0).float()
+        # Convert to numpy arrays
+        first_layer_np = first_layer.numpy()
+        second_layer_np = second_layer.numpy()
 
-        # Center the ranks
-        rank1 -= rank1.mean(dim=0, keepdim=True)
-        rank2 -= rank2.mean(dim=0, keepdim=True)
+        print("first layer shape: ", first_layer_np.shape)
+        print("second layer shape: ", second_layer_np.shape)
 
-        # Compute the covariance and standard deviations
-        cov = (rank1.T @ rank2) / first_layer.size(0)
-        std1 = rank1.std(dim=0, keepdim=True)
-        std2 = rank2.std(dim=0, keepdim=True)
+        n_features = first_layer_np.shape[1]
+        correlation_matrix = np.zeros((n_features, n_features))
 
-        # Compute the correlation matrix
-        correlation_matrix = cov / (std1.T @ std2)
-        
+        # Compute pairwise Spearman correlations between components (features)
+        for i in range(n_features):
+            for j in range(n_features):
+                corr, _ = stats.spearmanr(first_layer_np[:, i], second_layer_np[:, j])
+                correlation_matrix[i, j] = corr
+
         return correlation_matrix
 
 

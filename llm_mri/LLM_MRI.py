@@ -51,6 +51,8 @@ class LLM_MRI:
 
         # Transformando o dataset para o formato Torch
         encodedDataset = self.base.set_dataset_to_torch(encodedDataset)
+
+
         return encodedDataset
 
 
@@ -66,6 +68,11 @@ class LLM_MRI:
 
         self.dimension = map_dimension
         self.hidden_states_dataset = datasetHiddenStates
+
+        print("Hidden States shape: ", datasetHiddenStates.shape)
+
+        for x in range(1, 7):
+            torch.save(datasetHiddenStates[f'hidden_state_{x}'], f"./hidden_states/layer_{x}.pt")
 
         # Getting the grid dataset
         self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
@@ -226,7 +233,7 @@ class LLM_MRI:
         for index in range(len(reduced_hs_list) - 1):
             first_layer = reduced_hs_list[index]
             second_layer = reduced_hs_list[index+1]
-
+            
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
 
@@ -240,11 +247,14 @@ class LLM_MRI:
 
             # Turning matrix into DataFrame, so that components can be named
             spearman_matrix_df = pd.DataFrame(
-                correlation_matrix.detach().numpy(), columns=column_names, index=row_names)
+                correlation_matrix, columns=column_names, index=row_names)
+            
+            spearman_matrix_df.to_csv('./correlation/correlation_matrix_' + str(index) + '.csv')
 
             # Storing matrix
             correlation_reduced_hs.append(spearman_matrix_df)
 
+        print(correlation_reduced_hs[0])
         # 3) Adding edges to the graph
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
@@ -283,6 +293,8 @@ class LLM_MRI:
         if dataset_hidden_states is None:
             dataset_hidden_states = self.hidden_states_dataset
 
+        print("Shape of first layer before: ", dataset_hidden_states['hidden_state_0'].shape)
+
         # 1) Reducing dimensionality through PCA
         for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
 
@@ -290,6 +302,7 @@ class LLM_MRI:
             reduced_hs = pca.fit_transform(dataset_hidden_states[hs_name])
             reduced_hs_list.append(reduced_hs)
 
+        print("Shape of first layer after: ", reduced_hs_list[0].shape)
         return reduced_hs_list
 
 
@@ -367,9 +380,6 @@ class LLM_MRI:
         # Since nodes are the same, full graph are going to contain the same nodes
         G_composed = nx.MultiGraph()
         G_composed.add_nodes_from(c1_graph.nodes())
-
-        print("first edges: ", len(c1_graph.edges()))
-        print("second edges: ",len(c2_graph.edges()))
         
         # For the edges, we need to concatenate the edges from the two obtained graph
         G_composed.add_edges_from(c1_graph.edges(data=True))
@@ -460,11 +470,13 @@ class LLM_MRI:
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
 
+
         # Use graphviz_layout for positioning
-        pos = graphviz_layout(full_graph, prog="dot")
+        pos = graphviz_layout(G, prog="dot")
 
         # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
         removed_nodes = []
+        
         for node in pos.keys():
             if node not in nodelist:
                 removed_nodes.append(node)
@@ -476,10 +488,12 @@ class LLM_MRI:
         # Fixing node positions        
         new_pos = {}
 
+        total_layers = len([x for x in self.hidden_states_dataset.column_names if x.startswith("hidden_state")])
+
         for node in nodelist:
             
             # Extract the first character to determine height index
-            height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
+            height_index = total_layers - int(node.split('_')[0])  # Trocar posteriormente
             width_index = int(node.split('_')[-1])
 
             if G.graph['dimensionality_reduction'] == "PCA":
@@ -503,7 +517,6 @@ class LLM_MRI:
 
         ordered_edge_colors = edge_colors
 
-        print(type(G))
         # Create a mapping from label to color
         if len(edge_colors) > 2:
 
@@ -538,7 +551,7 @@ class LLM_MRI:
             G,
             pos,
             edgelist=G.edges(),
-            width=[edge[-1]['weight'] * 2 for edge in G.edges(data=True)],
+            width=[edge[-1]['weight'] for edge in G.edges(data=True)],
             edge_color=ordered_edge_colors,
             alpha=0.9,
             ax=ax
@@ -553,8 +566,10 @@ class LLM_MRI:
             node_color=node_colors, # added
             alpha=0.9,
             linewidths=1,
-            edgecolors='black'
+            edgecolors='black',
         )
+
+        # nx.draw_networkx_labels(G, pos, font_size=12, font_color='black')
         
         # Clear label names for future use
         self.label_names = []
