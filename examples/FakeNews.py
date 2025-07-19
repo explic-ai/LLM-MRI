@@ -1,8 +1,10 @@
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from llm_mri import LLM_MRI
+from llm_mri.dimensionality_reduction import PCA
+
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
 
@@ -16,8 +18,10 @@ dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
 dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
+pca = PCA(n_components = 10)
+
 # Beginning Visualization
-llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
 
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality, as a torch dataset

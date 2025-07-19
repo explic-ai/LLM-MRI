@@ -1,4 +1,5 @@
 from llm_mri.Treatment import Treatment
+from llm_mri.dimensionality_reduction import PCA
 from transformers import AutoTokenizer
 import networkx as nx
 import pandas as pd
@@ -9,11 +10,10 @@ import torch
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 import numpy as np
 import matplotlib.cm as cm
-from torchdr import PCA
 
 class LLM_MRI:
 
-    def __init__(self, model, device, dataset):
+    def __init__(self, model, device, dataset, reduction_method):
         """
         Initializes the LLM_MRI class.
 
@@ -38,7 +38,7 @@ class LLM_MRI:
         self.current_category = 0
         self.dim = 2
         self.threshold = 0.3
-
+        self.reduction_method = reduction_method
 
     def initialize_dataset(self):
         """
@@ -203,7 +203,7 @@ class LLM_MRI:
         return G
 
 
-    def get_spearman_graph(self, reduced_hs_list, dim:int=40):
+    def get_spearman_graph(self, reduced_hs_list):
         """
         Returns the networkx graph to represent the activations, using the Spearman correlation
 
@@ -222,8 +222,8 @@ class LLM_MRI:
 
         # 2) Calculating correlation for every hidden state intersection
         for index in range(len(reduced_hs_list) - 1):
-            first_layer = reduced_hs_list[index]
-            second_layer = reduced_hs_list[index+1]
+            first_layer = reduced_hs_list[f'hidden_state_{index}']
+            second_layer = reduced_hs_list[f'hidden_state_{index+1}']
 
             correlation_matrix = self.base.spearman_correlation(
                 first_layer, second_layer)
@@ -235,7 +235,6 @@ class LLM_MRI:
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
             G.add_nodes_from(row_names)
-
 
             # Turning matrix into DataFrame, so that components can be named
             spearman_matrix_df = pd.DataFrame(
@@ -291,7 +290,7 @@ class LLM_MRI:
         return reduced_hs_list
 
 
-    def get_svd_graph(self, dim:int=16):
+    def get_svd_graph(self):
         """
         Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
 
@@ -300,8 +299,8 @@ class LLM_MRI:
 
         """
 
-        reduced_hidden_states = self.get_svd_reduction(dim=dim)
-        return self.get_spearman_graph(reduced_hidden_states, dim)
+        reduced_hidden_states = self.reduction_method.get_reduction(self.hidden_states_dataset)
+        return self.get_spearman_graph(reduced_hidden_states)
 
 
     def get_composed_svd_graph(self, category1, category2, dim:int=16, threshold:float=0.3):
@@ -330,32 +329,34 @@ class LLM_MRI:
         filtered_hidden_states = self.hidden_states_dataset.select(indices) 
         
         # Select only rows with selected categories from hidden state
-        full_svd_hs = self.get_svd_reduction(filtered_hidden_states,dim)
+        full_svd_hs = self.reduction_method.get_reduction(filtered_hidden_states)
 
         # 2) Select specific hidden states to compute spearman correlation
-        category1_index = self.class_names.index(category1)
-        category2_index = self.class_names.index(category2)
         
         # The first indices are going to be equivalent to the first categories, the next ones to the second
-        indices_categ1 = list(range(int(len(full_svd_hs[0])/2)))
-        indices_categ2 = list(range(int(len(full_svd_hs[0])/2), int(len(full_svd_hs[0]))))
+        # To be Altered
+        # indices_categ1 = list(range(int(len(full_svd_hs[0])/2)))
+        # indices_categ2 = list(range(int(len(full_svd_hs[0])/2), int(len(full_svd_hs[0]))))
+
+        indices_categ1 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category1_index]
+        indices_categ2 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category2_index] 
 
         # Extract full hidden state list from indices
-        c1_hidden_states = []
-        c2_hidden_states = []
+        c1_hidden_states = {}
+        c2_hidden_states = {}
 
-        for i, layer in enumerate(full_svd_hs):
-            c1_hidden_states.append(layer[indices_categ1])
-            c2_hidden_states.append(layer[indices_categ2])
+        for i in range(len(full_svd_hs)):
+            c1_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}'][indices_categ1]
+            c2_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}'][indices_categ2]
 
         # Generate graph for first category
-        c1_graph = self.get_spearman_graph(c1_hidden_states, dim)
+        c1_graph = self.get_spearman_graph(c1_hidden_states)
 
         # Updating category
         self.current_category = 1
 
         # Generate graph for the second category
-        c2_graph = self.get_spearman_graph(c2_hidden_states, dim)
+        c2_graph = self.get_spearman_graph(c2_hidden_states)
 
         # Reseting category
         self.current_category = 0
