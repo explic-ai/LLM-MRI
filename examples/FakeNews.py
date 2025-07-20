@@ -24,7 +24,7 @@ pca = PCA(n_components = 10)
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
 
 # Processing hidden states and activation areas
-llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality, as a torch dataset
+llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
 # Getting the layer's image for a designed category
 # fig = llm_mri.get_layer_image(layer = 1, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
@@ -57,21 +57,21 @@ plt.title("Dimensionality Reduction of full graph by PCA")
 # plt.show()
 
 # Getting activations of different labels in the same Graph
-g_composed = llm_mri.get_composed_graph("true", "fake")
-plt.title("Full graph using UMAP as dimensionality reduction")
+# g_composed = llm_mri.get_composed_graph("true", "fake")
+# plt.title("Full graph using UMAP as dimensionality reduction")
 
 # Generating image of composed graph
-g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
+# g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
 # plt.box(False)
 # plt.show()
 
 # Generating image of svd composed graph
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=50)
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
 
 svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
 plt.title("Dimensionality Reduction to 50 dimensions of distinct categories by PCA")
 
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=8)
+svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
 
 svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
 plt.title("Dimensionality Reduction to 8 dimensions of distinct categories by PCA")

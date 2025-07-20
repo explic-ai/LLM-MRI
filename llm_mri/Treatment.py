@@ -31,35 +31,7 @@ class Treatment:
         """
         return self.embeddings_dataset
 
-    def tokenize(self, batch):
-        """
-        Tokenizes a batch of text.
 
-        Args:
-            batch (Dataset): Dataset with column "text" to be tokenized.
-
-        Returns:
-            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
-        """
-        if self.tokenizer.pad_token is None:  # Adding eos as pad token for decoders
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-
-        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)
-
-    def encode_dataset(self, dataset):
-        """
-        Maps over all items in the Dataset and performs tokenization.
-
-        Args:
-            dataset (Dataset): Dataset with text to be tokenized.
-
-        Returns:
-            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
-        """
-
-        dataset_encoded = dataset.map(
-            self.tokenize, batched=True, batch_size=None)
-        return dataset_encoded
 
     def set_embeddings_on_model(self, model_ckpt):
         """
@@ -72,50 +44,12 @@ class Treatment:
             Model: Model passed as a parameter.
         """
 
-        model = AutoModel.from_pretrained(model_ckpt).to(self.device)
+        
 
         return model
 
-    def extract_all_hidden_states(self, batch):
-        """
-        Extracts all hidden states for a batch of data.
+ 
 
-        Args:
-            batch (dict): Batch of data with model inputs.
-
-        Returns:
-            dict: Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
-        """
-
-        model = self.set_embeddings_on_model(model_ckpt=self.model)
-
-        inputs = {k: v.to(self.device) for k, v in batch.items()
-                  if k in self.tokenizer.model_input_names}
-
-        with torch.no_grad():
-            hidden_states = model(
-                **inputs, output_hidden_states=True).hidden_states
-        all_hidden_states = {}
-
-        for i, hs in enumerate(hidden_states):
-            all_hidden_states[f"hidden_state_{i}"] = hs[:, 0].cpu().numpy()
-
-        return all_hidden_states
-
-    def set_dataset_to_torch(self, dataset_encoded):
-        """
-        Sets the dataset format to PyTorch.
-
-        Args:
-            dataset_encoded (Dataset): Tokenized Dataset.
-
-        Returns:
-            Dataset: Dataset formatted for PyTorch.
-        """
-
-        dataset_encoded.set_format("torch",
-                                   columns=["input_ids", "attention_mask", "label"])
-        return dataset_encoded
 
     def spearman_correlation(self, first_layer, second_layer):
         """

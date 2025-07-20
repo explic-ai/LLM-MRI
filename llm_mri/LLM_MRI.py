@@ -1,6 +1,6 @@
 from llm_mri.Treatment import Treatment
 from llm_mri.dimensionality_reduction import PCA
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModel
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,10 +26,10 @@ class LLM_MRI:
         self.model = model
         self.device = torch.device(device)
         self.dataset = dataset
+
         self.base = Treatment(model, device)
         self.gridsize = 10
         self.class_names = self.dataset.features['label'].names
-        self.dataset = self.initialize_dataset() 
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
         self.label_names = []
@@ -40,168 +40,80 @@ class LLM_MRI:
         self.threshold = 0.3
         self.reduction_method = reduction_method
 
-    def initialize_dataset(self):
+
+    def _tokenize(self, batch):
+        """
+        Tokenizes a batch of text.
+
+        Args:
+            batch (Dataset): Dataset with column "text" to be tokenized.
+
+        Returns:
+            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
+        """
+        if self.tokenizer.pad_token is None:  # Adding eos as pad token for decoders
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+
+        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)    
+
+    def _initialize_dataset(self):
         """
         Initializes the encoded dataset from the model and transforms it into the torch type.
 
         Returns:
             Dataset: The encoded dataset in torch format.
         """
-        encodedDataset = self.base.encode_dataset(self.dataset)
+        dataset_encoded = self.dataset.map(
+            self._tokenize, batched=True, batch_size=None)
 
-        # Transformando o dataset para o formato Torch
-        encodedDataset = self.base.set_dataset_to_torch(encodedDataset)
-        return encodedDataset
+        # Setting dataset to torch
+        dataset_encoded.set_format("torch",
+                                   columns=["input_ids", "attention_mask", "label"])
+        return dataset_encoded
 
+    def _extract_all_hidden_states(self, batch):
+        """
+        Extracts all hidden states for a batch of data.
 
-    def process_activation_areas(self, map_dimension:int):
+        Args:
+            batch (dict): Batch of data with model inputs.
+
+        Returns:
+            dict: Dictionary containing a tensor related to the extracted hidden layer weights and their respective labels.
+        """
+        
+        model = AutoModel.from_pretrained(self.model).to(self.device)
+
+        inputs = {k: v.to(self.device) for k, v in batch.items()
+                  if k in self.tokenizer.model_input_names}
+
+        with torch.no_grad():
+            hidden_states = model(
+                **inputs, output_hidden_states=True).hidden_states
+        all_hidden_states = {}
+
+        for i, hs in enumerate(hidden_states):
+            all_hidden_states[f"hidden_state_{i}"] = hs[:, 0].cpu().numpy()
+
+        return all_hidden_states
+    
+
+    def process_activation_areas(self):
         """
         Processes the activation areas.
 
         Args:
             map_dimension (int): Size of the side of the square that will show the visualization.
         """
-    
-        datasetHiddenStates = self.dataset.map(self.base.extract_all_hidden_states, batched=True)
 
-        self.gridsize = map_dimension
-        self.hidden_states_dataset = datasetHiddenStates
+        # Obtaining the tokenized dataset
+        self.dataset = self._initialize_dataset()
 
-        # Getting the grid dataset
-        self.reduced_dataset = self.base.get_all_grids(datasetHiddenStates, map_dimension, self.reduced_dataset)
-        
-        # Performing the SVD for hidden states
-        self.svd_graph = self.get_svd_graph()
+        # Extracting hidden states from the model
+        self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
-        # Getting the original graph
-        self.graph = self.get_graph() # To be altered
-
-
-    def get_layer_image(self, layer:int, category:int):
-        """
-        Gets the activation grid for the desired layer and category.
-
-        Args:
-            layer (int): The layer to be visualized.
-            category (int): The category whose activations will be visualized.
-
-        Returns:
-            figure (plt.figure): The activation grid plot for the specified layer and category.
-        """
-
-        # Obtaining layer name string 
-        hidden_name = f"hidden_state_{layer}"
-
-        category_to_int = self.class_names.index(category)
-        return self.base.get_activations_grid(hidden_name, category_to_int, category, self.reduced_dataset[layer])
-       
-
-    def get_original_map(self, layer:int, colormap:str = 'viridis'):
-        """
-        Returns a scatterplot with the UMAP representation for every example on the corpus
-        passed by the user for a specific layer.
-
-        Args:
-            layer (int): The layer to be visualized.
-            colormap (int): The colormap to be used on the display.
-
-        Returns:
-            figure (plt.figure): Plot representing 2-dimension UMAP representation of documents
-            for a specific layer before turning it into a grid visualization.
-        """
-        
-        # Selecting reduced dataset (grids)
-        data_points = self.base.get_embeddings_dataset()[layer]
-
-        # Defining colormap
-        num_categories = len(self.class_names)
-        cmap = plt.get_cmap(colormap, num_categories)  # Get the colormap
-        colors = [cmap(i) for i in range(num_categories)]
-
-        # Create the figure and axes
-        fig, ax = plt.subplots()
-        
-        # Iterate over unique categories
-        for i, category in enumerate(data_points['label'].unique()):
-
-            # Filter the DataFrame for the current category
-            category_df = data_points[data_points['label'] == category]
-            X = category_df['X']
-            Y = category_df['Y']
-
-            # Plot scatter points on the axes
-            ax.scatter(X, Y, color=colors[i], label=self.class_names[category], alpha=0.9) 
-
-        # Add legend and labels
-        ax.legend()
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_title(f"UMAP representation for hidden state: {layer}")
-        
-        return ax
-
-
-    def get_graph(self, category_name:str = ""):
-        """
-        Builds the pandas edgelist (graph representation) for the network region activations,
-        for a given label (category) passed as a parameter.
-
-        Args:
-            category_name (str): The name of the category. Default is an empty string.
-
-        Returns:
-            Graph: The networkx graph representing the activations.
-        """
-
-        if(category_name != ""):
-            category = self.class_names.index(category_name)
-            self.label_names.append(category_name)
-
-        else:
-            category = -1
-        
-        # Obtaining desired layer
-        datasetHiddenStates = self.hidden_states_dataset
-        
-        hss = [x for x in datasetHiddenStates.column_names if x.startswith("hidden_state")]
-
-        # crete an empty dataframe with columns up, down and corr
-        df_graph = pd.DataFrame(columns=["cell_label_1", "cell_label_2", "weight", "level"])
-
-        for hs in range(0, len(hss)-1):
-            
-            df_grid1 = self.reduced_dataset[hs]
-            df_grid2 = self.reduced_dataset[hs+1]
-
-            # when no category is passed gets all values
-            if category == -1:
-                df_join = df_grid1[['cell_label']].join(df_grid2[['cell_label']], lsuffix='_1', rsuffix='_2')
-            
-            # when category is passed filters values by category
-            else:
-                df_join = df_grid1.loc[df_grid1['label'] == category][['cell_label']].join(df_grid2.loc[df_grid2['label'] == category][['cell_label']], lsuffix='_1', rsuffix='_2')
-
-            # group by and count the number of rows
-            df_join_grouped = df_join.groupby(['cell_label_1', 'cell_label_2']).size().reset_index(name='weight')
-
-            df_join_grouped['level'] = hs
-
-            df_graph = pd.concat([df_graph, df_join_grouped])
-
-            
-        G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
-
-        # when generating category graph, assigns category label to edges
-        if category != -1:
-            nx.set_edge_attributes(G, category, "label")
-
-        # Setting dimensionality reduction type to UMAP
-        G.graph['dimensionality_reduction'] = "UMAP"
-
-        G.graph['label_names'] = self.label_names
-
-        return G
-
+        # Reducing the hidden states dimensionality
+        self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
 
     def get_spearman_graph(self, reduced_hs_list):
         """
@@ -230,8 +142,10 @@ class LLM_MRI:
             
             # Generating names for columns and rows (hs{x}_{index})
             column_names = [f'{index}_{x}' for x in range(first_layer.shape[0])]
-            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[0])] # Number of instances
-            
+            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[0])] # Number of components
+
+            # Disclaimer: The comparison is made between the components of the reduced dataset
+
             # Adding all different nodes to the graph
             G.add_nodes_from(column_names)
             G.add_nodes_from(row_names)
@@ -264,32 +178,6 @@ class LLM_MRI:
         return G
 
 
-    def get_svd_reduction(self, dataset_hidden_states=None, dim:int=40, category:str = ""):
-        """
-        Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
-
-        Args:
-            dim (int): The number of dimensions to reduce the activations to (default 40).
-
-        Returns:
-            Graph: The networkx graph representing the activations.
-        """
-
-        reduced_hs_list = []
-
-        if dataset_hidden_states is None:
-            dataset_hidden_states = self.hidden_states_dataset
-        
-        # 1) Reducing dimensionality through PCA
-        for hs_name in [x for x in dataset_hidden_states.column_names if x.startswith("hidden_state")]:
-
-            reduced_hs = PCA(n_components=dim).fit_transform(dataset_hidden_states[hs_name])
-            reduced_hs_list.append(reduced_hs)
-            
-
-        return reduced_hs_list
-
-
     def get_svd_graph(self):
         """
         Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
@@ -299,11 +187,10 @@ class LLM_MRI:
 
         """
 
-        reduced_hidden_states = self.reduction_method.get_reduction(self.hidden_states_dataset)
-        return self.get_spearman_graph(reduced_hidden_states)
+        return self.get_spearman_graph(self.reduced_dataset)
 
 
-    def get_composed_svd_graph(self, category1, category2, dim:int=16, threshold:float=0.3):
+    def get_composed_svd_graph(self, category1, category2, threshold:float=0.3):
         """
         Returns a composed graph for two categories, using the SVD dimensionality reduction.
 
@@ -334,10 +221,6 @@ class LLM_MRI:
         # 2) Select specific hidden states to compute spearman correlation
         
         # The first indices are going to be equivalent to the first categories, the next ones to the second
-        # To be Altered
-        # indices_categ1 = list(range(int(len(full_svd_hs[0])/2)))
-        # indices_categ2 = list(range(int(len(full_svd_hs[0])/2), int(len(full_svd_hs[0]))))
-
         indices_categ1 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category1_index]
         indices_categ2 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category2_index] 
 
@@ -439,23 +322,11 @@ class LLM_MRI:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
 
-        # By default, full_graph is the current graph
-        full_graph = G
-
-        if fix_node_positions: # If asked to fix, the graph of all categories will be considered
-            
-            if G.graph['dimensionality_reduction'] == "SVD":
-                full_graph = self.svd_graph
-
-            else:
-            # Getting the graph with all possible activations
-                full_graph = self.graph
-
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
 
         # Use graphviz_layout for positioning
-        pos = graphviz_layout(full_graph, prog="dot")
+        pos = graphviz_layout(G, prog="dot")
 
         # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
         removed_nodes = []
@@ -476,16 +347,13 @@ class LLM_MRI:
             height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
             width_index = int(node.split('_')[-1])
 
-            if G.graph['dimensionality_reduction'] == "SVD":
 
-                if fix_node_dimensions == False:
-                    new_pos[node] = (pos[node][0], height_index)
-                
-                else:
-                    new_pos[node] = (width_index, height_index)
-            
-            else: # Dimensionality reduction is UMAP
+            if fix_node_dimensions == False:
                 new_pos[node] = (pos[node][0], height_index)
+                
+            else:
+                new_pos[node] = (width_index, height_index)
+            
 
         pos = new_pos
         
