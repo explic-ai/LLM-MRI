@@ -1,4 +1,3 @@
-from llm_mri.Treatment import Treatment
 from transformers import AutoTokenizer, AutoModel
 import networkx as nx
 import pandas as pd
@@ -21,20 +20,15 @@ class LLM_MRI:
             device (str): The device to be used (e.g., 'cpu' or 'cuda').
             dataset (Dataset): The dataset to be used.
         """
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.model = model
         self.device = torch.device(device)
         self.dataset = dataset
-
-        self.base = Treatment(model, device)
-        self.gridsize = 10
+        self.reduction_method = reduction_method
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.class_names = self.dataset.features['label'].names
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
         self.label_names = []
-        self.graph = ""
-        self.svd_graph = ''
-        self.reduction_method = reduction_method
 
 
     def _tokenize(self, batch):
@@ -110,6 +104,43 @@ class LLM_MRI:
         # Reducing the hidden states dimensionality
         self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
 
+    def _spearman_correlation(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
+
+        """
+        Compute the Spearman rank‐correlation matrix between columns of X and Y.
+
+        Args:
+            X: Tensor of shape (n_samples, n_features_X)
+            Y: Tensor of shape (n_samples, n_features_Y)
+
+        Returns:
+            corr: Tensor of shape (n_features_X, n_features_Y),
+                where corr[i, j] is Spearman's rho between X[:, i] and Y[:, j].
+        """
+        # 1) rank each column: argsort twice gives ranks 0..n-1
+        rx = X.argsort(dim=0).argsort(dim=0).float()
+        ry = Y.argsort(dim=0).argsort(dim=0).float()
+
+        # 2) zero-mean
+        rx -= rx.mean(dim=0, keepdim=True)
+        ry -= ry.mean(dim=0, keepdim=True)
+
+        # number of samples
+        n = X.size(0)
+
+        # 3) covariance of ranks (shape: n_features_X x n_features_Y)
+        cov = (rx.t() @ ry) / (n - 1)
+
+        # 4) standard deviations of ranks
+        stdx = rx.std(dim=0, unbiased=True)    # shape (n_features_X,)
+        stdy = ry.std(dim=0, unbiased=True)    # shape (n_features_Y,)
+
+        # 5) outer product to normalize
+        denom = stdx.unsqueeze(1) * stdy.unsqueeze(0)  # (n_features_X, n_features_Y)
+
+        # 6) elementwise division → Spearman’s rho
+        return cov / denom
+    
     def _get_spearman_graph(self, reduced_hs_list, category_index, threshold):
         """
         Returns the networkx graph to represent the activations, using the Spearman correlation
@@ -132,7 +163,7 @@ class LLM_MRI:
             first_layer = reduced_hs_list[f'hidden_state_{index}']
             second_layer = reduced_hs_list[f'hidden_state_{index+1}']
 
-            correlation_matrix = self.base.spearman_correlation(
+            correlation_matrix = self._spearman_correlation(
                 first_layer, second_layer)
             
             # Generating names for columns and rows (hs{x}_{index})
@@ -274,7 +305,6 @@ class LLM_MRI:
         
         else:
             return ['lightblue']
-
         
     def get_graph_image(self, G, colormap = 'coolwarm', fix_node_dimensions:bool = True):
         """
@@ -389,37 +419,6 @@ class LLM_MRI:
         plt.axis('off')
         
         return fig
-
-
-    def get_composed_graph(self, category1, category2):
-        """
-        Displays the pandas edgelist (graph representation) for the network region activations,
-        being each label represented by a different edge color.
-
-        Args:
-            category1 (String): The first category.
-            category2 (String): The second category.
-
-        Returns:
-            fig (plt.figure): The matplotlib figure representation of the graph.
-        """
-        g1 = self.get_graph(category1)
-        g2 = self.get_graph(category2)
-        
-        for u, v, data in g1.edges(data=True):
-            data['label'] = 0
-        
-        for u, v, data in g2.edges(data=True):
-            data['label'] = 1
-
-        g_composed = nx.compose(g1, g2)
-
-        # Marking repeated edges
-        duplicates = list(set(g1.edges) & set(g2.edges))
-        for e in duplicates : g_composed.edges[e]['label'] = 2 
-        
-        return g_composed
-
     
     def generate_node_colors(self, G, colormap: str = 'coolwarm'):
 
