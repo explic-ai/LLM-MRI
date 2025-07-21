@@ -1,15 +1,14 @@
 from llm_mri.Treatment import Treatment
-from llm_mri.dimensionality_reduction import PCA
 from transformers import AutoTokenizer, AutoModel
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
+from networkx.drawing.nx_agraph import graphviz_layout
 import torch
-from matplotlib.colors import LinearSegmentedColormap, Normalize
+from matplotlib.colors import Normalize
 import numpy as np
-import matplotlib.cm as cm
+from typing import Union, List
 
 class LLM_MRI:
 
@@ -35,9 +34,6 @@ class LLM_MRI:
         self.label_names = []
         self.graph = ""
         self.svd_graph = ''
-        self.current_category = 0
-        self.dim = 2
-        self.threshold = 0.3
         self.reduction_method = reduction_method
 
 
@@ -97,7 +93,6 @@ class LLM_MRI:
 
         return all_hidden_states
     
-
     def process_activation_areas(self):
         """
         Processes the activation areas.
@@ -115,7 +110,7 @@ class LLM_MRI:
         # Reducing the hidden states dimensionality
         self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
 
-    def get_spearman_graph(self, reduced_hs_list):
+    def _get_spearman_graph(self, reduced_hs_list, category_index, threshold):
         """
         Returns the networkx graph to represent the activations, using the Spearman correlation
 
@@ -141,8 +136,8 @@ class LLM_MRI:
                 first_layer, second_layer)
             
             # Generating names for columns and rows (hs{x}_{index})
-            column_names = [f'{index}_{x}' for x in range(first_layer.shape[0])]
-            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[0])] # Number of components
+            column_names = [f'{index}_{x}' for x in range(first_layer.shape[1])]
+            row_names = [f'{index+1}_{x}' for x in range(first_layer.shape[1])] # Number of components
 
             # Disclaimer: The comparison is made between the components of the reduced dataset
 
@@ -161,111 +156,81 @@ class LLM_MRI:
         for corr_matrix in correlation_reduced_hs:
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
                 for col_name, weight in row_data.items():  # Iterating through columns
-                    if weight > self.threshold: # Threshold
+                    if weight > threshold: # Threshold
                         # Adding edges
                         G.add_edge(col_name, row_name,
-                                   weight=weight, label=self.current_category)
+                                   weight=weight, label=category_index)
                     
                     # TODO: Add percentile as a parameter
 
-        # Setting dimensionality reduction type to SVD
-        G.graph['dimensionality_reduction'] = "SVD"
-
         # Setting label names previously defined
-        G.graph['label_names'] = self.label_names
+        G.graph['label_names'] = self.class_names[category_index]
+
+        if isinstance(G.graph['label_names'], str):
+            G.graph['label_names'] = [self.class_names[category_index]]
 
         # Returning the full graph developed
         return G
 
-
-    def get_svd_graph(self):
+    def get_graph(self, categories: Union[str, List[str]], threshold: float = 0.3):
         """
-        Builds the networkx graph to represent the activations, using the SVD dimensionality reduction.
+        Returns the networkx graph to represent the activations of one or more categories.
 
         Args:
-            dim (int): The number of dimensions to reduce the activations to (default 40).
+            categories (list): list of strings, each representing a category from the dataset. 
+            The method can generate a graph for one or two categories, but not more than that.
+            threshold (float): The threshold of the spearman correlation between components (default 0.3).
+            Edhes with correlation below the threshold will not be displayed.
 
+        Returns:
+            Graph: The networkx graph representing the activations.
         """
 
-        return self.get_spearman_graph(self.reduced_dataset)
-
-
-    def get_composed_svd_graph(self, category1, category2, threshold:float=0.3):
-        """
-        Returns a composed graph for two categories, using the SVD dimensionality reduction.
-
-        Args:
-            category1 (str): The first category from the passed documents to be displaced on the graph.
-            category2 (str): The second category from the passed documents to be displayed on the graph.
-            dim (int): The number of dimensions to reduce the activations to (default 16).
-            threshold (float): The threshold of the spearman correlation between components (default 0.3). The greater the threshold, the fewer edges will be displayed. 
-            Threshold of 0 means that every edge is being displayed, and the threshold of 1 means that no edge is being displayed.
-        """
-        self.threshold = threshold
-
-        # 1) Generate graph of only requested labels
+        if isinstance(categories, str):
+            categories = [categories]
         
-        # Get the category index
-        category1_index = self.class_names.index(category1)
-        category2_index = self.class_names.index(category2)
+        if len(categories) > 2:
+            raise ValueError("This method can only generate a graph for one or two categories. If you wish to compare more categories, please input one at a time")
 
-        # Filter the dataset to get the indices of rows with the given category
-        indices = [i for i, label in enumerate(self.dataset['label']) if label == category1_index or label == category2_index]
+        # List to store graphs for each category
+        graphs_list = []
 
-        # Extract the rows from the hidden_states_dataset tensor
-        filtered_hidden_states = self.hidden_states_dataset.select(indices) 
+        for category in categories:
+
+            if category not in self.class_names:
+                raise ValueError(f"Category '{category}' is not in the dataset's class names.")
+            
+            # Get the category index    
+            category_index = self.class_names.index(category)    
+
+            # Filter the dataset to get the indices of rows with the given category
+            indices = [i for i, label in enumerate(self.dataset['label']) if label == category_index]
+            
+            #  Extract the rows from the hidden_states_dataset tensor
+            filtered_hidden_states = self.hidden_states_dataset.select(indices) 
         
-        # Select only rows with selected categories from hidden state
-        full_svd_hs = self.reduction_method.get_reduction(filtered_hidden_states)
+            #  Select only rows with selected categories from hidden state
+            full_svd_hs = self.reduction_method.get_reduction(filtered_hidden_states)
 
-        # 2) Select specific hidden states to compute spearman correlation
+            # 2) Select specific hidden states to compute spearman correlation
+            c_hidden_states = {}
+
+            for i in range(len(full_svd_hs)):
+                c_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}']
+            
+            # Updating graphs list
+            graphs_list.append(self._get_spearman_graph(c_hidden_states, category_index, threshold))
         
-        # The first indices are going to be equivalent to the first categories, the next ones to the second
-        indices_categ1 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category1_index]
-        indices_categ2 = [i for i, label in enumerate(filtered_hidden_states['label']) if label == category2_index] 
-
-        # Extract full hidden state list from indices
-        c1_hidden_states = {}
-        c2_hidden_states = {}
-
-        for i in range(len(full_svd_hs)):
-            c1_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}'][indices_categ1]
-            c2_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}'][indices_categ2]
-
-        # Generate graph for first category
-        c1_graph = self.get_spearman_graph(c1_hidden_states)
-
-        # Updating category
-        self.current_category = 1
-
-        # Generate graph for the second category
-        c2_graph = self.get_spearman_graph(c2_hidden_states)
-
-        # Reseting category
-        self.current_category = 0
-
-        # Since nodes are the same, full graph are going to contain the same nodes
-        G_composed = nx.Graph()
-        G_composed.add_nodes_from(c1_graph.nodes())
+        # Merging graphs (if more than one category)
+        if len(graphs_list) > 1:
+            G = nx.compose(graphs_list[0], graphs_list[1])
+            G.graph['label_names'] = [graphs_list[0].graph['label_names'][0], graphs_list[1].graph['label_names'][0]]
         
-        # For the edges, we need to concatenate the edges from the two obtained graph
-        G_composed.add_edges_from(c1_graph.edges(data=True))
-        G_composed.add_edges_from(c2_graph.edges(data=True))
+        else:
+            G = graphs_list[0]
 
-        # Defining dimensionality reduction attribute
-        G_composed.graph['dimensionality_reduction'] = "SVD"
-
-        # Adding Label names to assigned variable
-        self.label_names.append(category1)
-        self.label_names.append(category2)
-
-        # Adding labels to graph property
-        G_composed.graph['label_names'] = self.label_names
-
-        self.svd_graph = G_composed
+        return G
         
-        return G_composed
-
 
     def generate_graph_edge_colors(self, G, colormap='coolwarm'):
         """
@@ -311,7 +276,7 @@ class LLM_MRI:
             return ['lightblue']
 
         
-    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True, fix_node_dimensions:bool = True):
+    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_dimensions:bool = True):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:

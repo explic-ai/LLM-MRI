@@ -18,7 +18,7 @@ dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
 dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
-pca = PCA(n_components = 10)
+pca = PCA(n_components = 20)
 
 # Beginning Visualization
 llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -26,54 +26,17 @@ llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset, reduction_met
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
-# Getting the layer's image for a designed category
-# fig = llm_mri.get_layer_image(layer = 1, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
-# plt.tight_layout()
-# plt.show()
+g_full = llm_mri.get_graph("true") # Gets the graph for all categories
+g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True) # Getting the graph image for a determined category
+plt.title("Dimensionality Reduction of true graph by PCA")
 
-# Getting full scatterplot
-# fig_scatter = llm_mri.get_original_map(6)
-# plt.tight_layout()
-# plt.show()
+g_full = llm_mri.get_graph("fake") # Gets the graph for all categories
+g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True) # Getting the graph image for a determined category
+plt.title("Dimensionality Reduction of fake graph by PCA")
 
-# fig = llm_mri.get_layer_image(layer = 1, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
-# plt.tight_layout()
-# plt.show()
+g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
+g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True) # Getting the graph image for a determined category
+plt.title("Dimensionality Reduction of fake and true graph by PCA")
 
-# g = llm_mri.get_graph()
-# _ = llm_mri.get_graph_image(g)
-# plt.show()
-
-# Getting activation's image as a Graph
-# g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
-
-g_full = llm_mri.get_svd_graph() # Gets the graph for all categories
-
-# Getting the image of Graph representation of activations
-g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True, fix_node_dimensions=False) # Getting the graph image for a determined category
-plt.title("Dimensionality Reduction of full graph by PCA")
-
-# plt.box(False)
-# plt.show()
-
-# Getting activations of different labels in the same Graph
-# g_composed = llm_mri.get_composed_graph("true", "fake")
-# plt.title("Full graph using UMAP as dimensionality reduction")
-
-# Generating image of composed graph
-# g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
-# plt.box(False)
-# plt.show()
-
-# Generating image of svd composed graph
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
-
-svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction to 50 dimensions of distinct categories by PCA")
-
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake")
-
-svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction to 8 dimensions of distinct categories by PCA")
 plt.box(False)
 plt.show()

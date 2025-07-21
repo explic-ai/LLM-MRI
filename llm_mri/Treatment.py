@@ -30,54 +30,44 @@ class Treatment:
         Returns the embeddings dataset
         """
         return self.embeddings_dataset
-
-
-
-    def set_embeddings_on_model(self, model_ckpt):
-        """
-        Sets embeddings on the model.
-
-        Args:
-            model_ckpt (Model): Hugging Face model.
-
-        Returns:
-            Model: Model passed as a parameter.
-        """
-
-        
-
-        return model
-
  
 
 
-    def spearman_correlation(self, first_layer, second_layer):
+    def spearman_correlation(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
         """
-        Compute Spearman correlation between the components of two different layers.
-        Args: 
-            first_layer (tensor): the first layer to be used in the correlation
-            second_layer (tensor): the second layer to be used in the correlation
+        Compute the Spearman rank‐correlation matrix between columns of X and Y.
+
+        Args:
+            X: Tensor of shape (n_samples, n_features_X)
+            Y: Tensor of shape (n_samples, n_features_Y)
+
+        Returns:
+            corr: Tensor of shape (n_features_X, n_features_Y),
+                where corr[i, j] is Spearman's rho between X[:, i] and Y[:, j].
         """
-        first_layer = first_layer.T
-        second_layer = second_layer.T
-        
-        # Rank the columns of each tensor
-        rank1 = first_layer.argsort(dim=0).argsort(dim=0).float()
-        rank2 = second_layer.argsort(dim=0).argsort(dim=0).float()
+        # 1) rank each column: argsort twice gives ranks 0..n-1
+        rx = X.argsort(dim=0).argsort(dim=0).float()
+        ry = Y.argsort(dim=0).argsort(dim=0).float()
 
-        # Center the ranks
-        rank1 -= rank1.mean(dim=0, keepdim=True)
-        rank2 -= rank2.mean(dim=0, keepdim=True)
+        # 2) zero-mean
+        rx -= rx.mean(dim=0, keepdim=True)
+        ry -= ry.mean(dim=0, keepdim=True)
 
-        # Compute the covariance and standard deviations
-        cov = (rank1.T @ rank2) / first_layer.size(0)
-        std1 = rank1.std(dim=0, keepdim=True)
-        std2 = rank2.std(dim=0, keepdim=True)
+        # number of samples
+        n = X.size(0)
 
-        # Compute the correlation matrix
-        correlation_matrix = cov / (std1.T @ std2)
-        
-        return correlation_matrix
+        # 3) covariance of ranks (shape: n_features_X x n_features_Y)
+        cov = (rx.t() @ ry) / (n - 1)
+
+        # 4) standard deviations of ranks
+        stdx = rx.std(dim=0, unbiased=True)    # shape (n_features_X,)
+        stdy = ry.std(dim=0, unbiased=True)    # shape (n_features_Y,)
+
+        # 5) outer product to normalize
+        denom = stdx.unsqueeze(1) * stdy.unsqueeze(0)  # (n_features_X, n_features_Y)
+
+        # 6) elementwise division → Spearman’s rho
+        return cov / denom
 
 
 
