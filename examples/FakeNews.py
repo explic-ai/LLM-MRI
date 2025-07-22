@@ -1,6 +1,6 @@
 import os
 
-from llm_mri import LLM_MRI
+from llm_mri import ActivationAreas
 from llm_mri.dimensionality_reduction import PCA
 
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ dataset.cleanup_cache_files()
 pca = PCA(n_components = 20)
 
 # Beginning Visualization
-llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
+llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
 
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset

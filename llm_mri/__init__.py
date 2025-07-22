@@ -1,1 +1,1 @@
-from .LLM_MRI import LLM_MRI
+from .ActivationAreas import ActivationAreas

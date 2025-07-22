@@ -9,11 +9,11 @@ from matplotlib.colors import Normalize
 import numpy as np
 from typing import Union, List
 
-class LLM_MRI:
+class ActivationAreas:
 
     def __init__(self, model, device, dataset, reduction_method):
         """
-        Initializes the LLM_MRI class.
+        Initializes the ActivationAreas class.
 
         Args:
             model (str): The model to be used.
