@@ -28,7 +28,6 @@ class LLM_MRI:
         self.class_names = self.dataset.features['label'].names
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
-        self.label_names = []
 
 
     def _tokenize(self, batch):
@@ -263,7 +262,7 @@ class LLM_MRI:
         return G
         
 
-    def generate_graph_edge_colors(self, G, colormap='coolwarm'):
+    def _generate_graph_edge_colors(self, G, colormap='coolwarm'):
         """
         Generates a list of colors based on the number of labels in the graph's edges.
 
@@ -295,7 +294,7 @@ class LLM_MRI:
             # sample the colormap
             colors = [(colormap_list(value)) for value in color_values]
 
-            if len(self.label_names) > 1:
+            if len(G.graph['label_names']) > 1:
 
                     blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
 
@@ -306,32 +305,36 @@ class LLM_MRI:
         else:
             return ['lightblue']
         
-    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_dimensions:bool = True):
+    def get_graph_image(self, G: nx.Graph, colormap : str = 'coolwarm', fix_node_dimensions:bool = True):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
         Args:
         G (networkx.Graph): The NetworkX graph.
         colormap (string): A string referent to the desired colormap. default is set by 'bwr'.
-
+        fix_node_dimensions (bool): If True, the horizontal position of the node determines the dimension being represented by the node.
+        If False, the horizontal position is defined by the layout algorithm.
+        
         Returns:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
-
+        
+        # Verifying if graph passed is a networkx graph
+        if not isinstance(G, nx.Graph):
+            raise TypeError("The graph must be a networkx Graph object.")
+        
+        # Verifying if the graph has nodes
+        if G.number_of_nodes() == 0:
+            raise ValueError("The graph has no nodes to display.")
+        
+        # Verifying if the graph has edges
+        if G.number_of_edges() == 0:
+            raise ValueError("The graph has no edges to display.")
+        
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
 
         # Use graphviz_layout for positioning
         pos = graphviz_layout(G, prog="dot")
-
-        # Since pos was generated to all nodes, we are going to remove the ones that are not currently being displaced
-        removed_nodes = []
-        for node in pos.keys():
-            if node not in nodelist:
-                removed_nodes.append(node)
-        
-        # Removing nodes
-        for node in removed_nodes:
-            pos.pop(node)
 
         # Fixing node positions        
         new_pos = {}
@@ -339,24 +342,23 @@ class LLM_MRI:
         for node in nodelist:
             
             # Extract the first character to determine height index
-            height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
+            height_index = int(node.split('_')[0])
             width_index = int(node.split('_')[-1])
 
-
+            # If fix_node_dimensions is True, the horizontal position determines the dimension being represented by the node.
             if fix_node_dimensions == False:
                 new_pos[node] = (pos[node][0], height_index)
                 
             else:
                 new_pos[node] = (width_index, height_index)
             
-
         pos = new_pos
         
         # Create the matplotlib figure
         fig, ax = plt.subplots(figsize=(25, 6))
         
         # Generate edge colors
-        edge_colors = self.generate_graph_edge_colors(G, colormap)
+        edge_colors = self._generate_graph_edge_colors(G, colormap)
 
         ordered_edge_colors = edge_colors
 
@@ -376,7 +378,7 @@ class LLM_MRI:
                 for u, v in G.edges().keys()]
         
         # Coloring Nodes
-        node_colors = self.generate_node_colors(G, colormap)
+        node_colors = self._generate_node_colors(G, colormap)
         
         # Create legend handles based on edge colors
         legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
@@ -394,7 +396,7 @@ class LLM_MRI:
             G,
             pos,
             edgelist=G.edges(),
-            width=[edge[-1]['weight'] * 2 for edge in G.edges(data=True)],
+            width=[edge[-1]['weight'] * 1.5 for edge in G.edges(data=True)],
             edge_color=ordered_edge_colors,
             alpha=0.9,
             ax=ax
@@ -412,15 +414,12 @@ class LLM_MRI:
             edgecolors='black'
         )
         
-        # Clear label names for future use
-        self.label_names = []
-        
         # Remove axes for a cleaner look
         plt.axis('off')
         
         return fig
     
-    def generate_node_colors(self, G, colormap: str = 'coolwarm'):
+    def _generate_node_colors(self, G, colormap: str = 'coolwarm'):
 
         """
         Generates a list of colors based on the amount of nodes in the graph's edges, being
