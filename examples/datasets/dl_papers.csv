@@ -1,0 +1,1770 @@
+,title,abstract,categories
+50351,"A Natural Language Processing Pipeline for Detecting Informal Data
+  References in Academic Literature","  Discovering authoritative links between publications and the datasets that
+they use can be a labor-intensive process. We introduce a natural language
+processing pipeline that retrieves and reviews publications for informal
+references to research datasets, which complements the work of data librarians.
+We first describe the components of the pipeline and then apply it to expand an
+authoritative bibliography linking thousands of social science studies to the
+data-related publications in which they are used. The pipeline increases recall
+for literature to review for inclusion in data-related collections of
+publications and makes it possible to detect informal data references at scale.
+We contribute (1) a novel Named Entity Recognition (NER) model that reliably
+detects informal data references and (2) a dataset connecting items from social
+science literature with datasets they reference. Together, these contributions
+enable future work on data reference, data citation networks, and data reuse.
+",cs.DL cs.CL cs.LG
+316527,"Visualization of rank-citation curves for fast detection of h-index
+  anomalies in university metrics","  University rankings, despite facing criticism, continue to maintain their
+popularity. In the 2023 Scopus Ranking of Ukrainian Universities, certain
+institutions stood out due to their high h-index, despite modest publication
+and citation numbers. This phenomenon can be attributed to influential research
+topics or involvement in international collaborative research. However, these
+results may also be due to the authors' own efforts to increase the number of
+citations of their publications in order to improve their h-index. To
+investigate this, the publications from the top 30 universities in the ranking
+were analysed, revealing humpback rank-citation curves for two universities.
+These humpbacks indicate unusual trends in the citation data, especially
+considering the high percentage of self-citations and FWCI of analysed papers.
+While quantitative analysis has limitations, the combination of humped
+rank-citation curves, self-citations, FWCI, and previous research findings
+raises concerns about the possible causes of these anomalies in the citation
+data of the analysed universities. The method presented in this paper can aid
+ranking compilers and citation databases managers in identifying potential
+instances of citation data anomalies, emphasizing the importance of expert
+assessment for accurate conclusions.
+",cs.DL
+20068,"Quantitative View of the Structure of Institutional Scientific
+  Collaborations Using the Examples of Halle, Jena and Leipzig","  Examining effectiveness of institutional scientific coalitions can inform
+future policies. This is a study on the structure of scientific collaborations
+in three cities in central Germany. Since 1995, the three universities of this
+region have formed and maintained a coalition which led to the establishment of
+an interdisciplinary center in 2012, i.e., German Center for Integrative
+Biodiversity Research (iDiv). We investigate whether the impact of the former
+coalition is evident in the region's structure of scientific collaborations and
+the scientific output of the new center. Using publications data from
+1996-2018, we build co-authorship networks and identify the most cohesive
+communities in terms of collaboration, and compare them with communities
+identified based on publications presented as the scientific outcome of the
+coalition and new center on their website. Our results show that despite the
+highly cohesive structure of collaborations presented on the coalition website,
+there is still much potential to be realized. The newly established center has
+bridged the member institutions but not to a particularly strong level. We see
+that geographical proximity, collaboration policies, funding, and
+organizational structure alone do not ensure prosperous scientific
+collaboration structures. When new center's scientific output is compared with
+its regional context, observed trends become less conspicuous. Nevertheless,
+the level of success the coalition achieved could inform policy makers
+regarding other regions' scientific development plans.
+",cs.DL cs.SI
+291673,SciCat: A Curated Dataset of Scientific Software Repositories,"  The proliferation of open-source scientific software for science and research
+presents opportunities and challenges. In this paper, we introduce the SciCat
+dataset -- a comprehensive collection of Free-Libre Open Source Software
+(FLOSS) projects, designed to address the need for a curated repository of
+scientific and research software. This collection is crucial for understanding
+the creation of scientific software and aiding in its development. To ensure
+extensive coverage, our approach involves selecting projects from a pool of 131
+million deforked repositories from the World of Code data source. Subsequently,
+we analyze README.md files using OpenAI's advanced language models. Our
+classification focuses on software designed for scientific purposes,
+research-related projects, and research support software. The SciCat dataset
+aims to become an invaluable tool for researching science-related software,
+shedding light on emerging trends, prevalent practices, and challenges in the
+field of scientific software development. Furthermore, it includes data that
+can be linked to the World of Code, GitHub, and other platforms, providing a
+solid foundation for conducting comparative studies between scientific and
+non-scientific software.
+",cs.SE cs.CE cs.DL
+38780,"""How trustworthy is this research?"" Designing a Tool to Help Readers
+  Understand Evidence and Uncertainty in Science Journalism","  This article reports on a Research through Design study exploring how to
+design a tool for helping readers of science journalism understand the strength
+and uncertainty of scientific evidence in news stories about health science,
+using both textual and visual information. A central aim has been to teach
+readers about criteria for assessing scientific evidence, in particular in
+order to help readers differentiate between science and pseudoscience. Working
+in a research-in-the-wild collaboration with a website for popular science, the
+study presents the design and evaluation of the Scientific Evidence Indicator,
+which uses metadata about scientific publications to present an assessment of
+evidence strength to the readers. Evaluations of the design demonstrate some
+success in helping readers recognize whether studies have undergone scientific
+peer review or not, but point to challenges in facilitating a more in-depth
+understanding. Insights from the study point to a potential for developing
+similar tools aimed at journalists rather than directly at audiences.
+",cs.DL cs.HC
+406176,"Streamlining and standardizing software citations with The Software
+  Citation Station","  Software is crucial for the advancement of astronomy especially in the
+context of rapidly growing datasets that increasingly require algorithm and
+pipeline development to process the data and produce results. However, software
+has not always been consistently cited, despite its importance to strengthen
+support for software development. To encourage, streamline, and standardize the
+process of citing software in academic work such as publications we introduce
+'The Software Citation Station': a publicly available website and tool to
+quickly find or add software citations
+",astro-ph.IM cs.DL
+382808,A Workflow for GLAM Metadata Crosswalk,"  The acquisition of physical artifacts not only involves transferring existing
+information into the digital ecosystem but also generates information as a
+process itself, underscoring the importance of meticulous management of FAIR
+data and metadata. In addition, the diversity of objects within the cultural
+heritage domain is reflected in a multitude of descriptive models. The
+digitization process expands the opportunities for exchange and joint
+utilization, granted that the descriptive schemas are made interoperable in
+advance. To achieve this goal, we propose a replicable workflow for metadata
+schema crosswalks that facilitates the preservation and accessibility of
+cultural heritage in the digital ecosystem. This work presents a methodology
+for metadata generation and management in the case study of the digital twin of
+the temporary exhibition ""The Other Renaissance - Ulisse Aldrovandi and the
+Wonders of the World"". The workflow delineates a systematic, step-by-step
+transformation of tabular data into RDF format, to enhance Linked Open Data.
+The methodology adopts the RDF Mapping Language (RML) technology for converting
+data to RDF with a human contribution involvement. This last aspect entails an
+interaction between digital humanists and domain experts through surveys
+leading to the abstraction and reformulation of domain-specific knowledge, to
+be exploited in the process of formalizing and converting information.
+",cs.DL
+154541,Bibliometric Data Fusion for Biomedical Information Retrieval,"  Digital libraries in the scientific domain provide users access to a wide
+range of information to satisfy their diverse information needs. Here, ranking
+results play a crucial role in users' satisfaction. Exploiting bibliometric
+metadata, e.g., publications' citation counts or bibliometric indicators in
+general, for automatically identifying the most relevant results can boost
+retrieval performance. This work proposes bibliometric data fusion, which
+enriches existing systems' results by incorporating bibliometric metadata such
+as citations or altmetrics. Our results on three biomedical retrieval
+benchmarks from TREC Precision Medicine (TREC-PM) show that bibliometric data
+fusion is a promising approach to improve retrieval performance in terms of
+normalized Discounted Cumulated Gain (nDCG) and Average Precision (AP), at the
+cost of the Precision at 10 (P@10) rate. Patient users especially profit from
+this lightweight, data-sparse technique that applies to any digital library.
+",cs.DL
+314153,Effects of Research Paper Promotion via ArXiv and X,"  In the evolving landscape of scientific publishing, it is important to
+understand the drivers of high-impact research, to equip scientists with
+actionable strategies to enhance the reach of their work, and to understand
+trends in the use of modern scientific publishing tools to inform their further
+development. Here, we study trends in the use of early preprint publications
+and revisions on ArXiv and the use of X (formerly Twitter) for promotion of
+such papers in computer science and physics. We find that early submissions to
+ArXiv and promotion on X have soared in recent years. Estimating the effect
+that the use of each of these modern affordances has on the number of citations
+of scientific publications, we find that peer-reviewed conference papers in
+computer science that are submitted early to ArXiv gain on average $21.1 \pm
+17.4$ more citations, revised on ArXiv gain $18.4 \pm 17.6$ more citations, and
+promoted on X gain $44.4 \pm 8$ more citations in the first 5 years from an
+initial publication. In contrast, journal articles in physics experience
+comparatively lower boosts in citation counts, with increases of $3.9 \pm 1.1$,
+$4.3 \pm 0.9$, and $6.9 \pm 3.5$ citations respectively for the same
+interventions. Our results show that promoting one's work on ArXiv or X has a
+large impact on the number of citations, as well as the number of influential
+citations computed by Semantic Scholar, and thereby on the career of
+researchers. These effects are present also for publications in physics, but
+they are relatively smaller. The larger relative effect sizes, effects of
+promotion accumulating over time, and elevated unpredictability of the number
+of citations in computer science than in physics suggest a greater role of
+world-of-mouth spreading in computer science than in physics.
+",cs.DL cs.CY cs.SI
+54977,"Identification of young talented individuals in the natural and life
+  sciences using bibliometric data","  Identification of young talented individuals is not an easy task.
+Citation-based data usually need too long to accrue. In this study, we proposed
+a method based on bibliometric data for the identification of young talented
+individuals. Three different indicators and their combinations were used. An
+older cohort with their first publication between 1999 and 2003 was used to
+find the most suitable indicator combination. For the validation step, citation
+impact on the level of individual papers was used. The best performing
+indicator combination was applied to the time period 2007-2011 for identifying
+young talented individuals who published their first paper within this time
+period. We produced a set of 46,200 potential talented individuals.
+",cs.DL
+53747,Research Topic Flows in Co-Authorship Networks,"  In scientometrics, scientific collaboration is often analyzed by means of
+co-authorships. An aspect which is often overlooked and more difficult to
+quantify is the flow of expertise between authors from different research
+topics, which is an important part of scientific progress. With the Topic Flow
+Network (TFN) we propose a graph structure for the analysis of research topic
+flows between scientific authors and their respective research fields.
+  Based on a multi-graph and a topic model, our proposed network structure
+accounts for intratopic as well as intertopic flows. Our method requires for
+the construction of a TFN solely a corpus of publications (i.e., author and
+abstract information). From this, research topics are discovered automatically
+through non-negative matrix factorization. The thereof derived TFN allows for
+the application of social network analysis techniques, such as common metrics
+and community detection. Most importantly, it allows for the analysis of
+intertopic flows on a large, macroscopic scale, i.e., between research topic,
+as well as on a microscopic scale, i.e., between certain sets of authors.
+  We demonstrate the utility of TFNs by applying our method to two
+comprehensive corpora of altogether 20 Mio. publications spanning more than 60
+years of research in the fields computer science and mathematics. Our results
+give evidence that TFNs are suitable, e.g., for the analysis of topical
+communities, the discovery of important authors in different fields, and, most
+notably, the analysis of intertopic flows, i.e., the transfer of topical
+expertise. Besides that, our method opens new directions for future research,
+such as the investigation of influence relationships between research fields.
+",cs.SI cs.DL cs.IR cs.LG
+156628,A model for reference list length of scholarly articles,"  We introduce and analyse a simple probabilistic model of article production
+and citation behavior that explicitly assumes that there is no decline in
+citability of a given article over time. It makes predictions about the number
+and age of items appearing in the reference list of an article. The latter
+topics have been studied before, but only in the context of data, and to our
+knowledge no models have been presented. We then perform large-scale analyses
+of reference list length for a variety of academic disciplines. The results
+show that our simple model cannot be rejected, and indeed fits the aggregated
+data on reference lists rather well. Over the last few decades, the
+relationship between total publications and mean reference list length is
+linear to a high level of accuracy. Although our model is clearly an
+oversimplification, it will likely prove useful for further modeling of the
+scholarly literature. Finally, we connect our work to the large literature on
+""aging"" or ""obsolescence"" of scholarly publications, and argue that the
+importance of that area of research is no longer clear, while much of the
+existing literature is confused and confusing.
+",cs.DL
+343510,"Preserving Tangible and Intangible Cultural Heritage: the Cases of
+  Volterra and Atari","  At first glance, the ruins of the Roman Theatre in the Italian town of
+Volterra have little in common with cassette tapes containing Atari games. One
+is certainly considered an important historical landmark, while the consensus
+on the importance of the other is partial at best. Still, both are remnants of
+times vastly different from the present and are at risk of oblivion. Unearthed
+architectural structures are exposed to the elements just as the deteriorating
+signals stored on magnetic tapes. However, the rate of deterioration is much
+faster with the magnetic media, as their life expectancy is counted in decades,
+whereas the Roman Theater, which is already in ruin, measures its lifespan in
+centuries. Hence, both would benefit from some form of digital preservation and
+reconstruction. In this panel, we discuss how to sustainably preserve tangible
+and intangible cultural artifacts for future generations.
+",cs.CY cs.DL cs.HC
+200904,"Scientific mobility, prestige and skill alignment in academic
+  institutions","  Scientific institutions play a crucial role in driving intellectual, social,
+and technological progress. Their capacity to innovate depends mainly on their
+ability to attract, retain, and nurture scientific talent and ultimately make
+it available to other organizations, industries, or the economy. As researchers
+change institutions during their careers, their skills are also transferred.
+The extent and mechanisms by which academic institutions manage their internal
+portfolio of scientific skills by attracting and sending researchers are far
+from being understood. We examine 25 million publication histories of 9.2
+million scientists extracted from a large-scale bibliographic database covering
+thousands of research institutions worldwide to understand how the skills of
+mobile scientists align with those present in-house. We find a clear
+association between top-ranked institutions and greater skill alignment, i.e.,
+the degree to which skills of incoming academics match those of their
+colleagues at the institution. We uncover similar high-alignment for scientists
+leaving top-ranked institutions. This type of academic alignment is more
+pronounced in engineering and life, health, earth, and physical sciences than
+in mathematics, computer science, social sciences, and the humanities. We show
+that over the past two decades, institutions generally have become more closely
+aligned in their overall skill profiles. We interpret these results in terms of
+levels of proactive management of the composition of the scientific workforce,
+diversity, and internal collaboration strategies at the institutional level.
+",cs.DL physics.soc-ph
+333168,"Citation Amnesia: NLP and Other Academic Fields Are in a Citation Age
+  Recession","  This study examines the tendency to cite older work across 20 fields of study
+over 43 years (1980--2023). We put NLP's propensity to cite older work in the
+context of these 20 other fields to analyze whether NLP shows similar temporal
+citation patterns to these other fields over time or whether differences can be
+observed. Our analysis, based on a dataset of approximately 240 million papers,
+reveals a broader scientific trend: many fields have markedly declined in
+citing older works (e.g., psychology, computer science). We term this decline a
+'citation age recession', analogous to how economists define periods of reduced
+economic activity. The trend is strongest in NLP and ML research (-12.8% and
+-5.5% in citation age from previous peaks). Our results suggest that citing
+more recent works is not directly driven by the growth in publication rates
+(-3.4% across fields; -5.2% in humanities; -5.5% in formal sciences) -- even
+when controlling for an increase in the volume of papers. Our findings raise
+questions about the scientific community's engagement with past literature,
+particularly for NLP, and the potential consequences of neglecting older but
+relevant research. The data and a demo showcasing our results are publicly
+available.
+",cs.DL cs.CL
+196809,Bibliometric Analysis of NIME References and Citations,"  This paper presents a bibliometric analysis that examines the works cited in,
+as well as those citing, NIME papers; for brevity, we refer to these as
+`references` and `citations`. Utilizing existing tools, we have computationally
+extracted data from the NIME proceedings archive and retrieved metadata from an
+academic database, including details of associated references and citations.
+From this data, we computed a range of metrics and statistics, which we present
+in this paper. We offer quantitative insights into NIME as a scholarly
+publication venue, its connections to other venues, and its relationship with
+various fields of study and authors. Based on our data interpretations, we
+provide several recommendations for the community's future. In sharing the
+software we developed for this study, and the summarized raw data, we enable
+other NIME researchers to conduct more in-depth investigations and examine
+specific trends.
+",cs.DL
+140030,A Gold Standard Dataset for the Reviewer Assignment Problem,"  Many peer-review venues are either using or looking to use algorithms to
+assign submissions to reviewers. The crux of such automated approaches is the
+notion of the ""similarity score""--a numerical estimate of the expertise of a
+reviewer in reviewing a paper--and many algorithms have been proposed to
+compute these scores. However, these algorithms have not been subjected to a
+principled comparison, making it difficult for stakeholders to choose the
+algorithm in an evidence-based manner. The key challenge in comparing existing
+algorithms and developing better algorithms is the lack of the publicly
+available gold-standard data that would be needed to perform reproducible
+research. We address this challenge by collecting a novel dataset of similarity
+scores that we release to the research community. Our dataset consists of 477
+self-reported expertise scores provided by 58 researchers who evaluated their
+expertise in reviewing papers they have read previously.
+  We use this data to compare several popular algorithms employed in computer
+science conferences and come up with recommendations for stakeholders. Our main
+findings are as follows. First, all algorithms make a non-trivial amount of
+error. For the task of ordering two papers in terms of their relevance for a
+reviewer, the error rates range from 12%-30% in easy cases to 36%-43% in hard
+cases, highlighting the vital need for more research on the
+similarity-computation problem. Second, most existing algorithms are designed
+to work with titles and abstracts of papers, and in this regime the Specter+MFR
+algorithm performs best. Third, to improve performance, it may be important to
+develop modern deep-learning based algorithms that can make use of the full
+texts of papers: the classical TD-IDF algorithm enhanced with full texts of
+papers is on par with the deep-learning based Specter+MFR that cannot make use
+of this information.
+",cs.IR cs.DL cs.LG
+140608,"Author-Unification: Name-, Institution-, and Career-Sharing Co-authors","  In this work, we investigate the phenomenon of Author-UnificAtion (AUA),
+which describes the high structural similarity of two co-authoring engineers
+that share the same forename, surname, institution, and academic career without
+being related by blood. So far, prior work has only explored similar surnames
+and institutions. On top of that, we elaborate on the additional author
+similarity of sharing the same academic career as a Ph.D. candidate with the
+same starting day and month included in the university contract. We show that
+our work outperforms previous state-of-the-art investigations, among others by
+providing a higher Structural Similarity Index Measure (SSIM) of the letters in
+our names and in our institution. Lastly, we prove the duality of our
+identities through a qualitative evaluation.
+",cs.DL
+268943,A scientometric-inspired framework to analyze EurekAlert! press releases,"  Press releases about scholarly news are brief statements provided in advance
+to the press, including a description of the most relevant findings of one or
+more accepted scientific publications, usually under the condition that
+journalists will adhere to an embargo until the publication date. The existence
+of centralized platforms such as EurekAlert! allows press releases to be
+disseminated online as independent news articles. Press releases can include
+additional material (e.g., interviews, commentaries, explanatory tables,
+figures, media, recommended readings), which turn them into online objects with
+analytical value of their own. The objective of this work is to illustrate how
+press releases can be quantitatively analyzed applying similar tools and
+approaches as those applied in scientometric research (SCI). To achieve this
+goal, a scientometric inspired analytical framework is proposed based on the
+formulation of spaces of interaction of objects, actors, and impacts. As such,
+the framework proposed considers press releases as science communication (SCO)
+objects, produced by different SCO actors (e.g., journalists), and the subject
+of receiving impact (e.g., tweets, links). To carry out this analysis, all
+press releases published by EurekAlert! from 1996 until 2021 (455,703 press
+releases), all tweets including at least one URL referring to a EurekAlert!
+press release (1,364,563 tweets), and all webpages with at least one URL
+referring to a EurekAlert! press release (54,089,233 webpages) have been
+studied. We argue that the large volume of press releases published and their
+online dissemination make these objects relevant in the measurement of SCO-SCI
+interactions.
+",cs.DL
+295566,"Sustainable Data Management: Indefinite Static Data at Rest with
+  Machine-Readable Printed Optical Data Sheets (MRPODS)","  In an era where both commercial and private sectors place a premium on the
+longevity of digital data storage, the imperative to bolster resilience of
+digital information while simultaneously curbing costs and reducing failure
+rates becomes paramount. This study delves into the unique attributes of
+optical encoding methodologies, which are poised to offer enduring stability
+for digital data. Despite their promising potential, there remains a notable
+dearth of comprehensive analyses comparing various optical encoding techniques
+in terms of their durability. This research is thus dedicated to exploring the
+financial and environmental implications of employing technology to transcribe
+digital data into a machine-readable optical format, assessing both the
+advantages and limitations inherent in this approach. Our empirical findings
+reveal a marked increase in the efficiency of machine-readable optical encoding
+over conventional digital storage methods, particularly as the volume of data
+diminishes and the expected lifespan of storage extends indefinitely. This
+paper aims to illuminate key aspects of long-term digital data storage within
+business contexts, focusing on aspects such as cost, dependability, legibility,
+and confidentiality of optically encoded digital information.
+",cs.CY cs.DL
+250166,"Research Funding in the Middle East and North Africa: Analyses of
+  Acknowledgments in Scientific Publications indexed in the Web of Science
+  (2008-2021)","  Funding acknowledgments are important objects of study in the context of
+science funding. This study uses a mixed-methods approach to analyze the
+funding acknowledgments found in 2.3 million scientific publications published
+between 2008 and 2021 by authors affiliated with research institutions located
+in the Middle Eastern and North Africa (MENA). The aim is to identify the major
+funders, assess their contribution to national scientific publications, and
+gain insights into the funding mechanism in relation to collaboration and
+publication. Publication data from the Web of Science is examined to provide
+key insights about funding activities. Saudi Arabia and Qatar lead the region,
+as about half of their publications include acknowledgments to funding sources.
+Most MENA countries exhibit strong linkages with foreign agencies, mainly due
+to a high level of international collaborations. The distinction between
+domestic and international publications reveals some differences in terms of
+funding structures. For instance, Turkey and Iran are dominated by one or two
+major funders whereas a few other countries like Saudi Arabia showcase multiple
+funders. Iran and Kuwait are examples of countries where research is mainly
+funded by domestic funders. The government and academic sectors mainly fund
+scientific research in MENA whereas the industry sector plays little or no role
+in terms of research funding. Lastly, the qualitative analyses provide more
+context into the complex funding mechanism. The findings of this study
+contribute to a better understanding of the funding structure in MENA countries
+and provide insights to funders and research managers to evaluate the funding
+landscape.
+",cs.DL
+234447,"A comparison of citation-based clustering and topic modeling for science
+  mapping","  Understanding the different ways in which different science mapping
+approaches capture the structure of scientific fields is critical. This paper
+presents a comparative analysis of two commonly used approaches, topic modeling
+(TM) and citation-based clustering (CC), to assess their respective strengths,
+weaknesses, and the characteristics of their results. We compare the two
+approaches using cluster-to-topic and topic-to-cluster mappings based on
+science maps of cardiovascular research generated by TM and CC. Our findings
+reveal that relations between topics and clusters are generally weak, with
+limited overlap between topics and clusters. Only in a few exceptional cases do
+more than one-third of the documents in a topic belong to the same cluster, or
+vice versa. For TM the presence of highly similar topics is a considerable
+challenge. A strength of TM is its ability to represent societal needs related
+to cardiovascular disease, potentially offering valuable insights for
+policymakers. In contrast, CC excels in depicting the intellectual structure of
+cardiovascular diseases, with a strong capability to reflect scientific
+micro-communities. This study deepens the understanding of the use of TM and CC
+for science mapping, providing insights for users on how to apply these
+approaches based on their needs.
+",cs.DL
+461180,"LCA and energy efficiency in buildings: mapping more than twenty years
+  of research","  Research on Life Cycle Assessment (LCA) is being conducted in various
+sectors, from analyzing building materials and components to comprehensive
+evaluations of entire structures. However, reviews of the existing literature
+have been unable to provide a comprehensive overview of research in this field,
+leaving scholars without a definitive guideline for future investigations. This
+paper aims to fill this gap, mapping more than twenty years of research. Using
+an innovative methodology that combines social network analysis and text
+mining, the paper examined 8024 scientific abstracts. The authors identified
+seven key thematic groups, building and sustainability clusters (BSCs). To
+assess their significance in the broader discourse on building and
+sustainability, the semantic brand score (SBS) indicator was applied.
+Additionally, building and sustainability trends were tracked, focusing on the
+LCA concept. The major research topics mainly relate to building materials and
+energy efficiency. In addition to presenting an innovative approach to
+reviewing extensive literature domains, the article also provides insights into
+emerging and underdeveloped themes, outlining crucial future research
+directions.
+",cs.DL cs.CL
+470751,Towards understanding evolution of science through language model series,"  We introduce AnnualBERT, a series of language models designed specifically to
+capture the temporal evolution of scientific text. Deviating from the
+prevailing paradigms of subword tokenizations and ""one model to rule them all"",
+AnnualBERT adopts whole words as tokens and is composed of a base RoBERTa model
+pretrained from scratch on the full-text of 1.7 million arXiv papers published
+until 2008 and a collection of progressively trained models on arXiv papers at
+an annual basis. We demonstrate the effectiveness of AnnualBERT models by
+showing that they not only have comparable performances in standard tasks but
+also achieve state-of-the-art performances on domain-specific NLP tasks as well
+as link prediction tasks in the arXiv citation network. We then utilize probing
+tasks to quantify the models' behavior in terms of representation learning and
+forgetting as time progresses. Our approach enables the pretrained models to
+not only improve performances on scientific text processing tasks but also to
+provide insights into the development of scientific discourse over time. The
+series of the models is available at https://huggingface.co/jd445/AnnualBERTs.
+",cs.CL cs.CY cs.DL
+113929,Composable Ledgers for Distributed Synchronic Web Archiving,"  The Synchronic Web is a highly scalable notary infrastructure that provides
+tamper-evident data provenance for historical web data. In this document, we
+describe the applicability of this infrastructure for web archiving across
+three envisioned stages of adoption. We codify the core mechanism enabling the
+value proposition: a procedure for splitting and merging cryptographic
+information fluidly across blockchain-backed ledgers. Finally, we present
+preliminary performance results that indicate the feasibility of our approach
+for modern web archiving scales.
+",cs.CR cs.DL
+52020,"Achievement of Objectives of Library Information Management: Result of
+  Right Structuring of Library Network System","  The world is transforming through a revolution and development in the
+progression of information and its broadcasting. The number of research
+journals, books and reports being published the world over has been increasing
+phenomenally. Currently, about five lakh books, one lakh periodicals, lakhs of
+patents, thousands of standards and numerous other types of documents are being
+published every year. The hypothesis was tested using SPSS to obtain
+covariances by going to Analyze Correlate Bivariate, A Likert type scale was
+prepared and used to capture the feedback using the feedback survey Total 90
+library staff were asked to complete this survey through questionnaires.
+",cs.DL cs.SI
+376733,"Towards the relationship between AIGC in manuscript writing and author
+  profiles: evidence from preprints in LLMs","  AIGC tools such as ChatGPT have profoundly changed scientific research,
+leading to widespread attention on its use on academic writing. Leveraging
+preprints from large language models, this study examined the use of AIGC in
+manuscript writing and its correlation with author profiles. We found that: (1)
+since the release of ChatGPT, the likelihood of abstracts being AI-generated
+has gradually increased; (2) scientists from English-speaking countries are
+less likely to use AIGC tools for writing assistance, while those from
+countries with linguistic differences from English are more likely to use these
+tools; (3) there is weak correlation between a paper's AI-generated probability
+and authors' academic performance; and (4) authors who have previously
+published papers with high AI-generated probabilities are more likely to
+continue using AIGC tools. We believe that this paper provides insightful
+results for relevant policies and norms and in enhancing the understanding of
+the relationship between humans and AI.
+",cs.DL
+138413,Synia: Displaying data from Wikibases,"  I present an agile method and a tool to display data from Wikidata and other
+Wikibase instances via SPARQL queries. The work-in-progress combines ideas from
+the Scholia Web application and the Listeria tool.
+",cs.DL
+136874,Digital Library Initiatives in India: A Comprehensive Study,"  This study is a survey of digital library initiatives in India collecting
+secondary information from about fifty digital libraries from their respective
+websites. The findings show that in most cases the actual conception of the
+digital library is still in a nascent stage. Online subscriptions and links to
+third-party websites are also considered digital libraries. However, many
+digital libraries do have not any proper search interface on their respective
+website due to improper arrangement of metadata. In some cases, they do not
+have their own digitized collection and provided other collections or referred
+to their users to some third-party website. Moreover, there are many digital
+libraries that cannot be accessed outside (remote access) of the organization.
+Hence, regular website maintenance, remote access facility, and proper training
+of information professionals are required. Moreover, the so-called digital
+libraries in India have not developed their own standards or are not following
+any global standards. However, the usage statistics for government digital
+libraries are far better than the usage statistics of academic or public
+libraries. Users are perhaps more interested in government rules, laws, orders,
+etc. That is perhaps a positive sign of digital governance and reaching the
+public. There are several important observations and policy suggestions that
+may be helpful for students, scholars, library professionals, and the
+decision-makers in the government.
+",cs.DL
+238818,"Proposal for an Organic Web, The missing link between the Web and the
+  Semantic Web, Part 1","  A huge amount of information is produced in digital form. The Semantic Web
+stems from the realisation that dealing efficiently with this production
+requires getting better at interlinking digital informational resources
+together. Its focus is on linking data. Linking data isn't enough. We need to
+provide infrastructural support for linking all sorts of informational
+resources including resources whose understanding and fine interlinking
+requires domain-specific human expertise. At times when many problems scale to
+planetary dimensions, it is essential to scale coordination of information
+processing and information production, without giving up on expertise and depth
+of analysis, nor forcing languages and formalisms onto thinkers,
+decision-makers and innovators that are only suitable to some forms of
+intelligence. This article makes a proposal in this direction and in line with
+the idea of interlinking championed by the Semantic Web.
+",cs.DL cs.ET cs.IR
+275220,"A proof-of-concept online metadata catalogue service of Earth
+  observation datasets for human health research in exposomics","  This article describes research carried out during 2023 under an
+International Society for Photogrammetry and Remote Sensing (ISPRS)-funded
+project to develop and disseminate a metadata catalogue of Earth observation
+data sources/products and types that are relevant to human health research in
+exposomics, as a free service to interested researchers worldwide. The
+proof-of-concept catalogue was informed by input from existing research
+literature on the subject (desk research), as well as online communications
+with, and relevant research publications collected from, a small panel (n = 5)
+of select experts from the academia in three countries (China, UK and USA). It
+has 90 metadata records of relevant Earth observation datasets (n = 40) and
+associated health-focused research publications (n = 50). The project's online
+portal offers a searchable version of the catalogue featuring a number of
+search modes and filtering options. It is hoped future, more comprehensive
+versions of this service will enable more researchers and studies to discover
+and use remote sensing data about population-level exposures to disease
+determinants (exposomic determinants of disease) in combination with other
+relevant data to reveal fresh insights that could improve our understanding of
+relevant diseases, and hence contribute to the development of better-optimized
+prevention and management plans to tackle them.
+",cs.DL cs.DB
+14769,Metrics and peer review agreement at the institutional level,"  In the past decades, many countries have started to fund academic
+institutions based on the evaluation of their scientific performance. In this
+context, post-publication peer review is often used to assess scientific
+performance. Bibliometric indicators have been suggested as an alternative to
+peer review. A recurrent question in this context is whether peer review and
+metrics tend to yield similar outcomes. In this paper, we study the agreement
+between bibliometric indicators and peer review based on a sample of
+publications submitted for evaluation to the national Italian research
+assessment exercise (2011--2014). In particular, we study the agreement between
+bibliometric indicators and peer review at a higher aggregation level, namely
+the institutional level. Additionally, we also quantify the internal agreement
+of peer review at the institutional level. We base our analysis on a
+hierarchical Bayesian model using cross-validation. We find that the level of
+agreement is generally higher at the institutional level than at the
+publication level. Overall, the agreement between metrics and peer review is on
+par with the internal agreement among two reviewers for certain fields of
+science in this particular context. This suggests that for some fields,
+bibliometric indicators may possibly be considered as an alternative to peer
+review for the Italian national research assessment exercise. Although results
+do not necessarily generalise to other contexts, it does raise the question
+whether similar findings would obtain for other research assessment exercises,
+such as in the United Kingdom.
+",cs.DL
+413354,"Where there's a will there's a way: ChatGPT is used more for science in
+  countries where it is prohibited","  Regulating AI is a key societal challenge, but which regulation methods are
+effective is unclear. This study measures the effectiveness of restricting AI
+services geographically, focusing on ChatGPT. OpenAI restricts ChatGPT access
+in several countries, including China and Russia. If restrictions are
+effective, ChatGPT use should be minimal in these countries. We measured use
+with a classifier based on distinctive word usage found in early versions of
+ChatGPT, e.g. ""delve."" We trained the classifier on pre- and post-ChatGPT
+""polished"" abstracts and found it outperformed GPTZero and ZeroGPT on
+validation sets, including papers with self-reported AI use. Applying the
+classifier to preprints from Arxiv, BioRxiv, and MedRxiv showed ChatGPT was
+used in about 12.6% of preprints by August 2023, with 7.7% higher usage in
+restricted countries. The gap appeared before China's first major legal LLM
+became widely available. To test the possibility that, due to high demand, use
+in restricted countries would have been even higher without restrictions, we
+compared Asian countries with high expected demand (where English is not an
+official language) and found that use was higher in those with restrictions.
+ChatGPT use was correlated with higher views and downloads, but not citations
+or journal placement. Overall, restricting ChatGPT geographically has proven
+ineffective in science and possibly other domains, likely due to widespread
+workarounds.
+",cs.DL cs.CY
+310091,Modeling citation concentration through a mixture of Leimkuhler curves,"  When a graphical representation of the cumulative percentage of total
+citations to articles, ordered from most cited to least cited, is plotted
+against the cumulative percentage of articles, we obtain a Leimkuhler curve. In
+this study, we noticed that standard Leimkuhler functions may not be sufficient
+to provide accurate fits to various empirical informetrics data. Therefore, we
+introduce a new approach to Leimkuhler curves by fitting a known probability
+density function to the initial Leimkuhler curve, taking into account the
+presence of a heterogeneity factor. As a significant contribution to the
+existing literature, we introduce a pair of mixture distributions (called PG
+and PIG) to bibliometrics. In addition, we present closed-form expressions for
+Leimkuhler curves. {Some measures of citation concentration are examined
+empirically for the basic models (based on the Power {and Pareto
+distributions}) and the mixed models derived from {these}.} An application to
+two sources of informetric data was conducted to see how the mixing models
+outperform the standard basic models. The different models were fitted using
+non-linear least squares estimation.
+",cs.DL stat.AP
+377769,"Quantifying Lifetime Productivity Changes: A Longitudinal Study of
+  320,000 Late-Career Scientists","  The present study focuses on persistence in research productivity over the
+course of an individual's entire scientific career. We track 'late-career'
+scientists - scientists with at least 25 years of publishing experience
+(N=320,564) - in 16 STEMM (science, technology, engineering, mathematics, and
+medicine) and social science disciplines from 38 OECD countries for up to five
+decades. Our OECD sample includes 79.42% of late-career scientists globally. We
+examine the details of their mobility patterns as early-career, mid-career, and
+late-career scientists between decile-based productivity classes, from the
+bottom 10% to top 10% of the productivity distribution. Methodologically, we
+turn a large-scale bibliometric dataset (Scopus raw data) into a comprehensive,
+longitudinal data source for research on careers in science. The global science
+system is highly immobile: half of global top performers continue their careers
+as top performers and one-third of global bottom performers as bottom
+performers. Jumpers-Up and Droppers-Down are extremely rare in science. The
+chances of moving radically up or down in productivity classes are marginal (1%
+or less). Our regression analyses show that productivity classes are highly
+path dependent: there is a single most important predictor of being a top
+performer, which is being a top performer at an earlier career stage.
+",cs.DL
+421062,"Wikipedia Citations: Reproducible Citation Extraction from Multilingual
+  Wikipedia","  Wikipedia is an essential component of the open science ecosystem, yet it is
+poorly integrated with academic open science initiatives. Wikipedia Citations
+is a project that focuses on extracting and releasing comprehensive datasets of
+citations from Wikipedia. A total of 29.3 million citations were extracted from
+English Wikipedia in May 2020. Following this one-off research project, we
+designed a reproducible pipeline that can process any given Wikipedia dump in
+the cloud-based settings. To demonstrate its usability, we extracted 40.6
+million citations in February 2023 and 44.7 million citations in February 2024.
+Furthermore, we equipped the pipeline with an adapted Wikipedia citation
+template translation module to process multilingual Wikipedia articles in 15
+European languages so that they are parsed and mapped into a generic structured
+citation template. This paper presents our open-source software pipeline to
+retrieve, classify, and disambiguate citations on demand from a given Wikipedia
+dump.
+",cs.DL
+179893,"Has the Machine Learning Review Process Become More Arbitrary as the
+  Field Has Grown? The NeurIPS 2021 Consistency Experiment","  We present the NeurIPS 2021 consistency experiment, a larger-scale variant of
+the 2014 NeurIPS experiment in which 10% of conference submissions were
+reviewed by two independent committees to quantify the randomness in the review
+process. We observe that the two committees disagree on their accept/reject
+recommendations for 23% of the papers and that, consistent with the results
+from 2014, approximately half of the list of accepted papers would change if
+the review process were randomly rerun. Our analysis suggests that making the
+conference more selective would increase the arbitrariness of the process.
+Taken together with previous research, our results highlight the inherent
+difficulty of objectively measuring the quality of research, and suggest that
+authors should not be excessively discouraged by rejected work.
+",cs.LG cs.DL
+146350,Characteristics of LIS Research Articles Affecting Their Citation Impact,"  The paper analyses the citation impact of Library and Information Science,
+LIS for short, research articles published in 31 leading international LIS
+journals in 2015. The main research question is: to what degree do authors'
+disciplinary composition in association with other content characteristics of
+LIS articles affect their citation impact? The impact is analysed in terms of
+the number of citations received and their authority, using outlier
+normalization and subfield normalization. The article characteristics analysed
+using quantitative content analysis include topic, methodology, type of
+contribution, and the disciplinary composition of their author teams. The
+citations received by the articles are traced from 2015 to May 2021. Citing
+document authority is measured by the citations they had received up to May
+2021. The overall finding was that authors' disciplinary composition is
+significantly associated with citation scores. The differences in citation
+scores between disciplinary compositions appeared typically within information
+retrieval and scientific communication. In both topics LIS and computer science
+jointly received significantly higher citation scores than many disciplines
+like LIS alone or humanities in information retrieval, or natural sciences,
+medicine, or social sciences alone in scientific communication. The paper is
+original in allowing joint analysis of content, authorship composition, and
+impact.
+",cs.DL cs.SI
+53132,"Once Highly Productive, Forever Highly Productive? Full Professors'
+  Research Productivity from a Longitudinal Perspective","  This longitudinal study explores persistence in research productivity over
+time. We examine the trajectories of the academic careers of 2,326 current full
+professors in 14 STEMM disciplines, studying their lifetime biographical
+histories and publication histories. Every full professor is compared in terms
+of productivity classes (top, middle, bottom) with their peers at earlier
+career stages. We used prestige-normalized productivity in which more weight is
+given to articles in high-impact than in low-impact journals, recognizing the
+highly stratified nature of academic science. Our results show that membership
+in top productivity classes is to a large extent determined by being in these
+classes earlier. Half of the current top productive full professors belonged to
+top productivity classes throughout their academic careers. Half of the top
+productive assistant professors continued as top productive associate
+professors, and half of the top productive associate professors continued as
+top productive full professors (52.6% and 50.8%). Top-to-bottom and
+bottom-to-top transitions in productivity classes occurred marginally. The
+combination of biographical and demographic data with raw Scopus publication
+data from the past 50 years (N=1 million) made it possible to assign all full
+professors retrospective to different productivity, promotion age, and
+promotion speed classes. In logistic regression models, two powerful predictors
+of belonging to the top productivity class for full professors were being
+highly productive as assistant professors and as associate professors
+(increasing the odds by 180% and 360%). Neither gender nor age (biological or
+academic) emerged as statistically significant.
+",cs.DL
+326146,"Does the Use of Unusual Combinations of Datasets Contribute to Greater
+  Scientific Impact?","  Scientific datasets play a crucial role in contemporary data-driven research,
+as they allow for the progress of science by facilitating the discovery of new
+patterns and phenomena. This mounting demand for empirical research raises
+important questions on how strategic data utilization in research projects can
+stimulate scientific advancement. In this study, we examine the hypothesis
+inspired by the recombination theory, which suggests that innovative
+combinations of existing knowledge, including the use of unusual combinations
+of datasets, can lead to high-impact discoveries. Focusing on social science,
+we investigate the scientific outcomes of such atypical data combinations in
+more than 30,000 publications that leverage over 5,000 datasets curated within
+one of the largest social science databases, ICPSR. This study offers four
+important insights. First, combining datasets, particularly those infrequently
+paired, significantly contributes to both scientific and broader impacts (e.g.,
+dissemination to the general public). Second, infrequently paired datasets
+maintain a strong association with citation even after controlling for the
+atypicality of dataset topics. In contrast, the atypicality of dataset topics
+has a much smaller positive impact on citation counts. Third, smaller and less
+experienced research teams tend to use atypical combinations of datasets in
+research more frequently than their larger and more experienced counterparts.
+Lastly, despite the benefits of data combination, papers that amalgamate data
+remain infrequent. This finding suggests that the unconventional combination of
+datasets is an under-utilized but powerful strategy correlated with the
+scientific impact and broader dissemination of scientific discoveries
+",cs.DL cs.SI econ.GN q-fin.EC
+434934,On the modification and revocation of open source licences,"  Historically, open source commitments have been deemed irrevocable once
+materials are released under open source licenses. In this paper, the authors
+argue for the creation of a subset of rights that allows open source
+contributors to force users to (i) update to the most recent version of a
+model, (ii) accept new use case restrictions, or even (iii) cease using the
+software entirely. While this would be a departure from the traditional open
+source approach, the legal, reputational and moral risks related to
+open-sourcing AI models could justify contributors having more control over
+downstream uses. Recent legislative changes have also opened the door to
+liability of open source contributors in certain cases. The authors believe
+that contributors would welcome the ability to ensure that downstream users are
+implementing updates that address issues like bias, guardrail workarounds or
+adversarial attacks on their contributions. Finally, this paper addresses how
+this license category would interplay with RAIL licenses, and how it should be
+operationalized and adopted by key stakeholders such as OSS platforms and
+scanning tools.
+",cs.DL cs.CY
+12407,MODMA dataset: a Multi-modal Open Dataset for Mental-disorder Analysis,"  According to the World Health Organization, the number of mental disorder
+patients, especially depression patients, has grown rapidly and become a
+leading contributor to the global burden of disease. However, the present
+common practice of depression diagnosis is based on interviews and clinical
+scales carried out by doctors, which is not only labor-consuming but also
+time-consuming. One important reason is due to the lack of physiological
+indicators for mental disorders. With the rising of tools such as data mining
+and artificial intelligence, using physiological data to explore new possible
+physiological indicators of mental disorder and creating new applications for
+mental disorder diagnosis has become a new research hot topic. However, good
+quality physiological data for mental disorder patients are hard to acquire. We
+present a multi-modal open dataset for mental-disorder analysis. The dataset
+includes EEG and audio data from clinically depressed patients and matching
+normal controls. All our patients were carefully diagnosed and selected by
+professional psychiatrists in hospitals. The EEG dataset includes not only data
+collected using traditional 128-electrodes mounted elastic cap, but also a
+novel wearable 3-electrode EEG collector for pervasive applications. The
+128-electrodes EEG signals of 53 subjects were recorded as both in resting
+state and under stimulation; the 3-electrode EEG signals of 55 subjects were
+recorded in resting state; the audio data of 52 subjects were recorded during
+interviewing, reading, and picture description. We encourage other researchers
+in the field to use it for testing their methods of mental-disorder analysis.
+",cs.DL cs.LG q-bio.NC
+32704,"Understanding the Use of e-Prints on Reddit and 4chan's Politically
+  Incorrect Board","  The dissemination and reach of scientific knowledge have increased at a
+blistering pace. In this context, e-Print servers have played a central role by
+providing scientists with a rapid and open mechanism for disseminating research
+without waiting for the (lengthy) peer review process. While helping the
+scientific community in several ways, e-Print servers also provide scientific
+communicators and the general public with access to a wealth of knowledge
+without paying hefty subscription fees. This motivates us to study how e-Prints
+are positioned within Web community discussions.
+  In this paper, we analyze data from two Web communities: 14 years of Reddit
+data and over 4 from 4chan's Politically Incorrect board. Our findings
+highlight the presence of e-Prints in both science-enthusiast and
+general-audience communities. Real-world events and distinct factors influence
+the e-Prints people's discussions; e.g., there was a surge of COVID-19-related
+research publications during the early months of the outbreak and increased
+references to e-Prints in online discussions. Text in e-Prints and in online
+discussions referencing them has a low similarity, suggesting that the latter
+are not exclusively talking about the findings in the former. Further, our
+analysis of a sample of threads highlights: 1) misinterpretation and
+generalization of research findings, 2) early research findings being amplified
+as a source for future predictions, and 3) questioning findings from a
+pseudoscientific e-Print. Overall, our work emphasizes the need to quickly and
+effectively validate non-peer-reviewed e-Prints that get substantial
+press/social media coverage to help mitigate wrongful interpretations of
+scientific outputs.
+",cs.DL cs.SI
+339377,How open are hybrid journals included in transformative agreements?,"  The ongoing controversy surrounding transformative agreements, which aim to
+transition subscription-based journal publishing to full open access,
+highlights the need for large-scale studies assessing the impact of these
+agreements on hybrid open access. By combining multiple open data sources,
+including cOAlition S Journal Checker, Crossref, and OpenAlex, this study
+presents a novel approach that analyses over 700 agreements. Results suggest a
+strong growth in open access, from 4.3% in 2018 to 15% in 2022. Over five
+years, 11,189 hybrid journals provided open access to 742,369 out of 8,146,958
+articles (9.1%). Authors who could make use of transformative agreements
+contributed 328,957 open access articles (44%) during this period, reaching a
+peak in 2022 with 143,615 out of 249,511 open access articles (58%). While this
+trend was predominantly driven by the three commercial publishers Elsevier,
+Springer Nature, and Wiley, open access uptake varied substantially across
+journals, publishers, disciplines, and countries. Particularly, the OECD and
+BRICS areas revealed different publication trends. In conclusion, this study
+suggests that current levels of implementation of transformative agreements is
+insufficient to bring about a large-scale transition to full open access.
+",cs.DL
+252452,"Disappearing repositories -- taking an infrastructure perspective on the
+  long-term availability of research data","  Currently, there is limited research investigating the phenomenon of research
+data repositories being shut down, and the impact this has on the long-term
+availability of data. This paper takes an infrastructure perspective on the
+preservation of research data by using a registry to identify 191 research data
+repositories that have been closed and presenting information on the shutdown
+process. The results show that 6.2 % of research data repositories indexed in
+the registry were shut down. The risks resulting in repository shutdown are
+varied. The median age of a repository when shutting down is 12 years.
+Strategies to prevent data loss at the infrastructure level are pursued to
+varying extent. 44 % of the repositories in the sample migrated data to another
+repository, and 12 % maintain limited access to their data collection. However,
+both strategies are not permanent solutions. Finally, the general lack of
+information on repository shutdown events as well as the effect on the
+findability of data and the permanence of the scholarly record are discussed.
+",cs.DL
+419095,"Delving into the Utilisation of ChatGPT in Scientific Publications in
+  Astronomy","  Rapid progress in the capabilities of machine learning approaches in natural
+language processing has culminated in the rise of large language models over
+the last two years. Recent works have shown unprecedented adoption of these for
+academic writing, especially in some fields, but their pervasiveness in
+astronomy has not been studied sufficiently. To remedy this, we extract words
+that ChatGPT uses more often than humans when generating academic text and
+search a total of 1 million articles for them. This way, we assess the
+frequency of word occurrence in published works in astronomy tracked by the
+NASA Astrophysics Data System since 2000. We then perform a statistical
+analysis of the occurrences. We identify a list of words favoured by ChatGPT
+and find a statistically significant increase for these words against a control
+group in 2024, which matches the trend in other disciplines. These results
+suggest a widespread adoption of these models in the writing of astronomy
+papers. We encourage organisations, publishers, and researchers to work
+together to identify ethical and pragmatic guidelines to maximise the benefits
+of these systems while maintaining scientific rigour.
+",cs.CL astro-ph.IM cs.DL
+437244,"ILiAD: An Interactive Corpus for Linguistic Annotated Data from Twitter
+  Posts","  Social Media platforms have offered invaluable opportunities for linguistic
+research. The availability of up-to-date data, coming from any part in the
+world, and coming from natural contexts, has allowed researchers to study
+language in real time. One of the fields that has made great use of social
+media platforms is Corpus Linguistics. There is currently a wide range of
+projects which have been able to successfully create corpora from social media.
+In this paper, we present the development and deployment of a linguistic corpus
+from Twitter posts in English, coming from 26 news agencies and 27 individuals.
+The main goal was to create a fully annotated English corpus for linguistic
+analysis. We include information on morphology and syntax, as well as NLP
+features such as tokenization, lemmas, and n- grams. The information is
+presented through a range of powerful visualisations for users to explore
+linguistic patterns in the corpus. With this tool, we aim to contribute to the
+area of language technologies applied to linguistic research.
+",cs.CL cs.DL
+115917,"Advancing Software Citation Implementation (Software Citation Workshop
+  2022)","  Software is foundationally important to scientific and social progress,
+however, traditional acknowledgment of the use of others' work has not adapted
+in step with the rapid development and use of software in research.
+  This report outlines a series of collaborative discussions that brought
+together an international group of stakeholders and experts representing many
+communities, forms of labor, and expertise. Participants addressed specific
+challenges about software citation that have so far gone unresolved. The
+discussions took place in summer 2022 both online and in-person and involved a
+total of 51 participants.
+  The activities described in this paper were intended to identify and
+prioritize specific software citation problems, develop (potential)
+interventions, and lay out a series of mutually supporting approaches to
+address them. The outcomes of this report will be useful for the GLAM
+(Galleries, Libraries, Archives, Museums) community, repository managers and
+curators, research software developers, and publishers.
+",cs.DL
+252089,"Towards immersive generosity: The need for a novel framework to explore
+  large audiovisual archives through embodied experiences in immersive
+  environments","  This article proposes an innovative framework to explore large audiovisual
+archives using Immersive Environments to place users inside a dataset and
+create an embodied experience. It starts by outlining the need for such a novel
+interface to meet the needs of archival scholars and the GLAM sector, and
+discusses issues in the current modes of access, mostly restrained to
+traditional information retrieval systems based on metadata. The paper presents
+the concept of ``generous interfaces"" as a preliminary approach to address
+these issues, and argues some of the key reasons why employing Immersive Visual
+Storytelling might benefit such frameworks. The theory of embodiment is
+leveraged to justify this claim, showing how a more embodied understanding of a
+collection can result in a stronger engagement for the public. By placing users
+as actors in the experience rather than mere spectators, the emergence of
+narrative is driven by their interactions, with benefits in terms of engagement
+with the public and understanding of the cultural component. The framework we
+propose is applied to two existing installations to analyze them in-depth and
+critique them, highlighting the key directions to pursue for further
+development.
+",cs.DL
+467014,"Universal Workflow Language and Software Enables Geometric Learning and
+  FAIR Scientific Protocol Reporting","  The modern technological landscape has trended towards increased precision
+and greater digitization of information. However, the methods used to record
+and communicate scientific procedures have remained largely unchanged over the
+last century. Written text as the primary means for communicating scientific
+protocols poses notable limitations in human and machine information transfer.
+In this work, we present the Universal Workflow Language (UWL) and the
+open-source Universal Workflow Language interface (UWLi). UWL is a graph-based
+data architecture that can capture arbitrary scientific procedures through
+workflow representation of protocol steps and embedded procedure metadata. It
+is machine readable, discipline agnostic, and compatible with FAIR reporting
+standards. UWLi is an accompanying software package for building and
+manipulating UWL files into tabular and plain text representations in a
+controlled, detailed, and multilingual format. UWL transcription of protocols
+from three high-impact publications resulted in the identification of
+substantial deficiencies in the detail of the reported procedures. UWL
+transcription of these publications identified seventeen procedural ambiguities
+and thirty missing parameters for every one hundred words in published
+procedures. In addition to preventing and identifying procedural omission, UWL
+files were found to be compatible with geometric learning techniques for
+representing scientific protocols. In a surrogate function designed to
+represent an arbitrary multi-step experimental process, graph transformer
+networks were able to predict outcomes in approximately 6,000 fewer experiments
+than equivalent linear models. Implementation of UWL and UWLi into the
+scientific reporting process will result in higher reproducibility between both
+experimentalists and machines, thus proving an avenue to more effective
+modeling and control of complex systems.
+",cs.DL physics.soc-ph
+393824,"Rethinking the production and publication of machine-reusable
+  expressions of research findings","  Literature is the primary expression of scientific knowledge and an important
+source of research data. However, scientific knowledge expressed in narrative
+text documents is not inherently machine reusable. To facilitate knowledge
+reuse, e.g. for synthesis research, scientific knowledge must be extracted from
+articles and organized into databases post-publication. The high time costs and
+inaccuracies associated with completing these activities manually has driven
+the development of techniques that automate knowledge extraction. Tackling the
+problem with a different mindset, we propose a pre-publication approach, known
+as reborn, that ensures scientific knowledge is born reusable, i.e. produced in
+a machine-reusable format during knowledge production. We implement the
+approach using the Open Research Knowledge Graph infrastructure for FAIR
+scientific knowledge organization. We test the approach with three use cases,
+and discuss the role of publishers and editors in scaling the approach. Our
+results suggest that the proposed approach is superior compared to classical
+manual and semi-automated post-publication extraction techniques in terms of
+knowledge richness and accuracy as well as technological simplicity.
+",cs.DL
+511494,Mitigating Consequences of Prestige in Citations of Publications,"  For many public research organizations, funding creation of science and
+maximizing scientific output is of central interest. Typically, when evaluating
+scientific production for funding, citations are utilized as a proxy, although
+these are severely influenced by factors beyond scientific impact. This study
+aims to mitigate the consequences of the Matthew effect in citations, where
+prominent authors and prestigious journals receive more citations regardless of
+the scientific content of the publications. To this end, the study presents an
+approach to predicting citations of papers based solely on observable
+characteristics available at the submission stage of a double-blind peer-review
+process. Combining classical linear models, generalized linear models and
+utilizing large-scale data sets on biomedical papers based on the PubMed
+database, the results demonstrate that it is possible to make fairly accurate
+predictions of citations using only observable characteristics of papers
+excluding information on authors and journals, thereby mitigating the Matthew
+effect. Thus, the outcomes have important implications for the field of
+scientometrics, providing a more objective method for citation prediction by
+relying on pre-publication variables that are immune to manipulation by authors
+and journals, thereby enhancing the objectivity of the evaluation process. Our
+approach is thus important for government agencies responsible for funding the
+creation of high-quality scientific content rather than perpetuating prestige.
+",cs.DL stat.AP
+502593,"Challenges in Implementing a Recommender System for Historical Research
+  in the Humanities","  This extended abstract describes the challenges in implementing recommender
+systems for digital archives in the humanities, focusing on Monasterium.net, a
+platform for historical legal documents. We discuss three key aspects: (i) the
+unique characteristics of so-called charters as items for recommendation, (ii)
+the complex multi-stakeholder environment, and (iii) the distinct
+information-seeking behavior of scholars in the humanities. By examining these
+factors, we aim to contribute to the development of more effective and tailored
+recommender systems for (digital) humanities research.
+",cs.IR cs.DL
+393429,"Amplifying Academic Research through YouTube: Engagement Metrics as
+  Predictors of Citation Impact","  This study explores the interplay between YouTube engagement metrics and the
+academic impact of cited publications within video descriptions, amid declining
+trust in traditional journalism and increased reliance on social media for
+information. By analyzing data from Altmetric.com and YouTube's API, it
+assesses how YouTube video features relate to citation impact. Initial results
+suggest that videos citing scientific publications and garnering high
+engagement-likes, comments, and references to other publications-may function
+as a filtering mechanism or even as a predictor of impactful research.
+",cs.CY cs.DL
+274763,On the Fast Track to Full Gold Open Access,"  The world of scientific publishing is changing; the days of an old type of
+subscription-based earnings for publishers seem over, and we are entering a new
+era. It seems as if an ever-increasing number of journals from disparate
+publishers are going Gold, Open Access that is, yet have we rigorously
+ascertained the issue in its entirety, or are we touting the strengths and
+forgetting about constructive criticism and careful weighing of evidence? We
+will therefore present the current state of the art, in a compact
+review/bibliometrics style, of this more relevant than ever hot topic,
+including challenges and potential solutions that are most likely to be
+acceptable to all parties. Suggested solutions, as per the performed analysis,
+at least for the time being, represent an inclusive publishing environment
+where multiple publishing models are competing for a piece of the pie and thus
+inhibiting each other's flaws. The performed analysis also shows that there
+seems to be a link between trends in scientific publishing and tumultuous world
+events, which in turn has a special significance for the publishing environment
+in the current world stage -- implying that academy publishing has potentially
+now found itself at a tipping point of change.
+",cs.DL
+232620,"Encoding Multi-Domain Scientific Papers by Ensembling Multiple CLS
+  Tokens","  Many useful tasks on scientific documents, such as topic classification and
+citation prediction, involve corpora that span multiple scientific domains.
+Typically, such tasks are accomplished by representing the text with a vector
+embedding obtained from a Transformer's single CLS token. In this paper, we
+argue that using multiple CLS tokens could make a Transformer better specialize
+to multiple scientific domains. We present Multi2SPE: it encourages each of
+multiple CLS tokens to learn diverse ways of aggregating token embeddings, then
+sums them up together to create a single vector representation. We also propose
+our new multi-domain benchmark, Multi-SciDocs, to test scientific paper vector
+encoders under multi-domain settings. We show that Multi2SPE reduces error by
+up to 25 percent in multi-domain citation prediction, while requiring only a
+negligible amount of computation in addition to one BERT forward pass.
+",cs.CL cs.DL cs.LG
+426070,"Are Scientists Changing their Research Productivity Classes When They
+  Move Up the Academic Ladder?","  We approach productivity in science in a longitudinal fashion: We track
+careers over time, up to 40 years. We first allocate scientists to decile-based
+publishing productivity classes, from the bottom 10% to the top 10%. Then, we
+seek patterns of mobility between the classes in two career stages: assistant
+professorship and associate professorship. Our findings confirm that radically
+changing publishing productivity levels (upward or downward) almost never
+happens. Scientists with a very weak past track record in publications emerge
+as having marginal chances of becoming scientists with a very strong future
+track record across all science, technology, engineering, mathematics, and
+medicine (STEMM) fields. Hence, our research shows a long-term character of
+careers in science, with publishing productivity during the apprenticeship
+period of assistant professorship heavily influencing productivity during the
+more independent period of associate professorship. We use individual-level
+microdata on academic careers (from a national registry of scientists) and
+individual-level metadata on publications (from the Scopus raw dataset). Polish
+associate professors tend to be stuck in their productivity classes for years:
+High performers tend to remain high performers, and low performers tend to
+remain low performers over their careers. Logistic regression analysis
+powerfully supports our two-dimensional results. We examine all internationally
+visible Polish associate professors in five fields of science in STEMM fields
+(N = 4,165 with N art = 71,841 articles).
+",cs.DL
+282138,"A Knowledge Graph Approach for Exploratory Search in Research
+  Institutions","  Over the past decades, research institutions have grown increasingly and
+consequently also their research output. This poses a significant challenge for
+researchers seeking to understand the research landscape of an institution. The
+process of exploring the research landscape of institutions has a vague
+information need, no precise goal, and is open-ended. Current applications are
+not designed to fulfill the requirements for exploratory search in research
+institutions. In this paper, we analyze exploratory search in research
+institutions and propose a knowledge graph-based approach to enhance this
+process.
+",cs.DL
+229971,CRUISE-Screening: Living Literature Reviews Toolbox,"  Keeping up with research and finding related work is still a time-consuming
+task for academics. Researchers sift through thousands of studies to identify a
+few relevant ones. Automation techniques can help by increasing the efficiency
+and effectiveness of this task. To this end, we developed CRUISE-Screening, a
+web-based application for conducting living literature reviews - a type of
+literature review that is continuously updated to reflect the latest research
+in a particular field. CRUISE-Screening is connected to several search engines
+via an API, which allows for updating the search results periodically.
+Moreover, it can facilitate the process of screening for relevant publications
+by using text classification and question answering models. CRUISE-Screening
+can be used both by researchers conducting literature reviews and by those
+working on automating the citation screening process to validate their
+algorithms. The application is open-source:
+https://github.com/ProjectDoSSIER/cruise-screening, and a demo is available
+under this URL: https://citation-screening.ec.tuwien.ac.at. We discuss the
+limitations of our tool in Appendix A.
+",cs.IR cs.CL cs.DL
+403162,"Knowledge Graph in Astronomical Research with Large Language Models:
+  Quantifying Driving Forces in Interdisciplinary Scientific Discovery","  Identifying and predicting the factors that contribute to the success of
+interdisciplinary research is crucial for advancing scientific discovery.
+However, there is a lack of methods to quantify the integration of new ideas
+and technological advancements in astronomical research and how these new
+technologies drive further scientific breakthroughs. Large language models,
+with their ability to extract key concepts from vast literature beyond keyword
+searches, provide a new tool to quantify such processes. In this study, we
+extracted concepts in astronomical research from 297,807 publications between
+1993 and 2024 using large language models, resulting in a set of 24,939
+concepts. These concepts were then used to form a knowledge graph, where the
+link strength between any two concepts was determined by their relevance
+through the citation-reference relationships. By calculating this relevance
+across different time periods, we quantified the impact of numerical
+simulations and machine learning on astronomical research. The knowledge graph
+demonstrates two phases of development: a phase where the technology was
+integrated and another where the technology was explored in scientific
+discovery. The knowledge graph reveals that despite machine learning has made
+much inroad in astronomy, there is currently a lack of new concept development
+at the intersection of AI and Astronomy, which may be the current bottleneck
+preventing machine learning from further transforming the field of astronomy.
+",astro-ph.IM cs.DL
+494817,"Exploring Scientific Contributions through Citation Context and Division
+  of Labor","  Scientific contributions are a direct reflection of a research paper's value,
+illustrating its impact on existing theories or practices. Existing measurement
+methods assess contributions based on the authors' perceived or self-identified
+contributions, while the actual contributions made by the papers are rarely
+investigated. This study measures the actual contributions of papers published
+in Nature and Science using 1.53 million citation contexts from citing
+literature and explores the impact pattern of division of labor (DOL) inputs on
+the actual contributions of papers from an input-output perspective. Results
+show that experimental contributions are predominant, contrasting with the
+theoretical and methodological contributions self-identified by authors. This
+highlights a notable discrepancy between actual contributions and authors'
+self-perceptions, indicating an 'ideal bias'. There is no significant
+correlation between the overall labor input pattern and the actual contribution
+pattern of papers, but a positive correlation appears between input and output
+for specific types of scientific contributions, reflecting a 'more effort, more
+gain' effect. Different types of DOL input in papers exhibit a notable
+co-occurrence trend. However, once the paper reaches the dissemination stage,
+the co-occurrence of different types of actual contributions becomes weaker,
+indicating that a paper's contributions are often focused on a single type.
+",cs.DL stat.AP
+21360,"Global Research Trends in the Modern Language Journal from 1999 to 2018:
+  A Data-Driven Analysis","  The present study conducts a scientometric study of the Modern Language
+Journal literature from 1999 to 2018 based on the database of Web of Science,
+2018. A total of 2564 items resulted from the publication name using ""Modern
+Language Journal"" as the search term. Based on the number of publications
+during the study period no consistent growth is observed in the research
+activities pertaining to the journal. The annual distribution of publications,
+number of authors, institution productivity, country wise publications and
+Citations are analyzed. Highly productive authors, institutions, and countries
+are identified. The results reveal that the maximum number of papers 179 is
+published in the year 1999. It was also observed that Byrnes H is the most
+productive, contributed 51 publications and Kramsch C is most cited author in
+the field having 543 global citations. The highest number (38.26%) of
+publications, contributed from USA and the foremost productive establishment
+was University of Iowa.
+",cs.DL
+204271,"On the Origin of LLMs: An Evolutionary Tree and Graph for 15,821 Large
+  Language Models","  Since late 2022, Large Language Models (LLMs) have become very prominent with
+LLMs like ChatGPT and Bard receiving millions of users. Hundreds of new LLMs
+are announced each week, many of which are deposited to Hugging Face, a
+repository of machine learning models and datasets. To date, nearly 16,000 Text
+Generation models have been uploaded to the site. Given the huge influx of
+LLMs, it is of interest to know which LLM backbones, settings, training
+methods, and families are popular or trending. However, there is no
+comprehensive index of LLMs available. We take advantage of the relatively
+systematic nomenclature of Hugging Face LLMs to perform hierarchical clustering
+and identify communities amongst LLMs using n-grams and term frequency-inverse
+document frequency. Our methods successfully identify families of LLMs and
+accurately cluster LLMs into meaningful subgroups. We present a public web
+application to navigate and explore Constellation, our atlas of 15,821 LLMs.
+Constellation rapidly generates a variety of visualizations, namely
+dendrograms, graphs, word clouds, and scatter plots. Constellation is available
+at the following link: https://constellation.sites.stanford.edu/.
+",cs.DL cs.CL
+203868,"How do software citation formats evolve over time? A longitudinal
+  analysis of R programming language packages","  Under the data-driven research paradigm, research software has come to play
+crucial roles in nearly every stage of scientific inquiry. Scholars are
+advocating for the formal citation of software in academic publications,
+treating it on par with traditional research outputs. However, software is
+hardly consistently cited: one software entity can be cited as different
+objects, and the citations can change over time. These issues, however, are
+largely overlooked in existing empirical research on software citation. To fill
+the above gaps, the present study compares and analyzes a longitudinal dataset
+of citation formats of all R packages collected in 2021 and 2022, in order to
+understand the citation formats of R-language packages, important members in
+the open-source software family, and how the citations evolve over time. In
+particular, we investigate the different document types underlying the
+citations and what metadata elements in the citation formats changed over time.
+Furthermore, we offer an in-depth analysis of the disciplinarity of journal
+articles cited as software (software papers). By undertaking this research, we
+aim to contribute to a better understanding of the complexities associated with
+software citation, shedding light on future software citation policies and
+infrastructure.
+",cs.DL cs.CL
+313541,"A multi-dimensional analysis of usage counts, Mendeley readership, and
+  citations for journal and conference papers","  This study analyzed 16,799 journal papers and 98,773 conference papers
+published by IEEE Xplore in 2016 to investigate the relationships among usage
+counts, Mendeley readership, and citations through descriptive, regression, and
+mediation analyses. Differences in the relationship among these metrics between
+journal and conference papers are also studied. Results showed that there is no
+significant difference between journal and conference papers in the
+distribution patterns and accumulation rates of the three metrics. However, the
+correlation coefficients of the interrelationships between the three metrics
+were lower in conference papers compared to journal papers. Secondly, funding,
+international collaboration, and open access are positively associated with all
+three metrics, except for the case of funding on the usage metrics of
+conference papers. Furthermore, early Mendeley readership is a better predictor
+of citations than early usage counts and performs better for journal papers.
+Finally, we reveal that early Mendeley readership partially mediates between
+early usage counts and citation counts in the journal and conference papers.
+The main difference is that conference papers rely more on the direct effect of
+early usage counts on citations. This study contributes to expanding the
+existing knowledge on the relationships among usage counts, Mendeley
+readership, and citations in journal and conference papers, providing new
+insights into the relationship between the three metrics through mediation
+analysis.
+",cs.DL
+189711,Mapping the German Diamond Open Access Journal Landscape,"  In the current scientific and political discourse surrounding the
+transformation of the scientific publication system, significant attention is
+focused on Diamond Open Access (OA). This article explores the potential and
+challenges of Diamond OA journals, using Germany as a case study. Two questions
+are addressed: first, the current role of such journals in the scientific
+publication system is determined through bibliometric analysis across various
+disciplines. Second, an investigation is conducted to assess the sustainability
+of Diamond OA journals and identify associated structural problems or potential
+breaking points. This investigation includes an in-depth expert interview study
+involving 20 editors of Diamond OA journals. The empirical results are
+presented using a landscape map that considers two dimensions: 'monetized and
+gift-based completion of tasks' and 'journal team size.' The bibliometric
+analysis reveals a substantial number of Diamond OA journals in the social
+sciences and humanities, but limited adoption in other fields. The model proves
+effective for small to mid-sized journals, but not for larger ones.
+Additionally, it was found that 23 Diamond OA journals have recently
+discontinued their operations. The expert interviews demonstrate the usefulness
+of the two dimensions in understanding key differences. Journals in two of the
+four quadrants of the map exemplify sustainable conditions, while the other two
+quadrants raise concerns about long-term stability. These concerns include
+limited funding leading to a lack of division of labor and an excessive burden
+on highly committed members. These findings underscore the need for the
+development of more sustainable funding models to ensure the success of Diamond
+OA journals.
+",cs.DL
+139893,"Data inaccuracy quantification and uncertainty propagation for
+  bibliometric indicators","  This study introduces an approach to estimate the uncertainty in bibliometric
+indicator values that is caused by data errors. This approach utilizes Bayesian
+regression models, estimated from empirical data samples, which are used to
+predict error-free data. Through direct Monte Carlo simulation - drawing many
+replicates of predicted data from the estimated regression models for the same
+input data - probability distributions for indicator values can be obtained,
+which provide the information on their uncertainty due to data errors. It is
+demonstrated how uncertainty in base quantities, such as the number of
+publications of a unit of certain document types and the number of citations of
+a publication, can be propagated along a measurement model into final indicator
+values. Synthetic examples are used to illustrate the method and real
+bibliometric research evaluation data is used to show its application in
+practice. Though in this contribution we just use two out of a larger number of
+known bibliometric error categories and therefore can account for only some
+part of the total uncertainty due to inaccuracies, the latter example reveals
+that average values of citation impact scores of publications of research
+groups need to be used very cautiously as they often have large margins of
+error resulting from data inaccuracies.
+",cs.DL
+90033,"A framework for improving the accessibility of research papers on
+  arXiv.org","  The research content hosted by arXiv is not fully accessible to everyone due
+to disabilities and other barriers. This matters because a significant
+proportion of people have reading and visual disabilities, it is important to
+our community that arXiv is as open as possible, and if science is to advance,
+we need wide and diverse participation. In addition, we have mandates to become
+accessible, and accessible content benefits everyone. In this paper, we will
+describe the accessibility problems with research, review current mitigations
+(and explain why they aren't sufficient), and share the results of our user
+research with scientists and accessibility experts. Finally, we will present
+arXiv's proposed next step towards more open science: offering HTML alongside
+existing PDF and TeX formats. An accessible HTML version of this paper is also
+available at https://info.arxiv.org/about/accessibility_research_report.html
+",cs.DL
+115171,"Relatedly: Scaffolding Literature Reviews with Existing Related Work
+  Sections","  Scholars who want to research a scientific topic must take time to read,
+extract meaning, and identify connections across many papers. As scientific
+literature grows, this becomes increasingly challenging. Meanwhile, authors
+summarize prior research in papers' related work sections, though this is
+scoped to support a single paper. A formative study found that while reading
+multiple related work paragraphs helps overview a topic, it is hard to navigate
+overlapping and diverging references and research foci. In this work, we design
+a system, Relatedly, that scaffolds exploring and reading multiple related work
+paragraphs on a topic, with features including dynamic re-ranking and
+highlighting to spotlight unexplored dissimilar information, auto-generated
+descriptive paragraph headings, and low-lighting of redundant information. From
+a within-subjects user study (n=15), we found that scholars generate more
+coherent, insightful, and comprehensive topic outlines using Relatedly compared
+to a baseline paper list.
+",cs.HC cs.DL cs.IR
+242300,"The Academic Midas Touch: An Unconventional Scientometric for Evaluating
+  Academic Excellence","  The recognition of academic excellence is fundamental to the scientific and
+academic endeavor. In particular, academic scientometrics that are able to
+computationally capture academic excellence are of great interest. In this
+work, we propose and investigate an unconventional scientometric termed the
+Academic Midas Touch (AMT) that refers to a researcher's tendency to produce
+outstanding publications (i.e., golden publications). Using an extensive
+dataset of mathematicians, both award-winning and otherwise, we show that the
+AMT scientometric is a valid and arguably valuable scientometric for the
+distinction of academic excellence.
+",cs.DL
+348778,"Sentiment-aware Enhancements of PageRank-based Citation Metric, Impact
+  Factor, and H-index for Ranking the Authors of Scholarly Articles","  Heretofore, the only way to evaluate an author has been frequency-based
+citation metrics that assume citations to be of a neutral sentiment. However,
+considering the sentiment behind citations aids in a better understanding of
+the viewpoints of fellow researchers for the scholarly output of an author.
+",cs.DL cs.CY
+83963,"New Technologies, Training Initiatives and the Future of Manuscript
+  Studies","  We are standing at the edge of a major transformation in manuscript studies.
+Digital surrogates, Digital Humanities analyses and the rise of new scientific
+analytical technologies proliferate across universities, libraries and museums.
+They change the way we consult, research and disseminate historical manuscripts
+to reveal hitherto unknown, and unknowable, information. This article looks at
+how the field can best integrate these transformations. Concentrating on
+training programmes for advanced students as a way of reimagining the field, it
+provides concrete advice for the future of manuscript studies, arguing that the
+existence of manuscript studies as removed from Digital Humanities and heritage
+science is becoming more and more artificial and detrimental to the future of
+the field.
+",cs.DL
+136631,"DBLP-QuAD: A Question Answering Dataset over the DBLP Scholarly
+  Knowledge Graph","  In this work we create a question answering dataset over the DBLP scholarly
+knowledge graph (KG). DBLP is an on-line reference for bibliographic
+information on major computer science publications that indexes over 4.4
+million publications published by more than 2.2 million authors. Our dataset
+consists of 10,000 question answer pairs with the corresponding SPARQL queries
+which can be executed over the DBLP KG to fetch the correct answer. DBLP-QuAD
+is the largest scholarly question answering dataset.
+",cs.DL cs.CL
+199844,"From academic to media capital: To what extent does the scientific
+  reputation of universities translate into Wikipedia attention?","  Universities face increasing demands to improve their visibility, public
+outreach, and online presence. There is a broad consensus that scientific
+reputation significantly increases the attention universities receive. However,
+in most cases estimates of scientific reputation are based on composite or
+weighted indicators and absolute positions in university rankings. In this
+study, we adopt a more granular approach to assessment of universities'
+scientific performance using a multidimensional set of indicators from the
+Leiden Ranking and testing their individual effects on university Wikipedia
+page views. We distinguish between international and local attention and find a
+positive association between research performance and Wikipedia attention which
+holds for regions and linguistic areas. Additional analysis shows that
+productivity, scientific impact, and international collaboration have a
+curvilinear effect on universities' Wikipedia attention. This finding suggests
+that there may be other factors than scientific reputation driving the general
+public's interest in universities. Our study adds to a growing stream of work
+which views altmetrics as tools to deepen science-society interactions rather
+than direct measures of impact and recognition of scientific outputs.
+",cs.DL
+437240,A Network Analysis Approach to Conlang Research Literature,"  The field of conlang has evidenced an important growth in the last decades.
+This has been the product of a wide interest in the use and study of conlangs
+for artistic purposes. However, one important question is what it is happening
+with conlang in the academic world. This paper aims to have an overall
+understanding of the literature on conlang research. With this we aim to give a
+realistic picture of the field in present days. We have implemented a
+computational linguistic approach, combining bibliometrics and network analysis
+to examine all publications available in the Scopus database. Analysing over
+2300 academic publications since 1927 until 2022, we have found that Esperanto
+is by far the most documented conlang. Three main authors have contributed to
+this: Garv\'ia R., Fiedler S., and Blanke D. The 1970s and 1980s have been the
+decades where the foundations of current research have been built. In terms of
+methodologies, language learning and experimental linguistics are the ones
+contributing to most to the preferred approaches of study in the field. We
+present the results and discuss our limitations and future work.
+",cs.DL cs.CL
+211137,The World Literature Knowledge Graph,"  Digital media have enabled the access to unprecedented literary knowledge.
+Authors, readers, and scholars are now able to discover and share an increasing
+amount of information about books and their authors. However, these sources of
+knowledge are fragmented and do not adequately represent non-Western writers
+and their works. In this paper we present The World Literature Knowledge Graph,
+a semantic resource containing 194,346 writers and 965,210 works, specifically
+designed for exploring facts about literary works and authors from different
+parts of the world. The knowledge graph integrates information about the
+reception of literary works gathered from 3 different communities of readers,
+aligned according to a single semantic model. The resource is accessible
+through an online visualization platform, which can be found at the following
+URL: https://literaturegraph.di.unito.it/. This platform has been rigorously
+tested and validated by $3$ distinct categories of experts who have found it to
+be highly beneficial for their respective work domains. These categories
+include teachers, researchers in the humanities, and professionals in the
+publishing industry. The feedback received from these experts confirms that
+they can effectively utilize the platform to enhance their work processes and
+achieve valuable outcomes.
+",cs.DL cs.CL
+358220,Technical Report: Incorporating Blogs in Pollux,"  This technical report describes the incorporation of political blogs into
+Pollux, the Specialised Information Service (FID) for Political Science in
+Germany. Considering the widespread use of political blogs in political science
+research, we decided to include them in the Pollux search system to enhance the
+available information infrastructure. We describe the crawling and analyzing of
+the blogs and the pipeline that integrates them into the Pollux system. To
+demonstrate the content of the incorporated blogs, we also provide a
+visualization of the topics covered by the blog posts during the first three
+months following integration.
+",cs.DL
+339716,"Analyzing the Dynamics of COVID-19 Lockdown Success: Insights from
+  Regional Data and Public Health Measures","  The COVID-19 pandemic caused by the coronavirus had a significant effect on
+social, economic, and health systems globally. The virus emerged in Wuhan,
+China, and spread worldwide resulting in severe disease, death, and social
+interference. Countries implemented lockdowns in various regions to limit the
+spread of the virus. Some of them were successful and some failed. Here,
+several factors played a vital role in their success. But mostly these factors
+and their correlations remained unidentified. In this paper, we unlocked those
+factors that contributed to the success of lockdown during the COVID-19
+pandemic and explored the correlations among them. Moreover, this paper
+proposes several strategies to control any pandemic situation in the future.
+Here, it explores the relationships among variables, such as population
+density, number of infected, death, recovered patients, and the success or
+failure of the lockdown in different regions of the world. The findings suggest
+a strong correlation among these factors and indicate that the spread of
+similar kinds of viruses can be reduced in the future by implementing several
+safety measures.
+",physics.soc-ph cs.DL
+191223,"Transfer Learning across Several Centuries: Machine and Historian
+  Integrated Method to Decipher Royal Secretary's Diary","  A named entity recognition and classification plays the first and foremost
+important role in capturing semantics in data and anchoring in translation as
+well as downstream study for history. However, NER in historical text has faced
+challenges such as scarcity of annotated corpus, multilanguage variety, various
+noise, and different convention far different from the contemporary language
+model. This paper introduces Korean historical corpus (Diary of Royal secretary
+which is named SeungJeongWon) recorded over several centuries and recently
+added with named entity information as well as phrase markers which historians
+carefully annotated. We fined-tuned the language model on history corpus,
+conducted extensive comparative experiments using our language model and
+pretrained muti-language models. We set up the hypothesis of combination of
+time and annotation information and tested it based on statistical t test. Our
+finding shows that phrase markers clearly improve the performance of NER model
+in predicting unseen entity in documents written far different time period. It
+also shows that each of phrase marker and corpus-specific trained model does
+not improve the performance. We discuss the future research directions and
+practical strategies to decipher the history document.
+",cs.CL cs.DL
+346145,"Nurses as agents for achieving Environmentally Sustainable Health
+  Systems: A bibliometric analysis","  Objective: To analyze the current scientific knowledge and research lines
+focused on environmentally sustainable health systems, including the role of
+nurses. Background: There seem to be differences between creating interventions
+focused on environmentally sustainable health systems, including nurses, and
+the scarcity of research on this topic, framed on the Sustainable Development
+Goals. Methods: A bibliometric analysis was carried out, via three databases
+(Web of Science, Scopus, and Pubmed), and the guideline recommendations were
+followed to select bibliometric data. Results: The search resulted in 159
+publications, significantly increasing the trends from 2017 to 2021 (p=0.028).
+The most relevant countries in this area were the United States of America, the
+United Kingdom, and Sweden. Also, the top articles were from relevant journals,
+indexed in Journal Citation Report, and the first and the second quartile
+linked to the nursing field and citations (p<0.001). Conclusion: Education is
+key to achieving environmentally sustainable health systems via institutions
+and policies. Implications for nursing management: There is a lack of
+experimental data and policies on achieving or maintaining environmentally
+sustainable health care systems, indicating that nurses have an important role
+and should be consulted and included in decision-making policies regarding
+sustainability in the healthcare systems.
+",cs.CY cs.DL cs.SI
+233320,"Evolving landscape of US-China science collaboration: Convergence and
+  divergence","  International research collaboration among global scientific powerhouses has
+exhibited a discernible trend towards convergence in recent decades. Notably,
+the US and China have significantly fortified their collaboration across
+diverse scientific disciplines, solidifying their status as a national-level
+duopoly in global scientific knowledge production. However, recent reports hint
+at a potential decline in collaboration between these two giants, even amidst
+the backdrop of advancing global convergence. Understanding the intricate
+interplay between cooperation and disparity within the US-China relationship is
+vital for both academia and policy leaders, as it provides invaluable insights
+into the potential future trajectory of global science collaboration. Despite
+its significance, there remains a noticeable dearth of quantitative evidence
+that adequately encapsulates the dynamism across disciplines and over time. To
+bridge this knowledge gap, this study delves into the evolving landscape of
+interaction between the US and China over recent decades. This investigation
+employs two approaches, one based on paper identifiers and the other on
+researcher identifiers, both obtained from bibliometric data sourced from
+OpenAlex. From both approaches, our findings unveil the unique and dynamic
+nature of the US-China relationship, characterised by a collaboration pattern
+initially marked by rapid convergence, followed by a recent phase of
+divergence.
+",cs.DL cs.CY cs.SI physics.soc-ph
+396364,Enhancing Reentry Support Programs Through Digital Literacy Integration,"  Challenges faced by formerly incarcerated individuals in the United States
+raise questions about our society's ability to truly provide second chances.
+This paper presents the outcomes of our ongoing collaboration with a non-profit
+organization dedicated to reentry support. We highlight the multifaceted
+challenges individuals face during their reentry journey, including support
+programs that prioritize supervision over service, unresponsive support
+systems, limited access to resources, financial struggles exacerbated by
+restricted employment opportunities, and technological barriers. In the face of
+such complex social challenges, our work aims to facilitate our partner
+organization's ongoing efforts to promote digital literacy through a web
+application that is integrated into their existing processes. We share initial
+feedback from the stakeholders, draw out four implications: supporting
+continuity of care, promoting reflection through slow technology, building in
+flexibility, and reconfiguring toward existing infrastructure, and conclude
+with a reflection on our role as partners on the side.
+",cs.HC cs.DL
+471891,"Research evolution of metal organic frameworks: A scientometric approach
+  with human-in-the-loop","  This paper reports on a scientometric analysis bolstered by human in the
+loop, domain experts, to examine the field of metal organic frameworks (MOFs)
+research. Scientometric analyses reveal the intellectual landscape of a field.
+The study engaged MOF scientists in the design and review of our research
+workflow. MOF materials are an essential component in next generation renewable
+energy storage and biomedical technologies. The research approach demonstrates
+how engaging experts, via human in the loop processes, can help develop a
+comprehensive view of a field research trends, influential works, and
+specialized topics.
+",cs.DL cond-mat.mtrl-sci physics.chem-ph
+277590,The state of OAI-PMH repositories in Canadian Universities,"  This article presents a study of the current state of Universities
+Institutional Repositories (UIRs) in Canada. UIRs are vital to sharing
+information and documents, mainly Electronic Thesis and Dissertation (ETDs),
+and theoretically allow anyone, anywhere, to access the documents contained
+within the repository. Despite calls for consistent and shareable metadata in
+these repositories, our literature review shows inconsistencies in UIRs,
+including incorrect use of metadata fields and the omission of crucial
+information, rendering the systematic analysis of UIR complex. Nonetheless, we
+collected the data of 57 Canadian UIRs with the aim of analyzing Canadian data
+and to assess the quality of its UIRs. This was surprisingly difficult due to
+the lack of information about the UIRs, and we attempt to ease future
+collection efforts by organizing vital information which are difficult to find,
+starting from addresses of UIRs. We furthermore present and analyze the main
+characteristics of the UIRs we managed to collect, using this dataset to create
+recommendations for future practitioners.
+",cs.DL
+123666,"Authorship Conflicts in Academia: an International Cross-Discipline
+  Survey","  Collaboration among scholars has emerged as a significant characteristic of
+contemporary science. As a result, the number of authors listed in publications
+continues to rise steadily. Unfortunately, determining the authors to be
+included in the byline and their respective order entails multiple difficulties
+which often lead to conflicts. Despite the large volume of literature about
+conflicts in academia, it remains unclear how exactly it is distributed over
+the main socio-demographic properties, as well as the different types of
+interactions academics experience. To address this gap, we conducted an
+international and cross-disciplinary survey answered by 752 academics from 41
+fields of research and 93 countries that statistically well-represent the
+overall academic workforce. Our findings are concerning and suggest that
+authorship credit conflicts arise very early in one's academic career, even at
+the level of Master and Ph.D., and become increasingly common over time.
+",cs.DL cs.IR
+224822,"Scientific knowledge production of blockchain: A bibliometric and
+  lexicometric review","  While recent reviews of blockchain technology have focused on the latest
+developments in cryptocurrency and their derivative impacts, less attention has
+been given to analysing their knowledge paths and boundaries based on past
+research to guide their development. To address this gap, we conducted both a
+bibliometric study of 2525 articles and a lexicometric study of 123 articles.
+The bibliometric study provided holistic insights into the evolution and
+distribution of blockchain research, including influential researchers and
+countries, discipline composition, knowledge development trends, and emerging
+frontiers. The lexicometric study identified the boundary concept structure
+with a quantitative textual approach, extracting the strongest signifying
+epistemic communities. Our findings indicate that blockchain research draws
+from four major disciplines, making it a multidisciplinary field. With the
+increasing maturity and development of technological infrastructure, the
+application and management of blockchain become increasingly relevant issues.
+Our analysis suggests that blockchain can be considered more of a boundary
+object than a disruptive change from knowledge perspectives. Therefore, this
+paper proposes a comprehensive understanding of the development path and
+epistemic concepts of blockchain research.
+",cs.DL
+415138,"Specification uncertainty: What the disruption index tells us about the
+  (hidden) multiverse of bibliometric indicators","  Following Funk and Owen-Smith (2017), Wu et al. (2019) proposed the
+disruption index (DI1) as a bibliometric indicator that measures disruptive and
+consolidating research. When we summarized the literature on the disruption
+index for our recently published review article (Leibel & Bornmann, 2024), we
+noticed that the calculation of disruption scores comes with numerous (hidden)
+degrees of freedom. In this Letter to the Editor, we explain based on the DI1
+(as an example) why the analytical flexibility of bibliometric indicators
+potentially endangers the credibility of research and advertise the application
+of multiverse-style methods to increase the transparency of the research.
+",cs.DL
+447553,The State of Reproducibility Stamps for Visualization Research Papers,"  I analyze the evolution of papers certified by the Graphics Replicability
+Stamp Initiative (GRSI) to be reproducible, with a specific focus on the subset
+of publications that address visualization-related topics. With this analysis I
+show that, while the number of papers is increasing overall and within the
+visualization field, we still have to improve quite a bit to escape the
+replication crisis. I base my analysis on the data published by the GRSI as
+well as publication data for the different venues in visualization and lists of
+journal papers that have been presented at visualization-focused conferences. I
+also analyze the differences between the involved journals as well as the
+percentage of reproducible papers in the different presentation venues.
+Furthermore, I look at the authors of the publications and, in particular,
+their affiliation countries to see where most reproducible papers come from.
+Finally, I discuss potential reasons for the low reproducibility numbers and
+suggest possible ways to overcome these obstacles. This paper is reproducible
+itself, with source code and data available from
+github.com/tobiasisenberg/Visualization-Reproducibility as well as a free paper
+copy and all supplemental materials at osf.io/mvnbj.
+",cs.GR cs.DL cs.HC
+497895,CiteClick: A Browser Extension for Real-Time Scholar Citation Tracking,"  This technical report presents CiteClick, a browser extension designed to
+monitor and track Google Scholar citation counts for multiple researchers in
+real-time. We discuss the motivation behind the tool, its key features,
+implementation details, and potential impact on the academic community. The
+report covers installation procedures, usage guidelines, and customization
+options, concluding with a discussion on future work and potential
+improvements. By automating the process of citation tracking, CiteClick aims to
+enhance research evaluation processes and facilitate more informed
+decision-making in academic contexts.
+",cs.DL cs.HC
+475125,"RRD-Bio: Building An Integrated Research Resource Database for
+  Biomedicine","  Research resources (RRs) such as data, software, and tools are essential
+pillars of scientific research. The field of biomedicine, a critical scientific
+discipline, is witnessing a surge in research publications resulting in the
+accumulation of a substantial number of RRs. However, these resources are
+dispersed among various biomedical articles and can be challenging to locate
+and reuse due to their transient nature. In this paper, we report our recent
+progress in biomedical data curation - building a large research resource
+database for biomedicine (RRD-Bio), based on a collection of 40 million papers
+from two large biomedical literature databases, PubMed and PubMed Central. The
+database contains 2,555,116 RRs, each identified by a location on the Internet
+(URL) and descriptive information (Context). We made the RRD-Bio database
+publicly available (\url{https://zenodo.org/records/10526493}) to enhance the
+visibility of biomedical research resources, the ability to preserve important
+resources and the reproducibility of biomedical research.
+",cs.DL
+275947,"Peer Reviews of Peer Reviews: A Randomized Controlled Trial and Other
+  Experiments","  Is it possible to reliably evaluate the quality of peer reviews? We study
+this question driven by two primary motivations -- incentivizing high-quality
+reviewing using assessed quality of reviews and measuring changes to review
+quality in experiments. We conduct a large scale study at the NeurIPS 2022
+conference, a top-tier conference in machine learning, in which we invited
+(meta)-reviewers and authors to evaluate reviews given to submitted papers.
+First, we conduct a RCT to examine bias due to the length of reviews. We
+generate elongated versions of reviews by adding substantial amounts of
+non-informative content. Participants in the control group evaluate the
+original reviews, whereas participants in the experimental group evaluate the
+artificially lengthened versions. We find that lengthened reviews are scored
+(statistically significantly) higher quality than the original reviews. In
+analysis of observational data we find that authors are positively biased
+towards reviews recommending acceptance of their own papers, even after
+controlling for confounders of review length, quality, and different numbers of
+papers per author. We also measure disagreement rates between multiple
+evaluations of the same review of 28%-32%, which is comparable to that of paper
+reviewers at NeurIPS. Further, we assess the amount of miscalibration of
+evaluators of reviews using a linear model of quality scores and find that it
+is similar to estimates of miscalibration of paper reviewers at NeurIPS.
+Finally, we estimate the amount of variability in subjective opinions around
+how to map individual criteria to overall scores of review quality and find
+that it is roughly the same as that in the review of papers. Our results
+suggest that the various problems that exist in reviews of papers --
+inconsistency, bias towards irrelevant factors, miscalibration, subjectivity --
+also arise in reviewing of reviews.
+",cs.DL cs.GT
+244171,The strain on scientific publishing,"  Scientists are increasingly overwhelmed by the volume of articles being
+published. Total articles indexed in Scopus and Web of Science have grown
+exponentially in recent years; in 2022 the article total was approximately ~47%
+higher than in 2016, which has outpaced the limited growth - if any - in the
+number of practising scientists. Thus, publication workload per scientist
+(writing, reviewing, editing) has increased dramatically. We define this
+problem as the strain on scientific publishing. To analyse this strain, we
+present five data-driven metrics showing publisher growth, processing times,
+and citation behaviours. We draw these data from web scrapes, requests for data
+from publishers, and material that is freely available through publisher
+websites. Our findings are based on millions of papers produced by leading
+academic publishers. We find specific groups have disproportionately grown in
+their articles published per year, contributing to this strain. Some publishers
+enabled this growth by adopting a strategy of hosting special issues, which
+publish articles with reduced turnaround times. Given pressures on researchers
+to publish or perish to be competitive for funding applications, this strain
+was likely amplified by these offers to publish more articles. We also observed
+widespread year-over-year inflation of journal impact factors coinciding with
+this strain, which risks confusing quality signals. Such exponential growth
+cannot be sustained. The metrics we define here should enable this evolving
+conversation to reach actionable solutions to address the strain on scientific
+publishing.
+",cs.DL
+484385,"Impact of a reclassification on Web of Science articles on bibliometric
+  indicators","  In order to avoid the ambiguous classification of articles in multiple
+categories in the Web of Science and the resulting complication of bibliometric
+indicators, a reclassification of articles in the Web of Sciences categories
+was carried out according to the method of S. Milojevi\'c (2020). The higher
+hierarchical level from the OST classification into 11 scientific disciplines
+is also revised. Though in most cases articles are assigned to a subject
+category close to the original category, the reclassification changes the
+subject category of about 50% of the documents of the database. Therefore, the
+world distribution of disciplines and disciplinary profiles of scientific
+actors are modified. A sample of twenty five countries highlights the impact of
+the reclassification on country specialization indexes. Field-normalized
+indicators are also impacted. The level of changes is explored in the case of
+the Mean Normalized Citation Indicator (MNCS). A more in-depth analysis of the
+MNCS in Mathematics is carried out and reveals different strategies of
+countries to publish works with a mathematical background.
+",cs.DL
+435365,"Identifying Research Hotspots and Future Development Trends in Current
+  Psychology: A Bibliometric Analysis of the Past Decade's Publications","  By conducting a bibliometric analysis on 4,869 publications in Current
+Psychology from 2013 to 2022, this paper examined the annual publications and
+annual citations, as well as the leading institutions, countries, and keywords.
+CiteSpace, VOSviewer and SCImago Graphica were utilized for visualization
+analysis. On one hand, this paper analyzed the academic influence of Current
+Psychology over the past decade. On the other hand, it explored the research
+hotspots and future development trends within the field of international
+psychology. The results revealed that the three main research areas covered in
+the publications of Current Psychology were: the psychological well-being of
+young people, the negative emotions of adults, and self-awareness and
+management. The latest research hotspots highlighted in the journal include
+negative emotions, personality, and mental health. The three main development
+trends of Current Psychology are: 1) exploring the personality psychology of
+both adolescents and adults, 2) promoting the interdisciplinary research to
+study social psychological issues through the use of diversified research
+methods, and 3) emphasizing the emotional psychology of individuals and their
+interaction with social reality, from a people-oriented perspective.
+",cs.DL stat.ME stat.OT
+230686,"The Batik-plays-Mozart Corpus: Linking Performance to Score to
+  Musicological Annotations","  We present the Batik-plays-Mozart Corpus, a piano performance dataset
+combining professional Mozart piano sonata performances with expert-labelled
+scores at a note-precise level. The performances originate from a recording by
+Viennese pianist Roland Batik on a computer-monitored B\""osendorfer grand
+piano, and are available both as MIDI files and audio recordings. They have
+been precisely aligned, note by note, with a current standard edition of the
+corresponding scores (the New Mozart Edition) in such a way that they can
+further be connected to the musicological annotations (harmony, cadences,
+phrases) on these scores that were recently published by Hentschel et al.
+(2021).
+  The result is a high-quality, high-precision corpus mapping scores and
+musical structure annotations to precise note-level professional performance
+information. As the first of its kind, it can serve as a valuable resource for
+studying various facets of expressive performance and their relationship with
+structural aspects. In the paper, we outline the curation process of the
+alignment and conduct two exploratory experiments to demonstrate its usefulness
+in analyzing expressive performance.
+",cs.SD cs.DL eess.AS
+260223,Chain-of-Factors Paper-Reviewer Matching,"  With the rapid increase in paper submissions to academic conferences, the
+need for automated and accurate paper-reviewer matching is more critical than
+ever. Previous efforts in this area have considered various factors to assess
+the relevance of a reviewer's expertise to a paper, such as the semantic
+similarity, shared topics, and citation connections between the paper and the
+reviewer's previous works. However, most of these studies focus on only one
+factor, resulting in an incomplete evaluation of the paper-reviewer relevance.
+To address this issue, we propose a unified model for paper-reviewer matching
+that jointly considers semantic, topic, and citation factors. To be specific,
+during training, we instruction-tune a contextualized language model shared
+across all factors to capture their commonalities and characteristics; during
+inference, we chain the three factors to enable step-by-step, coarse-to-fine
+search for qualified reviewers given a submission. Experiments on four datasets
+(one of which is newly contributed by us) spanning various fields such as
+machine learning, computer vision, information retrieval, and data mining
+consistently demonstrate the effectiveness of our proposed Chain-of-Factors
+model in comparison with state-of-the-art paper-reviewer matching methods and
+scientific pre-trained language models.
+",cs.IR cs.CL cs.DL cs.LG
+64261,Citation advantage of COVID-19 related publications,"  With the global spread of the COVID-19 pandemic, scientists from various
+disciplines responded quickly to this historical public health emergency. The
+sudden boom of COVID-19 related papers in a short period of time may bring
+unexpected influence to some commonly used bibliometric indicators. By a
+large-scale investigation using Science Citation Index Expanded and Social
+Sciences Citation Index, this brief communication confirms the citation
+advantage of COVID-19 related papers empirically through the lens of Essential
+Science Indicators' highly cited paper. More than 8% of COVID-19 related papers
+published during 2020 and 2021 were selected as Essential Science Indicators
+highly cited papers, which was much higher than the set global benchmark value
+of 1%. The citation advantage of COVID-19 related papers for different Web of
+Science categories/countries/journal impact factor quartiles were also
+demonstrated. The distortions of COVID-19 related papers' citation advantage to
+some bibliometric indicators such as journal impact factor were discussed at
+the end of this brief communication.
+",cs.DL
+408225,"Which topics are best represented by science maps? An analysis of
+  clustering effectiveness for citation and text similarity networks","  A science map of topics is a visualization that shows topics identified
+algorithmically based on the bibliographic metadata of scientific publications.
+In practice not all topics are well represented in a science map. We analyzed
+how effectively different topics are represented in science maps created by
+clustering biomedical publications. To achieve this, we investigated which
+topic categories, obtained from MeSH terms, are better represented in science
+maps based on citation or text similarity networks. To evaluate the clustering
+effectiveness of topics, we determined the extent to which documents belonging
+to the same topic are grouped together in the same cluster. We found that the
+best and worst represented topic categories are the same for citation and text
+similarity networks. The best represented topic categories are diseases,
+psychology, anatomy, organisms and the techniques and equipment used for
+diagnostics and therapy, while the worst represented topic categories are
+natural science fields, geographical entities, information sciences and health
+care and occupations. Furthermore, for the diseases and organisms topic
+categories and for science maps with smaller clusters, we found that topics
+tend to be better represented in citation similarity networks than in text
+similarity networks.
+",cs.DL
+225497,Preparing Reproducible Scientific Artifacts using Docker,"  The pursuit of scientific knowledge strongly depends on the ability to
+reproduce and validate research results. It is a well-known fact that the
+scientific community faces challenges related to transparency, reliability, and
+the reproducibility of empirical published results. Consequently, the design
+and preparation of reproducible artifacts has a fundamental role in the
+development of science. Reproducible artifacts comprise comprehensive
+documentation, data, and code that enable replication and validation of
+research findings by others. In this work, we discuss a methodology to
+construct reproducible artifacts based on Docker. Our presentation centers
+around the preparation of an artifact to be submitted to scientific venues that
+encourage or require this process. This report's primary audience are
+scientists working with empirical computer science; however, we believe that
+the presented methodology can be extended to other technology-oriented
+empirical disciplines.
+",cs.DL
+431724,Science cited in policy documents: Evidence from the Overton database,"  To reflect the extent to which science is cited in policy documents, this
+paper explores the presence of policy document citations for over 18 million
+Web of Science-indexed publications published between 2010 and 2019. Enabled by
+the policy document citation data provided by Overton, a searchable index of
+policy documents worldwide, the results show that there are 3.9% of
+publications in the dataset cited at least once by policy documents. Policy
+document citations present a citation delay towards newly published
+publications and show a stronger predominance to the document types of review
+and article. Based on the Overton database, publications in the field of Social
+Sciences and Humanities have the highest relative presence in policy document
+citations, followed by Life and Earth Sciences and Biomedical and Health
+Sciences. Our findings shed light not only on the impact of scientific
+knowledge on the policy-making process, but also on the particular focus of
+policy documents indexed by Overton on specific research areas.
+",cs.DL

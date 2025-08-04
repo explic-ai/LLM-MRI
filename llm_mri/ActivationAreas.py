@@ -100,8 +100,14 @@ class ActivationAreas:
         # Extracting hidden states from the model
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
+        torch.save(self.hidden_states_dataset['hidden_state_4'], 'complete_hidden_state.pt')
+        
         # Reducing the hidden states dimensionality
         self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
+        
+        torch.save(self.reduced_dataset['hidden_state_4'], 'reduced_hidden_state.pt')
+
+        
 
     def _spearman_correlation(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
 
@@ -317,7 +323,7 @@ class ActivationAreas:
         Returns:
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
-        
+
         # Verifying if graph passed is a networkx graph
         if not isinstance(G, nx.Graph):
             raise TypeError("The graph must be a networkx Graph object.")
@@ -436,9 +442,11 @@ class ActivationAreas:
         if len(G.graph['label_names']) < 2:
             # single feature being analyzed
             return ['gray']
+        
+        # category_index = self.class_names.index(category)    
 
         # assign labels to variables for clarity
-        label1, label2 = [0, 1] # as previously defined
+        label1, label2 = [self.class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
 
         # initialize dictionaries to count label activations per node
         label1_counts = {node: 0 for node in G.nodes()}

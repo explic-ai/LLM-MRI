@@ -17,7 +17,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = PCA(n_components = 20)
+pca = PCA(n_components = 40)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
