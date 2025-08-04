@@ -100,13 +100,8 @@ class ActivationAreas:
         # Extracting hidden states from the model
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
-        torch.save(self.hidden_states_dataset['hidden_state_4'], 'complete_hidden_state.pt')
-        
         # Reducing the hidden states dimensionality
         self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
-        
-        torch.save(self.reduced_dataset['hidden_state_4'], 'reduced_hidden_state.pt')
-
         
 
     def _spearman_correlation(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
