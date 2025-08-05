@@ -282,8 +282,9 @@ class ActivationAreas:
         if 'label' in edge_attributes:
 
             # extract all labels from the edges
-            labels = [data['label'] for _, _, data in G.edges(data=True) if 'label' in data]
-            unique_labels = sorted(set(labels))
+            unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
+            # unique_labels = sorted(set(labels))
+            print(unique_labels)
             num_labels = min(2, len(unique_labels))  # handles up to two labels
 
             # retrieve the specified continuous colormap
