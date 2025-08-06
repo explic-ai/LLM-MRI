@@ -322,13 +322,12 @@ class ActivationAreas:
         ordered_edge_colors = edge_colors
 
         # Create a mapping from label to color
-        if len(edge_colors) > 2:
+        if len(edge_colors) > 1:
             
             # Define your custom color mapping for labels
             custom_colors = {
                 0: edge_colors[0], # Color of first category 
                 1: edge_colors[1], # Color of second category
-                2: edge_colors[2]  # Blended color between the two categories 
             }
 
             # Generate edge_colors list aligned with the edgelist
@@ -338,11 +337,9 @@ class ActivationAreas:
             unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']]
 
             for u, v in G.edges().keys():
-                index = G[u][v].get('label', 0)
 
-                # Doing the assignment so that one category always get the first color and the other the second color
-                if index == min(unique_labels): index = 0
-                else: index = 1
+                # Get the index of the label for the edge
+                index = unique_labels.index(G[u][v].get('label', 0))
 
                 color = custom_colors.get(index, 'gray') 
 
@@ -499,12 +496,6 @@ class ActivationAreas:
 
                 # sample the colormap
                 colors = [(colormap_list(value)) for value in color_values]
-
-                if len(G.graph['label_names']) > 1:
-
-                        blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
-
-                        colors.append(blended_rgb)
 
                 return colors
             
