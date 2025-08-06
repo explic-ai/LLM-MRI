@@ -263,50 +263,7 @@ class ActivationAreas:
         return G
         
 
-    def _generate_graph_edge_colors(self, G, colormap='coolwarm'):
-        """
-        Generates a list of colors based on the number of labels in the graph's edges.
-
-        Args:
-            G (Graph): The networkx graph.
-            colormap (str): The name of the Matplotlib colormap to use (default 'bwr').
-
-        Returns:
-            list: A list of HEX color codes for the graph's edges.
-        """
-        # extract edge attributes from the first edge
-        first_edge_attrs = list(G.edges(data=True))
-    
-        edge_attributes = list(first_edge_attrs[0][-1].keys())
-
-        if 'label' in edge_attributes:
-
-            # extract all labels from the edges
-            unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
-            # unique_labels = sorted(set(labels))
-            print(unique_labels)
-            num_labels = min(2, len(unique_labels))  # handles up to two labels
-
-            # retrieve the specified continuous colormap
-            colormap_list = plt.get_cmap(colormap)
-
-            # generate evenly spaced values between 0 and 1 for sampling the colormap
-            color_values = np.linspace(0, 1, num_labels)
-
-            # sample the colormap
-            colors = [(colormap_list(value)) for value in color_values]
-
-            if len(G.graph['label_names']) > 1:
-
-                    blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
-
-                    colors.append(blended_rgb)
-
-            return colors
-        
-        else:
-            return ['lightblue']
-        
+  
     def get_graph_image(self, G: nx.Graph, colormap : str = 'coolwarm', fix_node_dimensions:bool = True):
         """
         Generates a matplotlib figure of the graph with nodes as pizza graphics.
@@ -366,18 +323,31 @@ class ActivationAreas:
 
         # Create a mapping from label to color
         if len(edge_colors) > 2:
-
+            
             # Define your custom color mapping for labels
             custom_colors = {
-                0: edge_colors[0],  
-                1: edge_colors[1], 
-                2: edge_colors[2]  
+                0: edge_colors[0], # Color of first category 
+                1: edge_colors[1], # Color of second category
+                2: edge_colors[2]  # Blended color between the two categories 
             }
 
             # Generate edge_colors list aligned with the edgelist
-            ordered_edge_colors = [
-                custom_colors.get(G[u][v].get('label', 0), 'gray') 
-                for u, v in G.edges().keys()]
+            ordered_edge_colors = []
+
+            # Getting the unique label's indixes
+            unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']]
+
+            for u, v in G.edges().keys():
+                index = G[u][v].get('label', 0)
+
+                # Doing the assignment so that one category always get the first color and the other the second color
+                if index == min(unique_labels): index = 0
+                else: index = 1
+
+                color = custom_colors.get(index, 'gray') 
+
+                # Getting the color for every edge
+                ordered_edge_colors.append(color)
         
         # Coloring Nodes
         node_colors = self._generate_node_colors(G, colormap)
@@ -498,3 +468,46 @@ class ActivationAreas:
 
         return node_colors
 
+    def _generate_graph_edge_colors(self, G, colormap='coolwarm'):
+            """
+            Generates a list of colors based on the number of labels in the graph's edges.
+
+            Args:
+                G (Graph): The networkx graph.
+                colormap (str): The name of the Matplotlib colormap to use (default 'bwr').
+
+            Returns:
+                list: A list of HEX color codes for the graph's edges.
+            """
+            # extract edge attributes from the first edge
+            first_edge_attrs = list(G.edges(data=True))
+        
+            edge_attributes = list(first_edge_attrs[0][-1].keys())
+
+            if 'label' in edge_attributes:
+
+                # extract all labels from the edges
+                unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
+
+                num_labels = min(2, len(unique_labels))  # handles up to two labels
+
+                # retrieve the specified continuous colormap
+                colormap_list = plt.get_cmap(colormap)
+
+                # generate evenly spaced values between 0 and 1 for sampling the colormap
+                color_values = np.linspace(0, 1, num_labels)
+
+                # sample the colormap
+                colors = [(colormap_list(value)) for value in color_values]
+
+                if len(G.graph['label_names']) > 1:
+
+                        blended_rgb = tuple(0.5 * c1 + 0.5 * c2 for c1, c2 in zip(colors[0], colors[1]))
+
+                        colors.append(blended_rgb)
+
+                return colors
+            
+            else:
+                return ['lightblue']
+        
