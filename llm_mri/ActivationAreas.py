@@ -28,6 +28,7 @@ class ActivationAreas:
         self.class_names = self.dataset.features['label'].names
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
+        self.num_layers = ""
 
 
     def _tokenize(self, batch):
@@ -81,6 +82,8 @@ class ActivationAreas:
                 **inputs, output_hidden_states=True).hidden_states
         all_hidden_states = {}
 
+        self.num_layers = len(hidden_states)
+        
         for i, hs in enumerate(hidden_states):
             all_hidden_states[f"hidden_state_{i}"] = hs[:, 0].cpu().numpy()
 
@@ -259,6 +262,9 @@ class ActivationAreas:
         
         else:
             G = graphs_list[0]
+
+        # Defining the number of layers on the graph's properties
+        G.graph['layers'] = self.num_layers
 
         return G
         
