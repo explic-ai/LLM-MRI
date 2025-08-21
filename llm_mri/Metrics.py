@@ -4,15 +4,15 @@ from networkx.algorithms import bipartite
 
 class Metrics:
 
-    def __init__(self, Graph, label, model_name): # Revisar isso daqui
+    def __init__(self, Graph, label, model_name):
         self.Graph = Graph
         self.label = label
         self.model_name = model_name
         self.layers = Graph.graph['layers']
 
         """
-        Rotulando cada nó com a camada que ele pertence, isso é feito
-        buscando o primeiro número do seu nome
+        Labeling the nodes with their respective layers.
+        This is necessary for the projection of the graph.
         """
         for n in self.Graph.nodes:
             self.Graph.nodes[n]['layer'] = int(n.split('_')[0])
@@ -23,8 +23,8 @@ class Metrics:
         nodes_even_layers = set()
         nodes_odd_layers = set()
         """
-        Para fazer a projeção, é necessário que os nós tenham a label
-        de qual camada pertencem.
+        To project the graph, it is necessary that the nodes have the label
+        of which layer they belong to.
         """
         for layer in range(self.layers + 1):
             if layer % 2 == 0:
@@ -35,6 +35,10 @@ class Metrics:
         return bipartite.collaboration_weighted_projected_graph(self.Graph, nodes_even_layers), bipartite.collaboration_weighted_projected_graph(self.Graph, nodes_odd_layers)
 
     def get_degree_by_layer(self):
+        """
+        Returns a DataFrame with the mean and variance of the degree of each layer.    
+        """
+    
         camadas = []
         for x in range(self.layers + 1):
             camadas.append(str(x))
@@ -50,6 +54,9 @@ class Metrics:
         return df_layers.reindex(index=df_layers.index[::-1])
 
     def get_graph_center_of_mass(self):
+        """
+        Calculates the center of mass of the graph.
+        """
         camadas = []
         for x in range(self.layers + 1):
             camadas.append(str(x))
@@ -62,6 +69,9 @@ class Metrics:
         return center_of_mass / len(list(self.Graph.nodes()))
 
     def get_graph_center_of_strength(self):
+        """
+        Calculates the center of strength of the graph.
+        """
         camadas = []
         for x in range(self.layers + 1):
             camadas.append(str(x))
@@ -77,6 +87,9 @@ class Metrics:
         return self.Graph
     
     def get_basic_metrics(self):
+        """
+        Returns a dictionary with the basic metrics of the graph.
+        """
         return {
             "mean_degree": pd.Series([v for k, v in dict(nx.degree(self.Graph)).items()]).mean(),
             "var_degree": pd.Series([v for k, v in dict(nx.degree(self.Graph)).items()]).var(),
@@ -96,6 +109,10 @@ class Metrics:
         }
 
     def get_projection_metrics_even(self):
+        """
+        Returns a dictionary with the basic metrics of the projection of the graph's even layers.
+        """
+
         return {
             "mean_degree": pd.Series([v for k, v in dict(nx.degree(self.projection_even)).items()]).mean(),
             "var_degree": pd.Series([v for k, v in dict(nx.degree(self.projection_even)).items()]).var(),
@@ -112,6 +129,9 @@ class Metrics:
         }
 
     def get_projection_metrics_odd(self):
+        """
+        Returns a dictionary with the basic metrics of the projection of the graph's odd layers.
+        """
         return {
             "mean_degree": pd.Series([v for k, v in dict(nx.degree(self.projection_odd)).items()]).mean(),
             "var_degree": pd.Series([v for k, v in dict(nx.degree(self.projection_odd)).items()]).var(),
