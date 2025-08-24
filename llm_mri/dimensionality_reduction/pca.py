@@ -35,16 +35,18 @@ class PCA(DimensionalityReduction):
         :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer).
         """
 
-        # If the number of components is set to 0, return the original embeddings.
+        # If the number of components is set to 0, return the original embeddings reduced to n_components.
         # Else, concatenate columns from the hidden states. hidden states are in a dictionary, where each hs is a tensor and has its value on dataset['hidden_state_x'], for x in [1, 2, ..., n_layers].
         # So, concatenate all hidden states in the same dataset, and then get the reduction to n_components components.
         
         if n_components == 0:
-            # Returns the last embedding only
-            return hidden_states[f'hidden_state_{n_layers-1}']
-        
+            # Reduces the last embedding only to n_components
+            return TorchPCA(n_components=n_components).fit_transform(hidden_states[f'hidden_state_{n_layers-1}'])
+
         # Concatenate all hidden states in one, and then reduce their dimensionality
-        concatenated_hs = pd.concat([hidden_states[f'hidden_state_{i}'] for i in range(n_layers)], axis=1)
+        hs = [pd.DataFrame(hidden_states[f'hidden_state_{i}'].detach().cpu().numpy()) for i in range(n_layers)]
+        concatenated_hs = pd.concat(hs, axis=1)
+
         reduced_hs = TorchPCA(n_components=n_components).fit_transform(concatenated_hs)
         
         # Convert the reduced hidden state to a DataFrame

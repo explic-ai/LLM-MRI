@@ -517,9 +517,10 @@ class ActivationAreas:
         :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer) and the labels of the dataset.
         """
 
+        print(self.dataset['label'].shape)
         # If some reduction should be made, call the reduction method
         if n_components is not None:
-            return self.reduction_method.get_reduced_embeddings(self.hidden_states_dataset, n_components, self.num_layers), self.dataset['label']
+            return self.reduction_method.get_reduced_embeddings(self.hidden_states_dataset, n_components, self.num_layers), pd.DataFrame(self.dataset['label'])
         
         # Else, return the original embeddings
         else:
