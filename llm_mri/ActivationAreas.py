@@ -508,3 +508,21 @@ class ActivationAreas:
             else:
                 return ['lightblue']
         
+    def get_nrag_embeddings(self, n_components:int=None):
+        """
+        This method returns either the reduced version of all hidden states combined, or only the embedding, last hidden state of the model.
+        It also returns the label of each instance, so that it can be used to train a classifier
+
+        :param n_components: The number of components to reduce to. If set to None, returns the original embeddings.
+        :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer) and the labels of the dataset.
+        """
+
+        print(self.dataset['label'].shape)
+        # If some reduction should be made, call the reduction method
+        if n_components is not None:
+            return self.reduction_method.get_reduced_embeddings(self.hidden_states_dataset, n_components, self.num_layers), pd.DataFrame(self.dataset['label'])
+        
+        # Else, return the original embeddings
+        else:
+            return pd.DataFrame(self.hidden_states_dataset[f'hidden_state_{self.num_layers-1}']), pd.DataFrame(self.dataset['label'])
+        

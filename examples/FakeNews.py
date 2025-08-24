@@ -1,6 +1,6 @@
 import os
 
-from llm_mri import ActivationAreas, Metrics
+from llm_mri import ActivationAreas, Metrics, Evaluation
 from llm_mri.dimensionality_reduction import PCA
 
 
@@ -47,3 +47,9 @@ metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
 
 print("True metrics: ", metrics_true.get_basic_metrics())
 print("Fake metrics: ", metrics_fake.get_basic_metrics())
+
+# Evaluating the made reduction
+
+eval = Evaluation(activation_areas=llm_mri, n_components=20)
+results = eval.evaluate_model()
+print("Evaluation results: ", results)

@@ -25,3 +25,14 @@ class DimensionalityReduction(ABC):
 
         """
         pass        
+    
+    @abstractmethod
+    def get_reduced_embeddings(self, dataset, n_components:int = 0):
+        """
+        Abstract method to obtain the reduced embeddings from the dataset.
+
+        :param dataset: The input dataset as a pandas DataFrame.
+        :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer).
+        """
+        pass
+        
