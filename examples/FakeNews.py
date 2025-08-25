@@ -36,7 +36,7 @@ plt.title("Dimensionality Reduction of fake graph by PCA")
 
 g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
 g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction of fake and true graph by PCA")
+plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
 
 plt.box(False)
 plt.show()
