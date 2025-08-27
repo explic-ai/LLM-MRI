@@ -98,9 +98,9 @@ class Evaluation:
         #cross-validation with StratifiedKFold
         skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
 
-        reduced_cv_scores = cross_val_score(clf_reduced, reduced_hidden_states, y_reduced, cv=skf, scoring="accuracy").mean()
-        full_cv_scores = cross_val_score(clf_full, full_embeddings, y_embeddings, cv=skf, scoring="accuracy").mean()
-        results['report_cross_validation_avg_difference'] = full_cv_scores - reduced_cv_scores
+        reduced_cv_scores = cross_val_score(clf_reduced, reduced_hidden_states, y_reduced, cv=skf, scoring="f1_macro").mean()
+        full_cv_scores = cross_val_score(clf_full, full_embeddings, y_embeddings, cv=skf, scoring="f1_macro").mean()
+        results['f1_score_difference'] = full_cv_scores - reduced_cv_scores
 
         #return dictionary with all metrics
         return results

@@ -8,10 +8,11 @@ import torch
 from matplotlib.colors import Normalize
 import numpy as np
 from typing import Union, List
+import datasets
 
 class ActivationAreas:
 
-    def __init__(self, model, device, dataset, reduction_method):
+    def __init__(self, model:str, dataset, reduction_method, device:str="cpu"):
         """
         Initializes the ActivationAreas class.
 
