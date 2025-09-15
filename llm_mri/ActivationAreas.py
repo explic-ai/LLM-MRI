@@ -30,6 +30,7 @@ class ActivationAreas:
         self.hidden_states_dataset = ""
         self.reduced_dataset = []
         self.num_layers = ""
+        self.category_hidden_states = {}
 
 
     def _tokenize(self, batch):
@@ -254,8 +255,12 @@ class ActivationAreas:
                 c_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}']
             
             # Updating graphs list
-            graphs_list.append(self._get_spearman_graph(c_hidden_states, category_index, threshold))
-        
+            graph = self._get_spearman_graph(c_hidden_states, category_index, threshold)
+            graphs_list.append(graph)
+            
+            # Updating the hidden states for the given category
+            self.category_hidden_states[category] = c_hidden_states
+
         # Merging graphs (if more than one category)
         if len(graphs_list) > 1:
             G = nx.compose(graphs_list[0], graphs_list[1])
@@ -509,21 +514,51 @@ class ActivationAreas:
             else:
                 return ['lightblue']
         
-    def get_nrag_embeddings(self, n_components:int=None):
+    def _get_nrag_embeddings(self):
         """
-        This method returns either the reduced version of all hidden states combined, or only the embedding, last hidden state of the model.
-        It also returns the label of each instance, so that it can be used to train a classifier
+        Returns a dataset containing the reduced hidden states outputs for each category and another containing the labels.
+        Both are going to be used on the train of a classifier.
 
-        :param n_components: The number of components to reduce to. If set to None, returns the original embeddings.
-        :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer) and the labels of the dataset.
+        :return: Reduced hidden states as a pandas DataFrame and the labels of the dataset.
         """
 
-        print(self.dataset['label'].shape)
-        # If some reduction should be made, call the reduction method
-        if n_components is not None:
-            return self.reduction_method.get_reduced_embeddings(self.hidden_states_dataset, n_components, self.num_layers), pd.DataFrame(self.dataset['label'])
+        nrag_embeddings_parts = []
+        nrag_labels_parts = []
+
+        for category in self.category_hidden_states.keys():
+            cat_df = pd.DataFrame()
+
+            # Iterating through hidden states of the category
+            for (i, hs) in enumerate(self.category_hidden_states[category]):
+                tensor_np = self.category_hidden_states[category][hs].cpu().numpy()  # (n_instancias, n_ativacoes)
+
+                # Creating column "i_j" (ith hidden state, jth feature)
+                layer_cols = [f"{i}_{j}" for j in range(tensor_np.shape[1])]
+                layer_df = pd.DataFrame(tensor_np, columns=layer_cols)
+
+                # Concatenates all features horizontally
+                if cat_df.empty:
+                    cat_df = layer_df
+                else:
+                    cat_df = pd.concat([cat_df, layer_df], axis=1)
+
+            # Storing features for the specific category
+            nrag_embeddings_parts.append(cat_df)
+
+            # Storing labels for that category
+            nrag_labels_parts.append(pd.DataFrame({"label": [category] * len(cat_df)}))
+
+        # Concatenating all categories
+        nrag_embeddings = pd.concat(nrag_embeddings_parts, ignore_index=True) if nrag_embeddings_parts else pd.DataFrame()
+        nrag_labels = pd.concat(nrag_labels_parts, ignore_index=True) if nrag_labels_parts else pd.DataFrame(columns=["label"])
+
+        return nrag_embeddings, nrag_labels
+
+
         
-        # Else, return the original embeddings
-        else:
-            return pd.DataFrame(self.hidden_states_dataset[f'hidden_state_{self.num_layers-1}']), pd.DataFrame(self.dataset['label'])
-        
+    def _get_embeddings(self):
+        """
+        Returns the values on the last hidden state of the model
+        """
+
+        return pd.DataFrame(self.hidden_states_dataset[f'hidden_state_{self.num_layers-1}']), pd.DataFrame(self.dataset['label'])

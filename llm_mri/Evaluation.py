@@ -5,23 +5,17 @@ from sklearn.metrics import classification_report
 
 class Evaluation:
 
-    def __init__(self, activation_areas:ActivationAreas, n_components:int = None):
+    def __init__(self, activation_areas:ActivationAreas):
         """
         Initializes the evaluation class with the activation areas class and number of components. 
         If no number of components is specified, the comparison will consider all of the embeddings in the comparison.
         
         activation_areas (ActivationAreas): An instance of the ActivationAreas class
-        n_components (int): The number of components to consider in the evaluation. If set to 0, all components (original embedding) will be used.
         """
         
         self.activation_areas = activation_areas
-        self.n_components = n_components
 
-    def _get_reduced_embeddings(self):
-        """
-        Obtains the hidden states, reduced to the number of components specified in the constructor.
-        """
-        pass
+
 
     def _subtract_reports(self, report_full, report_reduced):
         """
@@ -43,7 +37,8 @@ class Evaluation:
                 diff_report[key] = report_full[key] - report_reduced[key]
         return diff_report
 
-    def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42):
+
+    def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None):
         # Treina um classificador com o dataset obtido previamente, utilizando os parâmetros pré-definidos pelo usuário, como k-fold, split treino e teste, etc.
         # Retorna as métricas de acordo com o sklearn
         """
@@ -53,10 +48,13 @@ class Evaluation:
         """
 
         # Obtaining reduced hidden states
-        reduced_hidden_states, y_reduced = self.activation_areas.get_nrag_embeddings(self.n_components)
+        reduced_hidden_states, y_reduced = self.activation_areas._get_nrag_embeddings()
 
         # Obtaining full embeddings for comparison effects
-        full_embeddings, y_embeddings = self.activation_areas.get_nrag_embeddings()
+        full_embeddings, y_embeddings = self.activation_areas._get_embeddings()
+
+        print("Reduced: ", reduced_hidden_states.head())
+        print("Embeddings: ", full_embeddings.head())
 
         # Adjusting shape to 1 dimension only
         y_reduced = y_reduced.squeeze()
