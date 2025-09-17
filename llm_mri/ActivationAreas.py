@@ -222,6 +222,13 @@ class ActivationAreas:
             Graph: The networkx graph representing the activations.
         """
 
+        # Para criar o grafo, chamar a classe grafo, e passar:
+        # dataset reduzido
+        # categorias, no formato {categoria: indice}
+
+        category_index_dict = {category: self.class_names.index(category) for category in categories}
+
+
         if isinstance(categories, str):
             categories = [categories]
         
