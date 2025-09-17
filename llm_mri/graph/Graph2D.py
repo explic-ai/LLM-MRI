@@ -190,30 +190,22 @@ class Graph2D(Graph):
 
             # when generating category_idx graph, assigns category_idx label to edges
             if category_idx != -1:
-                nx.set_edge_attributes(G, category_idx, "label")
+                nx.set_edge_attributes(G, values=category_idx, name="label")
 
             graphs_list.append(G)
 
-        # Adjusting formatting in case it has more than one category
-        if (len(graphs_list) > 1):
-            g1 = graphs_list[0]
-            g2 = graphs_list[1]
-
-            for u, v, data in g1.edges(data=True):
-                data['label'] = 0
-            
-            for u, v, data in g2.edges(data=True):
-                data['label'] = 1
-
+        # compose without relabeling to 0/1/2
+        if len(graphs_list) > 1:
+            g1, g2 = graphs_list[0], graphs_list[1]
             g_composed = nx.compose(g1, g2)
 
-            # Marking repeated edges
-            duplicates = list(set(g1.edges) & set(g2.edges))
-            for e in duplicates : g_composed.edges[e]['label'] = 2 
-        
+            # mark overlaps; keep existing label (class index)
+            duplicates = set(g1.edges()) & set(g2.edges())
+            for e in duplicates:
+                g_composed.edges[e]['overlap'] = True
         else:
             g_composed = graphs_list[0]
-        
+
         g_composed.graph['label_names'] = category_list
         g_composed.graph['num_layers'] = self.num_layers
 
