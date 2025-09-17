@@ -50,6 +50,6 @@ print("Fake metrics: ", metrics_fake.get_basic_metrics())
 
 # Evaluating the made reduction
 
-eval = Evaluation(activation_areas=llm_mri, n_components=20)
+eval = Evaluation(activation_areas=llm_mri)
 results = eval.evaluate_model()
 print("Evaluation results: ", results)

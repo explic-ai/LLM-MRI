@@ -545,8 +545,11 @@ class ActivationAreas:
             # Storing features for the specific category
             nrag_embeddings_parts.append(cat_df)
 
+            # Obtaining number (encoding) of the category
+            category_index = self.class_names.index(category)
+
             # Storing labels for that category
-            nrag_labels_parts.append(pd.DataFrame({"label": [category] * len(cat_df)}))
+            nrag_labels_parts.append(pd.DataFrame({"label": [category_index] * len(cat_df)}))
 
         # Concatenating all categories
         nrag_embeddings = pd.concat(nrag_embeddings_parts, ignore_index=True) if nrag_embeddings_parts else pd.DataFrame()

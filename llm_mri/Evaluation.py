@@ -1,7 +1,11 @@
 from llm_mri import ActivationAreas
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
-from sklearn.metrics import classification_report
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import StratifiedShuffleSplit, cross_validate
+import pandas as pd
+import numpy as np
+from typing import Union
 
 class Evaluation:
 
@@ -38,7 +42,7 @@ class Evaluation:
         return diff_report
 
 
-    def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None):
+    def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None, metrics:Union[list, str] = None):
         # Treina um classificador com o dataset obtido previamente, utilizando os parâmetros pré-definidos pelo usuário, como k-fold, split treino e teste, etc.
         # Retorna as métricas de acordo com o sklearn
         """
@@ -47,58 +51,65 @@ class Evaluation:
         Returns the metrics according to sklearn.
         """
 
-        # Obtaining reduced hidden states
-        reduced_hidden_states, y_reduced = self.activation_areas._get_nrag_embeddings()
+        # Obtaining data from embeddings and nrags
+        X_reduced, y_reduced = self.activation_areas._get_nrag_embeddings()
+        X_full, y_full = self.activation_areas._get_embeddings()
 
-        # Obtaining full embeddings for comparison effects
-        full_embeddings, y_embeddings = self.activation_areas._get_embeddings()
+        # Flattening y if necessary
+        y_reduced = pd.Series(np.ravel(y_reduced))
+        y_full = pd.Series(np.ravel(y_full))
 
-        print("Reduced: ", reduced_hidden_states.head())
-        print("Embeddings: ", full_embeddings.head())
+        # Tests (remove afterwards)
+        if len(X_reduced) != len(X_full):
+            raise ValueError("Reduced e Full têm números diferentes de instâncias.")
+        if len(y_reduced) != len(y_full):
+            raise ValueError("Os vetores de rótulos têm tamanhos diferentes.")
+        if not y_reduced.reset_index(drop=True).equals(y_full.reset_index(drop=True)):
+            raise ValueError("As ordens/valores de rótulo diferem entre Reduced e Full.")
 
-        # Adjusting shape to 1 dimension only
-        y_reduced = y_reduced.squeeze()
-        y_embeddings = y_embeddings.squeeze()
+        # Resetting indices to ensure alignment
+        Xr = X_reduced.reset_index(drop=True)
+        Xf = X_full.reset_index(drop=True)
+        y = y_reduced.reset_index(drop=True)
 
-        # Training two different classifiers with both datasets, using the folds number, test_size, and random_state parameters.
-        #dictionary to store results
-        results = {}
+        # Evaluating metrics passed by user
+        if metrics is None:
+            metrics = [
+                "f1_macro", "f1_weighted",
+                "recall_macro", "recall_weighted",
+                "accuracy", "balanced_accuracy",
+            ]
 
-        #train/test split for both datasets (keeps stratification)
-        Xr_train, Xr_test, yr_train, yr_test = train_test_split(
-            reduced_hidden_states, y_reduced, test_size=test_size,
-            random_state=random_state, stratify=y_reduced
-        )
-        Xf_train, Xf_test, yf_train, yf_test = train_test_split(
-            full_embeddings, y_embeddings, test_size=test_size,
-            random_state=random_state, stratify=y_embeddings
-        )
-
-        #define classifiers
-        clf_reduced = LogisticRegression(max_iter=500, random_state=random_state)
-        clf_full = LogisticRegression(max_iter=500, random_state=random_state)
-
-        #fit classifiers
-        clf_reduced.fit(Xr_train, yr_train)
-        clf_full.fit(Xf_train, yf_train)
-
-        #predictions on test sets
-        yr_pred = clf_reduced.predict(Xr_test)
-        yf_pred = clf_full.predict(Xf_test)
-
-        #classification reports (sklearn metrics)
-        reduced_classification_report = classification_report(yr_test, yr_pred, output_dict=True)
-        full_classification_report = classification_report(yf_test, yf_pred, output_dict=True)
+        elif isinstance(metrics, str):  
+            metrics = [metrics]
         
-        # obtained subtracted metrics from the model trained with full dataset and the model trained with reduced dataset
-        results['report_difference'] = self._subtract_reports(full_classification_report, reduced_classification_report)
+        # Constructing scorers dictionary
+        scorers = {m: m for m in metrics}
 
-        #cross-validation with StratifiedKFold
-        skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        # Creating splits
+        sss = StratifiedShuffleSplit(n_splits=n_splits, test_size=test_size, random_state=random_state)
+        splits = list(sss.split(Xr, y))  # list of (train_idx, test_idx)
 
-        reduced_cv_scores = cross_val_score(clf_reduced, reduced_hidden_states, y_reduced, cv=skf, scoring="f1_macro").mean()
-        full_cv_scores = cross_val_score(clf_full, full_embeddings, y_embeddings, cv=skf, scoring="f1_macro").mean()
-        results['f1_score_difference'] = full_cv_scores - reduced_cv_scores
+        # Defining pipelines for each classifier
+        pipe_reduced = make_pipeline(StandardScaler(),
+                                    LogisticRegression(max_iter=1000, random_state=random_state))
+        pipe_full    = make_pipeline(StandardScaler(),
+                                    LogisticRegression(max_iter=1000, random_state=random_state))
 
-        #return dictionary with all metrics
-        return results
+        # Creating cross validation for each classifier
+        cv_reduced = cross_validate(pipe_reduced, Xr, y, cv=splits, scoring=scorers, return_estimator=False)
+        cv_full    = cross_validate(pipe_full,    Xf, y, cv=splits, scoring=scorers, return_estimator=False)
+
+        # Calculating difference between metrics, and displaying on the delta dictionary
+        delta = {}
+        for m in metrics:
+            r = np.asarray(cv_reduced[f"test_{m}"])
+            f = np.asarray(cv_full[f"test_{m}"])
+            d = f - r
+            delta[m] = {
+                "per_split": d.tolist(),
+                "mean": float(d.mean()),
+            }
+
+        return {"delta": delta}
+
