@@ -1,5 +1,5 @@
 # Import implementations
-from .GraphND import graphnd
+from .GraphND import GraphND
 from .Graph2D import Graph2D
 
 # Public API of the package

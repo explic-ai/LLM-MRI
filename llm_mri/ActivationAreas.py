@@ -9,6 +9,7 @@ from matplotlib.colors import Normalize
 import numpy as np
 from typing import Union, List
 import datasets
+from .graph import GraphND, Graph2D
 
 class ActivationAreas:
 
@@ -207,6 +208,20 @@ class ActivationAreas:
 
         # Returning the full graph developed
         return G
+    
+    def get_graph_2d(self, categories: Union[str, List[str]], gridsize:int = 10): # temporary
+        
+        # Creating the categories index
+        category_index_dict = {name: i for i, name in enumerate(self.class_names)}
+        
+        # Generating 2D Graph Object
+        graph2D = Graph2D(2, category_index_dict, self.hidden_states_dataset, self.num_layers, gridsize)
+
+        # Building the graph
+        g = graph2D.build_graph(categories)
+
+        return g
+
 
     def get_graph(self, categories: Union[str, List[str]], threshold: float = 0.3):
         """
