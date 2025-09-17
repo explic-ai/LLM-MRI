@@ -211,25 +211,15 @@ class Graph2D(Graph):
 
         return g_composed
 
-    # Need to specify the generate node colors and generate edge colors methods
-    def get_graph_image(self, G, colormap = 'coolwarm', fix_node_positions:bool = True):
-        """
-        Generates a matplotlib figure of the graph with nodes as pizza graphics.
-        Args:
-        G (networkx.Graph): The NetworkX graph.
-        colormap (string): A string referent to the desired colormap. default is set by 'bwr'.
-
-        Returns:
-        fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
-        """
+    # Instanciar esse método na classe grafo
+    def _get_node_positions(self, G, fix_node_positions):
         
         # By default, full_graph is the current graph
         full_graph = G
 
         if fix_node_positions: # If asked to fix, the graph of all categories will be considered
-
-            # Getting the graph with all possible activations
-                full_graph = self.full_graph
+            
+            full_graph = self.full_graph
 
 
         # Get all nodes from the defined category(ies) graph
@@ -254,75 +244,8 @@ class Graph2D(Graph):
         for node in nodelist:
             
             # Extract the first character to determine height index
-            height_index = int(node.split('_')[0])  # Adjust based on your node naming convention
+            height_index = self.num_layers - int(node.split('_')[0]) 
             new_pos[node] = (pos[node][0], height_index)
 
-        pos = new_pos
-        
-        # Create the matplotlib figure
-        fig, ax = plt.subplots(figsize=(25, 6))
-        
-        # Generate edge colors
-        edge_colors = self.generate_graph_edge_colors(G, colormap)
 
-        ordered_edge_colors = edge_colors
-
-        # Create a mapping from label to color
-        if len(edge_colors) > 2:
-
-            # Define your custom color mapping for labels
-            custom_colors = {
-                0: edge_colors[0],  
-                1: edge_colors[1], 
-                2: edge_colors[2]  
-            }
-
-            # Generate edge_colors list aligned with the edgelist
-            ordered_edge_colors = [
-                custom_colors.get(G[u][v].get('label', 0), 'gray') 
-                for u, v in G.edges().keys()]
-        
-        # Coloring Nodes
-        node_colors = self.generate_node_colors(G, colormap)
-        
-        # Create legend handles based on edge colors
-        legend_handles = [plt.Line2D([0], [0], color=color, lw=4) for color in (edge_colors)]
-        plt.legend(legend_handles, G.graph['label_names'], loc='upper right')
-        
-        # Compute the degree of each node
-        degrees = dict(G.degree())
-        
-        # Scale node sizes
-        max_degree = max(max(degrees.values()), 4)
-        node_sizes = [100 + (degrees[node] / max_degree) * 1400 for node in nodelist]
-        
-        # Draw edges with specified widths and colors
-        nx.draw_networkx_edges(
-            G,
-            pos,
-            edgelist=G.edges(),
-            width=[edge[-1]['weight'] * 2 for edge in G.edges(data=True)],
-            edge_color=ordered_edge_colors,
-            alpha=0.9,
-            ax=ax
-        )
-        
-        # Draw nodes with sizes proportional to their degree
-        nx.draw_networkx_nodes(
-            G,
-            pos,
-            nodelist=nodelist,
-            node_size=node_sizes,
-            node_color=node_colors, # added
-            alpha=0.9,
-            linewidths=1,
-            edgecolors='black'
-        )
-        
-        # Clear label names for future use
-        self.label_names = []
-        
-        # Remove axes for a cleaner look
-        plt.axis('off')
-        
-        return fig
+        return new_pos

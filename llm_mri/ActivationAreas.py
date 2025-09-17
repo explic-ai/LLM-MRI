@@ -32,6 +32,7 @@ class ActivationAreas:
         self.reduced_dataset = []
         self.num_layers = ""
         self.category_hidden_states = {}
+        self.graph_class = ""
 
 
     def _tokenize(self, batch):
@@ -217,6 +218,8 @@ class ActivationAreas:
         # Generating 2D Graph Object
         graph2D = Graph2D(2, category_index_dict, self.hidden_states_dataset, self.num_layers, gridsize)
 
+        self.graph_class = graph2D
+
         # Building the graph
         g = graph2D.build_graph(categories)
 
@@ -240,9 +243,6 @@ class ActivationAreas:
         # Para criar o grafo, chamar a classe grafo, e passar:
         # dataset reduzido
         # categorias, no formato {categoria: indice}
-
-        category_index_dict = {category: self.class_names.index(category) for category in categories}
-
 
         if isinstance(categories, str):
             categories = [categories]
@@ -295,7 +295,6 @@ class ActivationAreas:
         G.graph['layers'] = self.num_layers
 
         return G
-        
 
   
     def get_graph_image(self, G: nx.Graph, colormap : str = 'coolwarm', fix_node_dimensions:bool = True):
@@ -346,7 +345,10 @@ class ActivationAreas:
                 new_pos[node] = (width_index, height_index)
             
         pos = new_pos
-        
+
+        if self.reduction_method.n_components == 2:
+            pos = self.graph_class._get_node_positions(G, fix_node_positions=True)
+
         # Create the matplotlib figure
         fig, ax = plt.subplots(figsize=(25, 6))
         
@@ -416,6 +418,7 @@ class ActivationAreas:
             linewidths=1,
             edgecolors='black'
         )
+
         
         # Remove axes for a cleaner look
         plt.axis('off')
@@ -459,13 +462,6 @@ class ActivationAreas:
                 label1_counts[v] += weight
 
             elif label == label2:
-                label2_counts[u] += weight
-                label2_counts[v] += weight
-            
-            else: # label == 2
-
-                label1_counts[u] += weight
-                label1_counts[v] += weight
                 label2_counts[u] += weight
                 label2_counts[v] += weight
 
