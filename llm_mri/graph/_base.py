@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Union, Optional
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ class Graph(ABC):
         self.num_layers = num_layers
 
     @abstractmethod
-    def build_graph(self, category_list: Union[str, List[str]]=None):
+    def build_graph(self, category_list: Union[str, List[str]]=None, threshold: Optional[float]=0.3):
 
         """
 
@@ -44,7 +44,7 @@ class Graph(ABC):
         """
         pass
 
-    def _generate_node_colors(self, G, class_names, colormap:str = 'coolwarm'):
+    def _generate_node_colors(self, G, colormap:str = 'coolwarm'):
 
         """
         Generates a list of colors based on the amount of nodes in the graph's edges, being
@@ -63,7 +63,7 @@ class Graph(ABC):
             return ['gray']
         
         # assign labels to variables for clarity
-        label1, label2 = [class_names.index(categ) for categ in G.graph['label_names']]
+        label1, label2 = [self.class_names.index(categ) for categ in G.graph['label_names']]
 
         # initialize dictionaries to count label activations per node
         label1_counts = {node: 0 for node in G.nodes()}
@@ -112,7 +112,7 @@ class Graph(ABC):
 
         return node_colors
 
-    def _generate_graph_edge_colors(self, G, class_names, colormap:str = 'coolwarm'):
+    def _generate_graph_edge_colors(self, G, colormap:str = 'coolwarm'):
             """
             Generates a list of colors based on the number of labels in the graph's edges.
 
@@ -128,10 +128,11 @@ class Graph(ABC):
         
             edge_attributes = list(first_edge_attrs[0][-1].keys())
 
+            
             if 'label' in edge_attributes:
-
+                
                 # extract all labels from the edges
-                unique_labels = [class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
+                unique_labels = [self.class_names.index(categ) for categ in G.graph['label_names']] # as previously defined
 
                 num_labels = min(2, len(unique_labels))  # handles up to two labels
 
@@ -162,49 +163,16 @@ class Graph(ABC):
         fig (matplotlib.figure.Figure): The matplotlib figure representing the graph.
         """
 
-        # Verifying if graph passed is a networkx graph
-        if not isinstance(G, nx.Graph):
-            raise TypeError("The graph must be a networkx Graph object.")
-        
-        # Verifying if the graph has nodes
-        if G.number_of_nodes() == 0:
-            raise ValueError("The graph has no nodes to display.")
-        
-        # Verifying if the graph has edges
-        if G.number_of_edges() == 0:
-            raise ValueError("The graph has no edges to display.")
-        
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
 
-        # Use graphviz_layout for positioning
-        pos = graphviz_layout(G, prog="dot")
-
-        # Fixing node positions        
-        new_pos = {}
-
-        for node in nodelist:
-            
-            # Extract the first character to determine height index
-            height_index = int(node.split('_')[0])
-            width_index = int(node.split('_')[-1])
-
-            # If fix_node_dimensions is True, the horizontal position determines the dimension being represented by the node.
-            if fix_node_dimensions == False:
-                new_pos[node] = (pos[node][0], height_index)
-                
-            else:
-                new_pos[node] = (width_index, height_index)
-            
-        pos = new_pos
-
         if self.reduction_method.n_components == 2:
             # Renders visualization for the 2d Graph
-            pos = self._get_node_positions(G, fix=fix_node_positions)
+            pos = self._get_node_positions(G, fix_node_positions)
         
         else:
             # Renders visualization for the ND Graph
-            pos = self._get_node_positions(G, fix=fix_node_dimensions)
+            pos = self._get_node_positions(G, fix_node_dimensions)
 
         # Create the matplotlib figure
         fig, ax = plt.subplots(figsize=(25, 6))

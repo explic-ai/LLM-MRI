@@ -5,7 +5,7 @@ class DimensionalityReduction(ABC):
     Abstract base class for dimensionality reduction techniques.
     """
 
-    def __init__(self, n_components:int):
+    def __init__(self, n_components:int, gridzise:int = 10 ):
         """
         Initialize the dimensionality reduction object.
 
@@ -13,6 +13,7 @@ class DimensionalityReduction(ABC):
         :param n_components: The number of components to reduce to.
         """
         self.n_components = n_components
+        self.gridsize = gridzise
 
     @abstractmethod
     def get_reduction(dataset):

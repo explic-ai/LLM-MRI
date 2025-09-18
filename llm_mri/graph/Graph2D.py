@@ -20,11 +20,11 @@ class Graph2D(Graph):
         """
         super().__init__(n_components, hidden_states, reduction_method, class_names, num_layers)
         self.gridsize = gridsize # Aqui, tem o problema dos n² nrags
-        self.reduced_dataset = self.get_all_grids(self.hidden_states)
+        self.reduced_dataset = self._get_all_grids(self.hidden_states)
         self.full_graph = self.build_graph() # Grafo com todas as categorias
         
 
-    def get_grid_image(self, layer, category_name):
+    def get_grid(self, layer, category_name):
         """
         Reduces dimensionality and returns a NxN gridsize, each representing an activation region.
 
@@ -59,7 +59,7 @@ class Graph2D(Graph):
         return fig
 
 
-    def build_grid(self, dataset, hidden_state_label, gridsize):
+    def _build_grid(self, dataset, hidden_state_label, gridsize):
         """
         Gets a dataframe containing the embeddings for a specific layer of the network, and
         cuts it to make the grid representation.
@@ -99,7 +99,7 @@ class Graph2D(Graph):
         return df_emb
     
 
-    def get_all_grids(self, dataset): 
+    def _get_all_grids(self, dataset): 
         """
         Gets and stores all dimension-reduced grids on buffer 
 
@@ -118,14 +118,14 @@ class Graph2D(Graph):
         # aqui, usa o self.hidden_states_dataset
         with Bar('Processing layers...', max=len([x for x in dataset.column_names if x.startswith("hidden_state")])) as bar:
             for hs in [x for x in dataset.column_names if x.startswith("hidden_state")]:
-                df_grid = self.build_grid(dataset, hs, gridsize)
+                df_grid = self._build_grid(dataset, hs, gridsize)
                 bar.next()
                 buffer.append(df_grid)  # ith grid
 
         return buffer
 
     
-    def build_graph(self, category_list: Union[str, List[str]]=None):
+    def build_graph(self, category_list: Union[str, List[str]]=None, threshold=None):
         """
         Builds the networkx graph for the network region activations,
         for a given label (category) passed as a parameter.
@@ -162,7 +162,7 @@ class Graph2D(Graph):
 
             for hs in range(0, len(hss)-1):
                 
-                # Aqui, já tinha sido reduzido por UMAP (chamava o get_all_grids)
+                # Aqui, já tinha sido reduzido por UMAP (chamava o _get_all_grids)
                 df_grid1 = self.reduced_dataset[hs]
                 df_grid2 = self.reduced_dataset[hs+1]
 
