@@ -104,6 +104,8 @@ class ActivationAreas:
         # Obtaining the tokenized dataset
         self.dataset = self._initialize_dataset()
 
+        print(self.dataset.features['label'])
+
         # Extracting hidden states from the model
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
@@ -128,7 +130,6 @@ class ActivationAreas:
                                         class_names=self.class_names,
                                         num_layers=self.num_layers)
             
-    
     def get_grid(self, layer, category_name):
         
         if self.reduction_method.n_components != 2: # Grid cannot be obtained
@@ -136,7 +137,6 @@ class ActivationAreas:
         
         return self.graph_class.get_grid(layer, category_name)
     
-
     def get_graph(self, categories: Union[str, List[str]], threshold: float = 0.3, gridsize: int = 10):
         """
         Temporary method to test the Graph class
@@ -158,41 +158,31 @@ class ActivationAreas:
         :return: Reduced hidden states as a pandas DataFrame and the labels of the dataset.
         """
 
-        nrag_embeddings_parts = []
-        nrag_labels_parts = []
+        # 1) concatenating all reduced hidden states side-by-side
+        parts = []
+        for i in range(self.num_layers):
+            col = f'hidden_state_{i}'
+            X = self.reduced_dataset[col]  # (n_samples, n_featres)
+            if isinstance(X, torch.Tensor):
+                X = X.cpu().numpy()
+            else:
+                X = np.asarray(X)
+            # Setting column names
+            layer_cols = [f"{i}_{j}" for j in range(X.shape[1])]
+            # Saving as DF
+            parts.append(pd.DataFrame(X, columns=layer_cols))
 
-        for category in self.category_hidden_states.keys():
-            cat_df = pd.DataFrame()
+        # Concatting all parts 
+        nrag_embeddings = pd.concat(parts, axis=1)
 
-            # Iterating through hidden states of the category
-            for (i, hs) in enumerate(self.category_hidden_states[category]):
-                tensor_np = self.category_hidden_states[category][hs].cpu().numpy()  # (n_instancias, n_ativacoes)
-
-                # Creating column "i_j" (ith hidden state, jth feature)
-                layer_cols = [f"{i}_{j}" for j in range(tensor_np.shape[1])]
-                layer_df = pd.DataFrame(tensor_np, columns=layer_cols)
-
-                # Concatenates all features horizontally
-                if cat_df.empty:
-                    cat_df = layer_df
-                else:
-                    cat_df = pd.concat([cat_df, layer_df], axis=1)
-
-            # Storing features for the specific category
-            nrag_embeddings_parts.append(cat_df)
-
-            # Obtaining number (encoding) of the category
-            category_index = self.class_names.index(category)
-
-            # Storing labels for that category
-            nrag_labels_parts.append(pd.DataFrame({"label": [category_index] * len(cat_df)}))
-
-        # Concatenating all categories
-        nrag_embeddings = pd.concat(nrag_embeddings_parts, ignore_index=True) if nrag_embeddings_parts else pd.DataFrame()
-        nrag_labels = pd.concat(nrag_labels_parts, ignore_index=True) if nrag_labels_parts else pd.DataFrame(columns=["label"])
+        # 2) defining labels
+        y = self.dataset["label"]
+        if isinstance(y, torch.Tensor):
+            y = y.cpu().numpy()
+        nrag_labels = pd.DataFrame({"label": y})
 
         return nrag_embeddings, nrag_labels
-        
+            
     def _get_embeddings(self):
         """
         Returns the values on the last hidden state of the model
