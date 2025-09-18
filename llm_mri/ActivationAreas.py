@@ -108,8 +108,7 @@ class ActivationAreas:
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
         # Reducing the hidden states dimensionality
-        self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)
-        
+        self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)  
 
     def _spearman_correlation(self, X: torch.Tensor, Y: torch.Tensor) -> torch.Tensor:
 
@@ -225,6 +224,35 @@ class ActivationAreas:
 
         return g
 
+    def get_graph_test(self, categories: Union[str, List[str]], threshold: float = 0.3, gridsize: int = 10):
+        """
+        Temporary method to test the Graph class
+        """
+        if self.reduction_method.n_components == 2:
+            self.graph_class = Graph2D(n_components=2,
+                                        hidden_states=self.hidden_states_dataset,
+                                        gridsize=gridsize,
+                                        class_names=self.class_names,
+                                        reduction_method=self.reduction_method,
+                                        num_layers=self.num_layers)
+            
+            g = self.graph_class.build_graph(categories)
+        
+        else:
+
+            self.graph_class = GraphND(n_components=self.reduction_method.n_components,
+                                        hidden_states=self.hidden_states_dataset,
+                                        original_dataset=self.dataset,
+                                        reduction_method=self.reduction_method,
+                                        class_names=self.class_names,
+                                        num_layers=self.num_layers)
+            
+            g = self.graph_class.build_graph(categories, threshold)
+        
+        return g
+
+
+
 
     def get_graph(self, categories: Union[str, List[str]], threshold: float = 0.3):
         """
@@ -240,9 +268,8 @@ class ActivationAreas:
             Graph: The networkx graph representing the activations.
         """
 
-        # Para criar o grafo, chamar a classe grafo, e passar:
-        # dataset reduzido
-        # categorias, no formato {categoria: indice}
+        # Se o número de dimensões for 2, utiliza o Graph2D
+        # Se não, utiliza o GraphND
 
         if isinstance(categories, str):
             categories = [categories]

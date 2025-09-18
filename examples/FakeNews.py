@@ -18,7 +18,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = PCA(n_components = 20)
+pca = PCA(n_components = 10)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -26,37 +26,37 @@ llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduc
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
-# g_2d_true = llm_mri.get_graph_2d(["true", "fake"]) # Gets the 2D graph for the true category
-# # print(g_2d_true.edges(data=True))
-# print(g_2d_true)
+g_2d_true = llm_mri.get_graph_test(["true", "fake"]) # Gets the 2D graph for the true category
+print(g_2d_true.edges(data=True))
+print(g_2d_true)
 
-# image = llm_mri.get_graph_image(g_2d_true)
-# plt.show()
-
-g_true = llm_mri.get_graph("true") # Gets the graph for the true category
-g_img = llm_mri.get_graph_image(g_true, fix_node_dimensions=False)
-plt.title("Dimensionality Reduction of true graph by PCA")
-
-g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
-g_img = llm_mri.get_graph_image(g_fake, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction of fake graph by PCA")
-
-g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
-g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True)
-plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
-
-plt.box(False)
+image = llm_mri.get_graph_image(g_2d_true)
 plt.show()
 
-# Calculating metrics
-metrics_true = Metrics(g_true, model_name=model_ckpt, label="true")
-metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
+# g_true = llm_mri.get_graph("true") # Gets the graph for the true category
+# g_img = llm_mri.get_graph_image(g_true, fix_node_dimensions=False)
+# plt.title("Dimensionality Reduction of true graph by PCA")
 
-print("True metrics: ", metrics_true.get_basic_metrics())
-print("Fake metrics: ", metrics_fake.get_basic_metrics())
+# g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
+# g_img = llm_mri.get_graph_image(g_fake, fix_node_dimensions=True)
+# plt.title("Dimensionality Reduction of fake graph by PCA")
 
-# Evaluating the made reduction
+# g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
+# g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True)
+# plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
 
-eval = Evaluation(activation_areas=llm_mri)
-results = eval.evaluate_model()
-print("Evaluation results: ", results)
+# plt.box(False)
+# plt.show()
+
+# # Calculating metrics
+# metrics_true = Metrics(g_true, model_name=model_ckpt, label="true")
+# metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
+
+# print("True metrics: ", metrics_true.get_basic_metrics())
+# print("Fake metrics: ", metrics_fake.get_basic_metrics())
+
+# # Evaluating the made reduction
+
+# eval = Evaluation(activation_areas=llm_mri)
+# results = eval.evaluate_model()
+# print("Evaluation results: ", results)

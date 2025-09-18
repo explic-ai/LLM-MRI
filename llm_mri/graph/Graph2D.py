@@ -12,17 +12,13 @@ from networkx.drawing.nx_agraph import graphviz_layout, to_agraph
 
 class Graph2D(Graph):
 
-    def __init__(self, n_components:int, categories:dict, hidden_states: dict, num_layers: int, gridsize: int = 10):
+    def __init__(self, n_components:int, hidden_states: dict, num_layers: int, gridsize: int = 10, class_names: list = None, reduction_method: object = None):
         """
         Initialize the GraphND object.
 
         :param n_components: The number of components that the graph was reduced based on.
         """
-        super().__init__(n_components, categories)
-        self.n_components = n_components
-        self.categories = [categories] if isinstance(categories, str) else categories
-        self.hidden_states = hidden_states
-        self.num_layers = num_layers
+        super().__init__(n_components, hidden_states, reduction_method, class_names, num_layers)
         self.gridsize = gridsize # Aqui, tem o problema dos n² nrags
         self.reduced_dataset = self.get_all_grids(self.hidden_states)
         self.full_graph = self.build_graph() # Grafo com todas as categorias
@@ -46,7 +42,7 @@ class Graph2D(Graph):
         # Chooses the specific layer
         df_grid = self.reduced_dataset[layer]
 
-        label = self.categories[category_name]
+        label = self.class_names.index(category_name)
 
         df_grid = df_grid.loc[df_grid['label'] == label]
 
@@ -131,7 +127,7 @@ class Graph2D(Graph):
     
     def build_graph(self, category_list: Union[str, List[str]]=None):
         """
-        Builds the pandas edgelist (graph representation) for the network region activations,
+        Builds the networkx graph for the network region activations,
         for a given label (category) passed as a parameter.
 
         Args:
@@ -151,7 +147,7 @@ class Graph2D(Graph):
         for category_name in category_list:
 
             if(category_name != ""):
-                category_idx = self.categories[category_name]
+                category_idx = self.class_names.index(category_name)
 
             else:
                 category_idx = -1
@@ -214,13 +210,24 @@ class Graph2D(Graph):
     # Instanciar esse método na classe grafo
     def _get_node_positions(self, G, fix_node_positions):
         
+        # Verifying if graph passed is a networkx graph
+        if not isinstance(G, nx.Graph):
+            raise TypeError("The graph must be a networkx Graph object.")
+        
+        # Verifying if the graph has nodes
+        if G.number_of_nodes() == 0:
+            raise ValueError("The graph has no nodes to display.")
+        
+        # Verifying if the graph has edges
+        if G.number_of_edges() == 0:
+            raise ValueError("The graph has no edges to display.")
+
         # By default, full_graph is the current graph
         full_graph = G
 
         if fix_node_positions: # If asked to fix, the graph of all categories will be considered
             
             full_graph = self.full_graph
-
 
         # Get all nodes from the defined category(ies) graph
         nodelist = list(G.nodes())
