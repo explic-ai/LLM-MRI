@@ -22,6 +22,7 @@ class Graph2D(Graph):
         self.gridsize = gridsize # Aqui, tem o problema dos n² nrags
         self.reduced_dataset = self._get_all_grids(self.hidden_states)
         self.full_graph = self.build_graph() # Grafo com todas as categorias
+        self.category_list = []
         
 
     def get_grid(self, layer, category_name):
@@ -144,6 +145,9 @@ class Graph2D(Graph):
         if isinstance(category_list, str):
             category_list = [category_list]
 
+        # Storing categories used to generate the graph
+        self.category_list = category_list
+
         for category_name in category_list:
 
             if(category_name != ""):
@@ -256,3 +260,40 @@ class Graph2D(Graph):
 
 
         return new_pos
+    
+
+    def _get_nrag_embeddings(self):
+        """
+        Returns a dataset containing the reduced hidden states outputs for each category and another containing the labels.
+        Both are going to be used on the train of a classifier.
+
+        :return: Reduced hidden states as a pandas DataFrame and the labels of the dataset.
+        """
+
+        df_map = pd.DataFrame(self.reduced_dataset[0][['label']])
+        
+        cell_numeration = {}
+        
+        for idx, data in enumerate(self.reduced_dataset):
+            df_mid = data[['label','cell_label']].pivot_table(index=data.index, columns="cell_label")
+            df_mid.columns = df_mid.columns.droplevel(0)
+        
+            cell_numeration[idx] = [df_map.columns.size, df_map.columns.size + df_mid.columns.size]
+            
+            df_map = pd.concat([
+                df_map,
+                df_mid
+            ], axis=1)
+        
+        # Filtra as duas classes de interesse
+        df_map = df_map[(df_map['label'] == 0) | (df_map['label'] == 2)]
+
+        # Reduz o valor da classe maior para um
+        df_map = df_map.replace(2, 1)
+
+        # Seta todos os valores ativados (classe top 1 ou classe botton 0) para 1 e todos os nulos para 0
+        df_map.iloc[:,1:] = df_map.iloc[:,1:].notnull().astype('int')
+        
+        #pd.Series(df_model.iloc[:,2:].isnull().values.all(axis=0)).value_counts()
+        return df_map
+
