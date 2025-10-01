@@ -143,6 +143,7 @@ class GraphND(Graph):
         # List to store graphs for each category
         graphs_list = []
 
+        # Iterating through every category passed, so that it is possible to compare activations for different categories on the graph
         for category in category_list:
 
             if category not in self.class_names:
@@ -157,21 +158,15 @@ class GraphND(Graph):
             #  Extract the rows from the hidden_states_dataset tensor
             filtered_hidden_states = self.hidden_states.select(indices) 
         
-            #  Select only rows with selected categories from hidden state
-            full_svd_hs = self.reduction_method.get_reduction(filtered_hidden_states)
-
-            # 2) Select specific hidden states to compute spearman correlation
-            c_hidden_states = {}
-
-            for i in range(len(full_svd_hs)):
-                c_hidden_states[f'hidden_state_{i}'] = full_svd_hs[f'hidden_state_{i}']
+            #  2) Select only rows with selected categories from hidden state
+            category_hidden_states = self.reduction_method.get_reduction(filtered_hidden_states)
             
             # Updating graphs list
-            graph = self._get_spearman_graph(c_hidden_states, category_index, threshold)
+            graph = self._get_spearman_graph(category_hidden_states, category_index, threshold)
             graphs_list.append(graph)
             
             # Updating the hidden states for the given category
-            self.category_hidden_states[category] = c_hidden_states
+            self.category_hidden_states[category] = category_hidden_states
 
         # Merging graphs (if more than one category)
         if len(graphs_list) > 1:
@@ -231,3 +226,49 @@ class GraphND(Graph):
                 new_pos[node] = (width_index, height_index)
 
         return new_pos
+    
+    def _get_nrag_embeddings(self):
+        """
+        Build (X, y) for probing using EXACTLY the reduced tensors already
+        computed and stored in self.category_hidden_states by build_graph().
+
+        X shape: (sum_c n_rows_c, n_components * num_layers)
+        y shape: (sum_c n_rows_c,)
+        """
+        X_blocks = []
+        y_blocks = []
+
+        # Keep a stable layer order like hidden_state_0, hidden_state_1, ...
+        def _sorted_layer_keys(d):
+            return sorted([k for k in d.keys() if k.startswith("hidden_state_")],
+                        key=lambda s: int(s.split("_")[-1]))
+
+        for category_name, reduced_dict in self.category_hidden_states.items():
+            # Determine category index
+            c_idx = self.class_names.index(category_name)
+
+            # Concatenate this category's reduced layers along features
+            layer_keys = _sorted_layer_keys(reduced_dict) # Creates one feature per component per layer
+
+            per_layer = [reduced_dict[k] for k in layer_keys]
+            X_cat = torch.cat(per_layer, dim=1)   # (n_rows, n_components * num_layers)
+
+            # Labels for this block
+            y_cat = torch.full((X_cat.shape[0],), c_idx, dtype=torch.long)
+
+            X_blocks.append(X_cat)
+            y_blocks.append(y_cat)
+
+        # Stack categories along rows (since dimensionality reduction was done per category)
+        X_reduced = torch.cat(X_blocks, dim=0) if len(X_blocks) > 0 else torch.empty(0)
+        y_reduced = torch.cat(y_blocks, dim=0) if len(y_blocks) > 0 else torch.empty(0, dtype=torch.long)
+
+        # Convert tensors to numpy arrays
+        X_np = X_reduced.cpu().numpy()
+        y_np = y_reduced.cpu().numpy()
+
+        # Create DataFrames
+        df_X = pd.DataFrame(X_np)
+        df_y = pd.DataFrame(y_np, columns=["target"])  
+
+        return df_X, df_y

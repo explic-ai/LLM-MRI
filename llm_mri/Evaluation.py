@@ -43,12 +43,10 @@ class Evaluation:
 
 
     def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None, metrics:Union[list, str] = None):
-        # Treina um classificador com o dataset obtido previamente, utilizando os parâmetros pré-definidos pelo usuário, como k-fold, split treino e teste, etc.
-        # Retorna as métricas de acordo com o sklearn
         """
-        Evaluates the model using the activation areas and reduced embeddings.
+        Evaluates the model using the original and reduced embeddings.
         This method will train a classifier with the dataset obtained previously, using the parameters predefined by the user, such as k-fold, train-test split, etc.
-        Returns the metrics according to sklearn.
+        Returns the difference between the metrics of the two classifiers.
         """
 
         # Obtaining data from embeddings and nrags

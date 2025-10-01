@@ -2,7 +2,7 @@ import os
 
 from llm_mri import ActivationAreas, Metrics, Evaluation
 from llm_mri.dimensionality_reduction import PCA
-
+import networkx as nx
 
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
@@ -39,6 +39,8 @@ plt.title("Dimensionality Reduction of fake graph by PCA")
 g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
 g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True)
 plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
+
+nx.write_edgelist(g_full, "full_graph.edgelist")
 
 plt.box(False)
 plt.show()

@@ -158,28 +158,8 @@ class ActivationAreas:
         :return: Reduced hidden states as a pandas DataFrame and the labels of the dataset.
         """
 
-        # 1) concatenating all reduced hidden states side-by-side
-        parts = []
-        for i in range(self.num_layers):
-            col = f'hidden_state_{i}'
-            X = self.reduced_dataset[col]  # (n_samples, n_featres)
-            if isinstance(X, torch.Tensor):
-                X = X.cpu().numpy()
-            else:
-                X = np.asarray(X)
-            # Setting column names
-            layer_cols = [f"{i}_{j}" for j in range(X.shape[1])]
-            # Saving as DF
-            parts.append(pd.DataFrame(X, columns=layer_cols))
-
-        # Concatting all parts 
-        nrag_embeddings = pd.concat(parts, axis=1)
-
-        # 2) defining labels
-        y = self.dataset["label"]
-        if isinstance(y, torch.Tensor):
-            y = y.cpu().numpy()
-        nrag_labels = pd.DataFrame({"label": y})
+        # Calls function on graph
+        nrag_embeddings, nrag_labels = self.graph_class._get_nrag_embeddings()
 
         return nrag_embeddings, nrag_labels
             
