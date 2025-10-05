@@ -29,18 +29,16 @@ llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimen
 grid = llm_mri.get_grid(layer=6, category_name="true")
 
 # g_true = llm_mri.get_graph("true") # Gets the graph for the true category
-# g_img = llm_mri.get_graph_image(g_true, fix_node_dimensions=False)
+# g_img = llm_mri.get_graph_image(g_true, fix_node_positions=False)
 # plt.title("Dimensionality Reduction of true graph by PCA")
 
 # g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
-# g_img = llm_mri.get_graph_image(g_fake, fix_node_dimensions=True)
+# g_img = llm_mri.get_graph_image(g_fake, fix_node_positions=True)
 # plt.title("Dimensionality Reduction of fake graph by PCA")
 
 g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
-g_img = llm_mri.get_graph_image(g_full, fix_node_dimensions=True)
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True)
 plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
-
-nx.write_edgelist(g_full, "full_graph.edgelist")
 
 plt.box(False)
 plt.show()

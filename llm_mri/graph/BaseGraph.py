@@ -150,7 +150,7 @@ class Graph(ABC):
             else:
                 return ['lightblue']
     
-    def get_graph_image(self, G: nx.Graph, colormap:str = 'coolwarm', fix_node_dimensions:bool = True, fix_node_positions:bool = True) -> plt.Figure: 
+    def get_graph_image(self, G: nx.Graph, colormap:str = 'coolwarm', fix_node_positions:bool = True) -> plt.Figure: 
         """
         Renders generated graph as an image
         Args:
@@ -172,7 +172,7 @@ class Graph(ABC):
         
         else:
             # Renders visualization for the ND Graph
-            pos = self._get_node_positions(G, fix_node_dimensions)
+            pos = self._get_node_positions(G, fix_node_positions)
 
         # Create the matplotlib figure
         fig, ax = plt.subplots(figsize=(25, 6))
