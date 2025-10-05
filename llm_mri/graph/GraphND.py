@@ -72,7 +72,7 @@ class GraphND(Graph):
             Graph: The networkx graph representing the activations.
         """
         # Creating the graph
-        G = nx.Graph()
+        G = nx.DiGraph()
 
         # Variable to store the correlation matrices
         correlation_reduced_hs = []
@@ -107,7 +107,6 @@ class GraphND(Graph):
             for row_name, row_data in corr_matrix.iterrows():  # Iterating though rows
                 for col_name, weight in row_data.items():  # Iterating through columns
                     if weight > threshold: # Threshold
-                        # Adding edges
                         G.add_edge(col_name, row_name,
                                    weight=weight, label=category_index)
                     
@@ -215,7 +214,7 @@ class GraphND(Graph):
         for node in nodelist:
             
             # Extract the first character to determine height index
-            height_index = int(node.split('_')[0])
+            height_index = self.num_layers - int(node.split('_')[0]) + 1 # we want node 0 to have the highest height, so we invert the index
             width_index = int(node.split('_')[-1])
 
             # If fix_node_dimensions is True, the horizontal position determines the dimension being represented by the node.

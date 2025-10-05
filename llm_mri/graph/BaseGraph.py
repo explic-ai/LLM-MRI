@@ -246,17 +246,17 @@ class Graph(ABC):
         
         # Optionally, add labels to nodes (commented out for clarity, but could be parametrized later if needed)
 
-        # node_labels = {n: str(n) for n in nodelist}
+        node_labels = {n: str(n) for n in nodelist}
 
-        # nx.draw_networkx_labels(
-        #     G,
-        #     pos,
-        #     labels=node_labels,
-        #     font_size=10,
-        #     font_color="black",
-        #     ax=ax
-        # )
-        
+        nx.draw_networkx_labels(
+            G,
+            pos,
+            labels=node_labels,
+            font_size=10,
+            font_color="black",
+            ax=ax
+        )
+
         # Remove axes for a cleaner look
         plt.axis('off')
         
