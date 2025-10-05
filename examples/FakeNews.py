@@ -1,7 +1,7 @@
 import os
 
 from llm_mri import ActivationAreas, Metrics, Evaluation
-from llm_mri.dimensionality_reduction import PCA
+from llm_mri.dimensionality_reduction import PCA, UMAP, SVD
 import networkx as nx
 
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = PCA(n_components = 10)
+pca = SVD(n_components = 10)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)

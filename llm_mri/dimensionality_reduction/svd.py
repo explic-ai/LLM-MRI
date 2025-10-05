@@ -10,7 +10,7 @@ class SVD(DimensionalityReduction):
         super().__init__(n_components)
         self.reduced_dataset = None
 
-    def get_reduction(self, hidden_states: dict):
+    def get_hidden_states_reduction(self, hidden_states: dict):
         """
         Perform SVD dimensionality reduction on the dataset.
 

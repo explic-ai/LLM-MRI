@@ -158,7 +158,7 @@ class GraphND(Graph):
             filtered_hidden_states = self.hidden_states.select(indices) 
         
             #  2) Select only rows with selected categories from hidden state
-            category_hidden_states = self.reduction_method.get_reduction(filtered_hidden_states)
+            category_hidden_states = self.reduction_method.get_hidden_states_reduction(filtered_hidden_states)
             
             # Updating graphs list
             graph = self._get_spearman_graph(category_hidden_states, category_index, threshold)

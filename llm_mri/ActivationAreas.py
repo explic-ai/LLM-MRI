@@ -108,7 +108,7 @@ class ActivationAreas:
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 
         # Reducing the hidden states dimensionality
-        self.reduced_dataset = self.reduction_method.get_reduction(self.hidden_states_dataset)  
+        self.reduced_dataset = self.reduction_method.get_hidden_states_reduction(self.hidden_states_dataset)  
 
         # Definig the Graph object, based on the number of components
         if self.reduction_method.n_components == 2:
