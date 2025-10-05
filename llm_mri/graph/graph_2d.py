@@ -1,4 +1,4 @@
-from .BaseGraph import Graph
+from .base import Graph
 import pandas as pd
 from typing import Union, List
 import networkx as nx
@@ -96,7 +96,6 @@ class Graph2D(Graph):
         df_emb['cell_label'] = hidden_state + "_" + \
             df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         
-        print(df_emb)
         return df_emb
     
 

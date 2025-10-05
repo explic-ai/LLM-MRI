@@ -156,7 +156,7 @@ class Graph(ABC):
         Args:
         G (networkx.Graph): The NetworkX graph.
         colormap (string): A string referent to the desired colormap. default is set by 'bwr'.
-        fix_node_dimensions (bool): If True, the horizontal position of the node determines the dimension being represented by the node.
+        fix_node_positions (bool): If True, the horizontal position of the node determines the dimension being represented by the node.
         If False, the horizontal position is defined by the layout algorithm.
         
         Returns:
