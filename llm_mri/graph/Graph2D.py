@@ -1,4 +1,4 @@
-from ._base import Graph
+from .BaseGraph import Graph
 import pandas as pd
 from typing import Union, List
 import networkx as nx
@@ -97,6 +97,7 @@ class Graph2D(Graph):
         # Adjusting Labels
         df_emb['cell_label'] = hidden_state + "_" + \
             df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
+        
         return df_emb
     
 
@@ -122,7 +123,7 @@ class Graph2D(Graph):
                 df_grid = self._build_grid(dataset, hs, gridsize)
                 bar.next()
                 buffer.append(df_grid)  # ith grid
-
+        
         return buffer
 
     
@@ -176,7 +177,11 @@ class Graph2D(Graph):
                 
                 # when category_idx is passed filters values by category_idx
                 else:
-                    df_join = df_grid1.loc[df_grid1['label'] == category_idx][['cell_label']].join(df_grid2.loc[df_grid2['label'] == category_idx][['cell_label']], lsuffix='_1', rsuffix='_2')
+                    left  = df_grid1.loc[df_grid1['label'] == category_idx, ['cell_label']].rename(columns={'cell_label': 'cell_label_1'})
+
+                    right = df_grid2.loc[df_grid2['label'] == category_idx, ['cell_label']].rename(columns={'cell_label': 'cell_label_2'})
+
+                    df_join = left.join(right, how='left')  # index-based left join
 
                 # group by and count the number of rows
                 df_join_grouped = df_join.groupby(['cell_label_1', 'cell_label_2']).size().reset_index(name='weight')
@@ -185,8 +190,14 @@ class Graph2D(Graph):
 
                 df_graph = pd.concat([df_graph, df_join_grouped])
 
-                
-            G = nx.from_pandas_edgelist(df_graph, 'cell_label_1', 'cell_label_2', ['weight'])
+            # Creating direct graph from the previous edgelist
+            G = nx.from_pandas_edgelist(
+                df_graph, 
+                source='cell_label_1',
+                target='cell_label_2',
+                edge_attr=['weight', 'level'],
+                create_using=nx.DiGraph()
+            )
 
             # when generating category_idx graph, assigns category_idx label to edges
             if category_idx != -1:
@@ -194,12 +205,12 @@ class Graph2D(Graph):
 
             graphs_list.append(G)
 
-        # compose without relabeling to 0/1/2
+        # composeing graphs
         if len(graphs_list) > 1:
             g1, g2 = graphs_list[0], graphs_list[1]
             g_composed = nx.compose(g1, g2)
 
-            # mark overlaps; keep existing label (class index)
+            # mark overlaps
             duplicates = set(g1.edges()) & set(g2.edges())
             for e in duplicates:
                 g_composed.edges[e]['overlap'] = True
@@ -207,7 +218,7 @@ class Graph2D(Graph):
             g_composed = graphs_list[0]
 
         g_composed.graph['label_names'] = category_list
-        g_composed.graph['num_layers'] = self.num_layers
+        g_composed.graph['layers'] = self.num_layers
 
         return g_composed
 
@@ -258,7 +269,7 @@ class Graph2D(Graph):
             height_index = self.num_layers - int(node.split('_')[0]) 
             new_pos[node] = (pos[node][0], height_index)
 
-
+        
         return new_pos
     
 

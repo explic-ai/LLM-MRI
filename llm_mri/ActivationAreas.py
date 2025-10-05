@@ -104,8 +104,6 @@ class ActivationAreas:
         # Obtaining the tokenized dataset
         self.dataset = self._initialize_dataset()
 
-        print(self.dataset.features['label'])
-
         # Extracting hidden states from the model
         self.hidden_states_dataset = self.dataset.map(self._extract_all_hidden_states, batched=True)
 

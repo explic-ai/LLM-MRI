@@ -57,8 +57,6 @@ class Evaluation:
         y_reduced = pd.Series(np.ravel(y_reduced))
         y_full = pd.Series(np.ravel(y_full))
 
-        print(f"Reduced shape: {X_reduced.shape}, Full shape: {X_full.shape}")
-
         # Tests (remove afterwards)
         if len(X_reduced) != len(X_full):
             raise ValueError("Reduced and Full have different numbers of instances.")
