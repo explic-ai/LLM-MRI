@@ -18,7 +18,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = SVD(n_components = 2)
+pca = PCA(n_components = 5, random_state=42, gridsize=15)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -26,29 +26,33 @@ llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduc
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
-grid = llm_mri.get_grid(layer=6, category_name="true")
+# Only if n_components = 2
+# grid = llm_mri.get_grid(layer=6, category_name="true")
 
-# g_true = llm_mri.get_graph("true") # Gets the graph for the true category
-# g_img = llm_mri.get_graph_image(g_true, fix_node_positions=False)
-# plt.title("Dimensionality Reduction of true graph by PCA")
+g_true = llm_mri.get_graph("true") # Gets the graph for the true category
+g_img = llm_mri.get_graph_image(g_true, fix_node_positions=False)
+plt.title("Dimensionality Reduction of true graph by PCA")
 
-# g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
-# g_img = llm_mri.get_graph_image(g_fake, fix_node_positions=True)
-# plt.title("Dimensionality Reduction of fake graph by PCA")
+g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
+g_img = llm_mri.get_graph_image(g_fake, fix_node_positions=True)
+plt.title("Dimensionality Reduction of fake graph by PCA")
 
 g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
 g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True)
 plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
 
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False)
+plt.title("Grafo de Ativações para notícias verdadeiras e falsas (sem fixar)")
+
 plt.box(False)
 plt.show()
 
 # Calculating metrics
-# metrics_true = Metrics(g_true, model_name=model_ckpt, label="true")
-# metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
+metrics_true = Metrics(g_true, model_name=model_ckpt, label="true")
+metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
 
-# print("True metrics: ", metrics_true.get_basic_metrics())
-# print("Fake metrics: ", metrics_fake.get_basic_metrics())
+print("True metrics: ", metrics_true.get_basic_metrics())
+print("Fake metrics: ", metrics_fake.get_basic_metrics())
 
 # Evaluating the made reduction
 

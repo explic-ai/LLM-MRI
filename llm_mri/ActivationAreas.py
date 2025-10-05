@@ -144,9 +144,9 @@ class ActivationAreas:
         
         return g
 
-    def get_graph_image(self, G: nx.Graph, colormap : str = 'coolwarm', fix_node_dimensions:bool = True, fix_node_positions:bool = True):
+    def get_graph_image(self, G: nx.Graph, colormap : str = 'coolwarm', fix_node_positions:bool = True):
 
-        return self.graph_class.get_graph_image(G, colormap=colormap, fix_node_dimensions=fix_node_dimensions, fix_node_positions=fix_node_positions)
+        return self.graph_class.get_graph_image(G, colormap=colormap, fix_node_positions=fix_node_positions)
 
     def _get_nrag_embeddings(self):
         """

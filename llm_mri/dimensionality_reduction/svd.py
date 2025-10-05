@@ -1,18 +1,23 @@
-from ._base import DimensionalityReduction
+from .base import DimensionalityReduction
 import torch
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from typing import Optional
 
 class SVD(DimensionalityReduction):
     """
     Principal Component Analysis (SVD) implementation for dimensionality reduction of the dataset's hidden states.
     """
 
-    def __init__(self, n_components):
+    def __init__(self, 
+                 n_components: int,
+                 random_state: Optional[int] = None,
+                 gridsize: Optional[int] = 10):
         super().__init__(n_components)
         self.reduced_dataset = None
-
+        self.gridsize = gridsize
+        self.random_state = random_state
     def get_hidden_states_reduction(self, hidden_states: dict):
         """
         Perform SVD dimensionality reduction on the dataset.
@@ -41,9 +46,7 @@ class SVD(DimensionalityReduction):
         Returns a DataFrame with columns ['X', 'Y'], to be used on the grids generation.
         """
 
-        # Scale like your UMAP version
         X_std = StandardScaler(with_mean=True, with_std=True).fit_transform(dataset)
-
 
         # SVD on CPU tensor
         X_t = torch.from_numpy(np.asarray(X_std))

@@ -1,20 +1,26 @@
-from ._base import DimensionalityReduction
+from .base import DimensionalityReduction
 from umap import UMAP as UMAPLibrary
 import torch
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
+from typing import Optional
+
 
 class UMAP(DimensionalityReduction):
     """
     
     """
 
-    def __init__(self, n_components, random_state=42, metric:str = "cosine"):
-        super().__init__(n_components)
+    def __init__(self, n_components, 
+                 gridsize: Optional[int] = 10,
+                 random_state: Optional[int] = None, 
+                 metric: Optional[str] = "cosine"):
+        super().__init__(n_components, random_state, gridsize)
         self.reduced_dataset = None
         self.random_state = random_state
         self.metric = metric
+        self.gridsize = gridsize
         
         
     def get_hidden_states_reduction(self, hidden_states: dict):
@@ -37,8 +43,12 @@ class UMAP(DimensionalityReduction):
                 dtype, device = torch.float32, "cpu"
 
             x_proc = MinMaxScaler().fit_transform(x_np)
-            # UMAP fit/transform
-            embedding_np = UMAPLibrary(n_components=self.n_components, metric=self.metric).fit_transform(x_proc)
+
+            if self.random_state is not None:
+                embedding_np = UMAPLibrary(n_components=self.n_components, metric=self.metric, random_state=self.random_state).fit_transform(x_proc)
+            else:
+                # UMAP fit/transform
+                embedding_np = UMAPLibrary(n_components=self.n_components, metric=self.metric).fit_transform(x_proc)
 
             # Convert back to torch (keep dtype/device if input was torch)
             embedding = torch.from_numpy(embedding_np).to(dtype=dtype, device=device)

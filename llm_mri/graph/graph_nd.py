@@ -1,4 +1,4 @@
-from .BaseGraph import Graph
+from .base import Graph
 import torch
 import networkx as nx
 import pandas as pd

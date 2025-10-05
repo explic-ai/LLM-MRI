@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 class DimensionalityReduction(ABC):
     """
     Abstract base class for dimensionality reduction techniques.
     """
 
-    def __init__(self, n_components:int, gridzise:int = 10 ):
+    def __init__(self, n_components:int, random_state:Optional[int] = None, gridsize: Optional[int] = 10):
         """
         Initialize the dimensionality reduction object.
 
@@ -13,8 +14,8 @@ class DimensionalityReduction(ABC):
         :param n_components: The number of components to reduce to.
         """
         self.n_components = n_components
-        self.gridsize = gridzise
-        self.random_state = 42
+        self.random_state = random_state
+        self.gridsize = gridsize
 
     @abstractmethod
     def get_hidden_states_reduction(dataset):
