@@ -1,0 +1,194 @@
+0_4_4 1_1_4 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_3_1 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_3_3 {'weight': 1, 'level': 0, 'label': 1, 'overlap': True}
+0_4_4 1_5_4 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_5_5 {'weight': 2, 'level': 0, 'label': 0}
+0_4_4 1_5_6 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_5_8 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_6_0 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_6_3 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_6_5 {'weight': 1, 'level': 0, 'label': 1, 'overlap': True}
+0_4_4 1_7_5 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_7_6 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_7_7 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_8_2 {'weight': 1, 'level': 0, 'label': 0}
+0_4_4 1_8_6 {'weight': 1, 'level': 0, 'label': 1, 'overlap': True}
+0_4_4 1_9_4 {'weight': 1, 'level': 0, 'label': 1, 'overlap': True}
+0_4_4 1_9_5 {'weight': 2, 'level': 0, 'label': 0}
+0_4_4 1_0_6 {'weight': 2, 'level': 0, 'label': 1}
+0_4_4 1_0_9 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_1_5 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_2_4 {'weight': 2, 'level': 0, 'label': 1}
+0_4_4 1_2_5 {'weight': 2, 'level': 0, 'label': 1}
+0_4_4 1_3_0 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_3_2 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_3_5 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_4_2 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_4_8 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_5_2 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_5_3 {'weight': 1, 'level': 0, 'label': 1}
+0_4_4 1_7_8 {'weight': 1, 'level': 0, 'label': 1}
+1_1_4 2_0_7 {'weight': 1, 'level': 1, 'label': 0}
+1_3_1 2_3_7 {'weight': 1, 'level': 1, 'label': 0}
+1_3_3 2_2_8 {'weight': 1, 'level': 1, 'label': 1, 'overlap': True}
+1_5_4 2_5_8 {'weight': 1, 'level': 1, 'label': 0}
+1_5_5 2_4_8 {'weight': 1, 'level': 1, 'label': 0}
+1_5_5 2_7_7 {'weight': 1, 'level': 1, 'label': 0}
+1_5_6 2_5_8 {'weight': 1, 'level': 1, 'label': 0}
+1_5_8 2_6_8 {'weight': 1, 'level': 1, 'label': 0}
+1_6_0 2_3_9 {'weight': 1, 'level': 1, 'label': 0}
+1_6_3 2_5_8 {'weight': 1, 'level': 1, 'label': 0}
+1_6_5 2_5_9 {'weight': 1, 'level': 1, 'label': 0}
+1_6_5 2_6_8 {'weight': 1, 'level': 1, 'label': 1}
+1_7_5 2_8_7 {'weight': 1, 'level': 1, 'label': 0}
+1_7_6 2_8_7 {'weight': 1, 'level': 1, 'label': 0}
+1_7_7 2_6_8 {'weight': 1, 'level': 1, 'label': 0}
+1_8_2 2_5_9 {'weight': 1, 'level': 1, 'label': 0}
+1_8_6 2_8_6 {'weight': 1, 'level': 1, 'label': 0}
+1_8_6 2_7_9 {'weight': 1, 'level': 1, 'label': 1}
+1_9_4 2_8_7 {'weight': 2, 'level': 1, 'label': 0}
+1_9_4 2_9_5 {'weight': 1, 'level': 1, 'label': 1}
+1_9_5 2_7_7 {'weight': 1, 'level': 1, 'label': 0}
+1_9_5 2_9_5 {'weight': 1, 'level': 1, 'label': 0}
+2_0_7 3_0_7 {'weight': 1, 'level': 2, 'label': 0}
+2_0_7 3_0_8 {'weight': 1, 'level': 2, 'label': 1}
+2_0_7 3_4_0 {'weight': 1, 'level': 2, 'label': 1}
+2_3_7 3_1_7 {'weight': 1, 'level': 2, 'label': 0}
+2_2_8 3_1_7 {'weight': 1, 'level': 2, 'label': 0}
+2_2_8 3_0_7 {'weight': 1, 'level': 2, 'label': 1}
+2_2_8 3_1_8 {'weight': 1, 'level': 2, 'label': 1}
+2_2_8 3_2_8 {'weight': 1, 'level': 2, 'label': 1}
+2_5_8 3_1_1 {'weight': 1, 'level': 2, 'label': 0}
+2_5_8 3_1_3 {'weight': 1, 'level': 2, 'label': 0}
+2_5_8 3_2_1 {'weight': 1, 'level': 2, 'label': 0}
+2_4_8 3_1_4 {'weight': 1, 'level': 2, 'label': 0}
+2_7_7 3_1_2 {'weight': 1, 'level': 2, 'label': 0}
+2_7_7 3_7_3 {'weight': 1, 'level': 2, 'label': 0}
+2_6_8 3_1_2 {'weight': 1, 'level': 2, 'label': 1, 'overlap': True}
+2_6_8 3_3_2 {'weight': 1, 'level': 2, 'label': 0}
+2_3_9 3_1_3 {'weight': 1, 'level': 2, 'label': 0}
+2_5_9 3_1_2 {'weight': 1, 'level': 2, 'label': 0}
+2_5_9 3_4_0 {'weight': 1, 'level': 2, 'label': 0}
+2_8_7 3_5_1 {'weight': 1, 'level': 2, 'label': 0}
+2_8_7 3_7_3 {'weight': 1, 'level': 2, 'label': 0}
+2_8_7 3_7_5 {'weight': 1, 'level': 2, 'label': 0}
+2_8_7 3_8_3 {'weight': 1, 'level': 2, 'label': 0}
+2_8_7 3_3_5 {'weight': 1, 'level': 2, 'label': 1}
+2_8_6 3_7_4 {'weight': 1, 'level': 2, 'label': 0}
+2_9_5 3_8_5 {'weight': 1, 'level': 2, 'label': 0}
+2_9_5 3_8_4 {'weight': 1, 'level': 2, 'label': 1}
+3_0_7 4_9_2 {'weight': 1, 'level': 3, 'label': 0}
+3_0_7 4_9_1 {'weight': 1, 'level': 3, 'label': 1}
+3_1_7 4_8_2 {'weight': 1, 'level': 3, 'label': 0}
+3_1_7 4_9_2 {'weight': 1, 'level': 3, 'label': 0}
+3_1_3 4_8_5 {'weight': 2, 'level': 3, 'label': 0}
+3_1_4 4_8_4 {'weight': 1, 'level': 3, 'label': 0}
+3_1_1 4_8_6 {'weight': 1, 'level': 3, 'label': 0}
+3_2_1 4_7_8 {'weight': 1, 'level': 3, 'label': 0}
+3_1_2 4_8_6 {'weight': 1, 'level': 3, 'label': 1, 'overlap': True}
+3_4_0 4_6_9 {'weight': 1, 'level': 3, 'label': 0}
+3_4_0 4_6_8 {'weight': 1, 'level': 3, 'label': 1}
+3_3_2 4_8_5 {'weight': 1, 'level': 3, 'label': 0}
+3_7_3 4_1_4 {'weight': 2, 'level': 3, 'label': 0}
+3_7_4 4_0_3 {'weight': 1, 'level': 3, 'label': 0}
+3_5_1 4_4_7 {'weight': 1, 'level': 3, 'label': 0}
+3_7_5 4_0_3 {'weight': 1, 'level': 3, 'label': 0}
+3_8_3 4_1_4 {'weight': 1, 'level': 3, 'label': 0}
+3_8_5 4_0_3 {'weight': 1, 'level': 3, 'label': 0}
+4_9_2 5_9_2 {'weight': 2, 'level': 4, 'label': 1, 'overlap': True}
+4_8_6 5_8_5 {'weight': 1, 'level': 4, 'label': 0}
+4_8_6 5_8_6 {'weight': 1, 'level': 4, 'label': 0}
+4_8_6 5_9_5 {'weight': 1, 'level': 4, 'label': 1, 'overlap': True}
+4_8_5 5_8_4 {'weight': 1, 'level': 4, 'label': 0}
+4_8_5 5_9_4 {'weight': 2, 'level': 4, 'label': 1, 'overlap': True}
+4_8_5 5_9_5 {'weight': 1, 'level': 4, 'label': 0}
+4_8_4 5_9_5 {'weight': 1, 'level': 4, 'label': 0}
+4_8_4 5_8_3 {'weight': 1, 'level': 4, 'label': 1}
+4_8_2 5_9_2 {'weight': 2, 'level': 4, 'label': 1, 'overlap': True}
+4_7_8 5_7_8 {'weight': 1, 'level': 4, 'label': 0}
+4_6_9 5_5_9 {'weight': 1, 'level': 4, 'label': 0}
+4_4_7 5_5_7 {'weight': 1, 'level': 4, 'label': 0}
+4_1_4 5_1_3 {'weight': 1, 'level': 4, 'label': 0}
+4_1_4 5_1_4 {'weight': 2, 'level': 4, 'label': 0}
+4_0_3 5_0_2 {'weight': 1, 'level': 4, 'label': 1, 'overlap': True}
+4_0_3 5_0_3 {'weight': 1, 'level': 4, 'label': 0}
+5_0_2 6_9_1 {'weight': 1, 'level': 5, 'label': 1, 'overlap': True}
+5_0_3 6_8_1 {'weight': 1, 'level': 5, 'label': 0}
+5_1_3 6_8_1 {'weight': 1, 'level': 5, 'label': 1, 'overlap': True}
+5_1_3 6_8_0 {'weight': 1, 'level': 5, 'label': 1}
+5_1_4 6_7_0 {'weight': 2, 'level': 5, 'label': 0}
+5_5_7 6_3_2 {'weight': 1, 'level': 5, 'label': 0}
+5_5_9 6_0_4 {'weight': 1, 'level': 5, 'label': 0}
+5_7_8 6_1_7 {'weight': 1, 'level': 5, 'label': 0}
+5_9_2 6_8_8 {'weight': 1, 'level': 5, 'label': 1, 'overlap': True}
+5_9_2 6_8_9 {'weight': 4, 'level': 5, 'label': 1, 'overlap': True}
+5_9_2 6_9_8 {'weight': 2, 'level': 5, 'label': 1}
+5_9_5 6_5_9 {'weight': 1, 'level': 5, 'label': 0}
+5_9_5 6_6_9 {'weight': 1, 'level': 5, 'label': 1, 'overlap': True}
+5_9_5 6_7_9 {'weight': 1, 'level': 5, 'label': 0}
+5_8_4 6_8_7 {'weight': 1, 'level': 5, 'label': 0}
+5_9_4 6_7_9 {'weight': 1, 'level': 5, 'label': 1, 'overlap': True}
+5_9_4 6_7_8 {'weight': 1, 'level': 5, 'label': 1}
+5_9_4 6_8_8 {'weight': 1, 'level': 5, 'label': 1}
+5_8_5 6_5_8 {'weight': 1, 'level': 5, 'label': 0}
+5_8_6 6_6_8 {'weight': 1, 'level': 5, 'label': 0}
+1_0_6 2_0_7 {'weight': 1, 'level': 1, 'label': 1}
+1_0_6 2_2_2 {'weight': 1, 'level': 1, 'label': 1}
+1_0_9 2_0_7 {'weight': 1, 'level': 1, 'label': 1}
+1_1_5 2_2_0 {'weight': 1, 'level': 1, 'label': 1}
+1_2_4 2_2_7 {'weight': 1, 'level': 1, 'label': 1}
+1_2_4 2_2_8 {'weight': 1, 'level': 1, 'label': 1}
+1_2_5 2_1_7 {'weight': 1, 'level': 1, 'label': 1}
+1_2_5 2_2_8 {'weight': 1, 'level': 1, 'label': 1}
+1_3_0 2_0_8 {'weight': 1, 'level': 1, 'label': 1}
+1_3_2 2_1_7 {'weight': 1, 'level': 1, 'label': 1}
+1_3_5 2_4_6 {'weight': 1, 'level': 1, 'label': 1}
+1_4_2 2_3_8 {'weight': 1, 'level': 1, 'label': 1}
+1_4_8 2_6_7 {'weight': 1, 'level': 1, 'label': 1}
+1_5_2 2_4_7 {'weight': 1, 'level': 1, 'label': 1}
+1_5_3 2_3_8 {'weight': 1, 'level': 1, 'label': 1}
+1_7_8 2_8_7 {'weight': 1, 'level': 1, 'label': 1}
+2_2_2 3_9_8 {'weight': 1, 'level': 2, 'label': 1}
+2_2_0 3_9_9 {'weight': 1, 'level': 2, 'label': 1}
+2_2_7 3_2_8 {'weight': 1, 'level': 2, 'label': 1}
+2_1_7 3_2_7 {'weight': 1, 'level': 2, 'label': 1}
+2_1_7 3_2_8 {'weight': 1, 'level': 2, 'label': 1}
+2_0_8 3_0_6 {'weight': 1, 'level': 2, 'label': 1}
+2_4_6 3_3_9 {'weight': 1, 'level': 2, 'label': 1}
+2_3_8 3_0_5 {'weight': 1, 'level': 2, 'label': 1}
+2_3_8 3_2_2 {'weight': 1, 'level': 2, 'label': 1}
+2_6_7 3_0_3 {'weight': 1, 'level': 2, 'label': 1}
+2_4_7 3_2_7 {'weight': 1, 'level': 2, 'label': 1}
+2_7_9 3_2_3 {'weight': 1, 'level': 2, 'label': 1}
+3_0_8 4_9_2 {'weight': 1, 'level': 3, 'label': 1}
+3_0_6 4_9_3 {'weight': 1, 'level': 3, 'label': 1}
+3_2_7 4_6_2 {'weight': 1, 'level': 3, 'label': 1}
+3_2_7 4_8_2 {'weight': 1, 'level': 3, 'label': 1}
+3_2_8 4_7_0 {'weight': 1, 'level': 3, 'label': 1}
+3_2_8 4_8_2 {'weight': 1, 'level': 3, 'label': 1}
+3_2_8 4_9_1 {'weight': 1, 'level': 3, 'label': 1}
+3_9_9 4_1_3 {'weight': 1, 'level': 3, 'label': 1}
+3_9_8 4_1_3 {'weight': 1, 'level': 3, 'label': 1}
+3_1_8 4_9_2 {'weight': 1, 'level': 3, 'label': 1}
+3_0_5 4_9_1 {'weight': 1, 'level': 3, 'label': 1}
+3_2_2 4_8_5 {'weight': 1, 'level': 3, 'label': 1}
+3_3_9 4_4_0 {'weight': 1, 'level': 3, 'label': 1}
+3_0_3 4_9_5 {'weight': 1, 'level': 3, 'label': 1}
+3_2_3 4_8_5 {'weight': 1, 'level': 3, 'label': 1}
+3_3_5 4_8_4 {'weight': 1, 'level': 3, 'label': 1}
+3_8_4 4_0_3 {'weight': 1, 'level': 3, 'label': 1}
+4_9_5 5_9_4 {'weight': 1, 'level': 4, 'label': 1}
+4_9_1 5_9_1 {'weight': 1, 'level': 4, 'label': 1}
+4_9_1 5_9_2 {'weight': 2, 'level': 4, 'label': 1}
+4_9_3 5_9_2 {'weight': 1, 'level': 4, 'label': 1}
+4_6_2 5_7_2 {'weight': 1, 'level': 4, 'label': 1}
+4_7_0 5_8_0 {'weight': 1, 'level': 4, 'label': 1}
+4_4_0 5_6_1 {'weight': 1, 'level': 4, 'label': 1}
+4_6_8 5_6_9 {'weight': 1, 'level': 4, 'label': 1}
+4_1_3 5_1_3 {'weight': 2, 'level': 4, 'label': 1}
+5_6_1 6_8_5 {'weight': 1, 'level': 5, 'label': 1}
+5_7_2 6_9_7 {'weight': 1, 'level': 5, 'label': 1}
+5_6_9 6_2_3 {'weight': 1, 'level': 5, 'label': 1}
+5_8_0 6_9_7 {'weight': 1, 'level': 5, 'label': 1}
+5_8_3 6_8_8 {'weight': 1, 'level': 5, 'label': 1}
+5_9_1 6_8_9 {'weight': 1, 'level': 5, 'label': 1}

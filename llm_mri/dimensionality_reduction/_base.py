@@ -5,7 +5,7 @@ class DimensionalityReduction(ABC):
     Abstract base class for dimensionality reduction techniques.
     """
 
-    def __init__(self, n_components:int):
+    def __init__(self, n_components:int, gridzise:int = 10 ):
         """
         Initialize the dimensionality reduction object.
 
@@ -13,26 +13,26 @@ class DimensionalityReduction(ABC):
         :param n_components: The number of components to reduce to.
         """
         self.n_components = n_components
+        self.gridsize = gridzise
+        self.random_state = 42
+
+    @abstractmethod
+    def get_hidden_states_reduction(dataset):
+        """
+        Abstract method to perform the dimensionality reduction of all hidden states. 
+        Returns a reduced version of the dataset's activations to n_components as a dictionary of DataFrames.
+        The naming of each layer should be 'hidden_state_number' (e.g., 'hidden_state_1', 'hidden_state_2', etc.).
+
+        :return: Dictionary, where each reduced hidden state is represented as a tensor, and its keys are "hidden_state_x"
+
+        """
+        pass        
 
     @abstractmethod
     def get_reduction(dataset):
         """
-        Abstract method to perform dimensionality reduction. 
-        Returns a reduced version of the dataset's activations to n_components as a dictionary of DataFrames.
-        The naming of each layer should be 'hidden_state_number' (e.g., 'hidden_state_1', 'hidden_state_2', etc.).
-
-        :return: Dataset's activations as a dictionary of pandas DataFrame (one for each layer).
-
-        """
-        pass        
-    
-    @abstractmethod
-    def get_reduced_embeddings(self, dataset, n_components:int = 0):
-        """
-        Abstract method to obtain the reduced embeddings from the dataset.
-
-        :param dataset: The input dataset as a pandas DataFrame.
-        :return: Reduced embeddings as a dictionary of pandas DataFrame (one for each layer).
+        Simple reduction by passing a dataset and returning a reduced dataset with n_components components.
+        As of now, this method is only used on the 2D graph implementation, to generate the grids.
         """
         pass
-        
+    
