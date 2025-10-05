@@ -28,9 +28,11 @@ class DimensionalityReduction(ABC):
         """
         pass        
 
-    # @abstractmethod
-    # def get_reduction(dataset):
-    #     """
-    #     Simple reduction by passing a dataset and returning a reduced dataset with n_components components
-    #     """
+    @abstractmethod
+    def get_reduction(dataset):
+        """
+        Simple reduction by passing a dataset and returning a reduced dataset with n_components components.
+        As of now, this method is only used on the 2D graph implementation, to generate the grids.
+        """
+        pass
     

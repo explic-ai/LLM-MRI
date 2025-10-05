@@ -1,6 +1,8 @@
 from ._base import DimensionalityReduction
 from torchdr import PCA as TorchPCA
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
 
 class PCA(DimensionalityReduction):
     """
@@ -25,3 +27,19 @@ class PCA(DimensionalityReduction):
             reduced_hs_list[hs_name] = reduced_hs
             
         return reduced_hs_list
+
+    def get_reduction(self, dataset):
+        """
+        PCA-based 2D reduction for a single dataset.
+        Returns a DataFrame with columns ['X', 'Y'], to be used on the grids generation.
+        """
+
+        # 1) Scale like your UMAP version
+        X_std = StandardScaler(with_mean=True, with_std=True).fit_transform(dataset)
+
+        # 2) 2D PCA (using TorchPCA to stay consistent with your class)
+        coords = TorchPCA(n_components=2).fit_transform(X_std)
+
+        # 3) Return as a DataFrame
+        df_emb = pd.DataFrame(coords, columns=["X", "Y"])
+        return df_emb

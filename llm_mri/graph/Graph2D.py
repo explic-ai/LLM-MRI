@@ -80,11 +80,9 @@ class Graph2D(Graph):
         X = np.array(dataset[hidden_state_label])
         y = np.array(dataset["label"])
 
-        # --- inlined get_embeddings (unchanged logic) ---
-        X_scaled = MinMaxScaler().fit_transform(X)
-        mapper = UMAP(n_components=2, metric="cosine").fit(
-            X_scaled)  # , random_state=42
-        df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
+        # Reduced dimensionality through passed DimensionalityReduction object
+        df_emb = self.reduction_method.get_reduction(X)
+
         df_emb["label"] = y
         # ------------------------------------------------
 
@@ -98,6 +96,7 @@ class Graph2D(Graph):
         df_emb['cell_label'] = hidden_state + "_" + \
             df_emb['X'].astype(str) + "_" + df_emb['Y'].astype(str)
         
+        print(df_emb)
         return df_emb
     
 

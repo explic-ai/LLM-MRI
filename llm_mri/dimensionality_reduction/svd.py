@@ -1,5 +1,8 @@
 from ._base import DimensionalityReduction
 import torch
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 class SVD(DimensionalityReduction):
     """
@@ -30,3 +33,22 @@ class SVD(DimensionalityReduction):
 
             
         return reduced_hs_list
+    
+
+    def get_reduction(self, dataset):
+        """
+        SVD-based 2D reduction for a single dataset.
+        Returns a DataFrame with columns ['X', 'Y'], to be used on the grids generation.
+        """
+
+        # Scale like your UMAP version
+        X_std = StandardScaler(with_mean=True, with_std=True).fit_transform(dataset)
+
+
+        # SVD on CPU tensor
+        X_t = torch.from_numpy(np.asarray(X_std))
+        U, S, Vh = torch.linalg.svd(X_t, full_matrices=False)
+
+        # 2D coords
+        coords = (U[:, :2] * S[:2]).cpu().numpy()
+        return pd.DataFrame(coords, columns=["X", "Y"])

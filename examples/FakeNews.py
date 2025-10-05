@@ -18,7 +18,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = SVD(n_components = 10)
+pca = SVD(n_components = 2)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -26,7 +26,7 @@ llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduc
 # Processing hidden states and activation areas
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
-# grid = llm_mri.get_grid(layer=6, category_name="true")
+grid = llm_mri.get_grid(layer=6, category_name="true")
 
 # g_true = llm_mri.get_graph("true") # Gets the graph for the true category
 # g_img = llm_mri.get_graph_image(g_true, fix_node_dimensions=False)
