@@ -2,35 +2,28 @@
 
 This repository contains the implementation from the paper [LLM-MRI Python module: a brain scanner for LLMs](https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/30782/30585)
 
-As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. While many approaches focus on the interpretability of LLMs through visualizing different attention mechanisms and methods that explain the model's architecture, `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM.
+As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM through the generation, visualization and analysis of NRAGs.
 
-By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. Through a series of steps, such as dimensionality reduction and representing each layer as a grid, the tool provides various visualization methods for the activation patterns in the feed-forward layers. Accordingly, the objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
+By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. The objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
 
 This model allows users to explore questions such as:
 
 - How do different categories of text in the corpus activate different neural regions?
-- What are the differences between the properties of graphs formed by activations from two distinct categories?
+- What are the differences between the properties of NRAGs from two distinct categories?
 - Are there regions of activation in the model more related to specific aspects of a category?
 
 We encourage you to not only use this toolkit but also to extend it as you see fit.
 
 
 ## Index
-- [Online Example](#online-example)
+
 - [Installation](#installation)
 - [Usage](#usage)
 - [Functions](#functions)
   - [Activation Extraction](#activation-extraction)
   - [Heatmap Representation of Activations](#heatmap-representation-of-activations)
   - [Graph Representation of Activations](#graph-representation-of-activations)
-  - [Composed Graph Visualization](#composed-graph-visualization)
 
-
-## Online Example
-
-The link below runs an online example of our library, in the Jupyter platform running over the Binder server:
-
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/luizcelsojr/LLM-MRI/v01.2?labpath=examples%2FEmotions.ipynb)
 
 ## Instalation
 
@@ -42,10 +35,20 @@ pip install llm_mri
 
 ## Usage
 
-Firstly, the user needs to import the `LLM-MRI` and `matplotlib.pyplot` packages:
+Firstly, the user needs to choose a dimensionality reduction (PCA, SVD or UMAP) algorithm to be used on the model's internal activations.
 
 ```
-from llm_mri import LLM_MRI
+from llm_mri.dimensionality_reduction import PCA
+pca = PCA(n_components, 
+          random_state, 
+          gridsize)
+```
+>**gridsize**: parameter used to define the size of [heatmaps](#heatmap-representation-of-activations). Those are only available when the number of components is equal to 2.
+
+Then, import the `ActivationAreas` package, in order to build the NRAGs, and the `matplotlib.pyplot` package to render its visualizations:
+
+```
+from llm_mri import ActivationAreas
 import matplotlib.pyplot as plt
 ```
 The user also needs to specify the Hugging Face Dataset that will be used to process the model's activations. There are two ways to do this:
@@ -67,26 +70,29 @@ Next, the user selects the model to be used as a string:
 ```
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 ```
-Then, the user instantiates `LLM-MRI`, to apply the methods defined on Functions:
+Then, the user instantiates `LLM-MRI`, to apply the methods defined later, on the Functions sections:
 ```
-llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+llm_mri = ActivationAreas(model=model_ckpt, 
+                          device="cpu", 
+                          dataset=dataset, 
+                          reduction_method=pca)
 ```
 > For now, we recommend to use "cpu" as device. Further tests are going to be executed to ensure full "gpu" compatibility.
 ## Functions
 The library's functionality is divided into the following sections:
 
 ### Activation Extraction: 
-As the user inputs the model and corpus to be analyzed, the dimensionality of the model's hidden layers is reduced, enabling visualization as an NxN grid.
+As the user inputs the model and corpus to be analyzed, the dimensionality of the model's hidden layers is reduced accordingly to the dimensionality algorithm previously passed.
   ```
-  llm_mri.process_activation_areas(map_dimension)
+  llm_mri.process_activation_areas()
   ```
 
 
-  
-### Heatmap representation of activations:
-This includes the _get_layer_image_ function, which transforms the NxN grid for a selected layer into a heatmap. In this heatmap, each cell represents the number of activations that different regions on a determined layer received for the provided corpus. Additionally, users can visualize activations for a specific label.
+### Heatmap Representation of Activations:
+This includes the _get_grid_ function, which transforms the NxN grid for a selected layer into a heatmap (grid). In this heatmap, each cell represents the number of activations that the specific reduced region on a determined layer received for the provided corpus. Additionally, users can visualize activations for a specific label.
+> Heatmaps can only be obtained if the number of components is set to 2, since all activations are disposed on a 2-dimensional map.
   ```
-  fig = llm_mri.get_layer_image(layer, category)
+  fig = llm_mri.get_grid(layer, category)
   ```
 ![hidden_state_1_true](https://github.com/user-attachments/assets/0bfbc90e-2bb9-4bd0-aa20-68c67608189f)
 
@@ -94,38 +100,23 @@ This includes the _get_layer_image_ function, which transforms the NxN grid for 
 
   
 ### Graph Representation of Activations:
-Using the _get_graph_ function, the module connects regions from neighboring layers based on co-activations to form a graph representing the entire network. The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
+Using the _get_graph_ function, the module connects regions from neighboring layers based either on the heatmaps (2 dimensions) or through the *Spearman Correlation* of neighboring layers activations (>2 dimensions). The graph's edges can also be colored according to different labels, allowing the user to identify the specific category that activated each neighboring node.
 
+
+
+```
+graph = llm_mri.get_graph(category)
+graph_image = llm_mri.get_graph_image(graph, colormap, fix_node_positions)
+```
+
+
+> **categories:** String or (list of at most two strings) containing the categories that to be used to generate the NRAG.
+>
 > **_colormap:_**  The default used colormap is the 'coolwarm'. More can be found on [matplotlib.colors](https://matplotlib.org/stable/users/explain/colors/colormaps.html). We recommend the use of a 'Diverging' colormap for better visualization.
-> **_fix_node_positions:_**  'True' keeps the nodes and edges at the same positions, independently of the categories. This could be useful for comparing activations between distinct categories. Setting to 'False' does not allow this comparison, although the graph will be more easily visualized.
+> 
+>**_fix_node_positions:_**  'True' keeps the nodes and edges at the same positions, independently of the categories. This could be useful for comparing activations between distinct categories. Setting to 'False' does not allow this comparison, although the graph will be more easily visualized.
 
-   ```
-   graph = llm_mri.get_graph(category)
-   graph_image = llm_mri.get_graph_image(graph, colormap, fix_node_positions)
-  ```
-![true](https://github.com/user-attachments/assets/98b006ad-1e1a-40c1-9259-66e0496203b8)
-
-
-
-### Composed Graph Visualization:
-The user is also able to obtain a composed visualization of two different categories using the _get_composed_graph_ function. By setting a category, each edge is colored based on the designated label, so the user is able to see which document label activated each region. Additionally, the user can select a colormap, where node colors reflect the label that most strongly activated them. Nodes colored white indicate equal activation by both categories, as white represents the midpoint of the color spectrum.
-```
-g_composed = llm_mri.get_composed_graph("true", "fake")
-g_composed_img = llm_mri.get_graph_image(g_composed)
-```
 
 ![fake_and_true_graph](https://github.com/user-attachments/assets/7ca1c194-045f-45fd-a2a7-33941fe0dc86)
 
-
-### Reduced dimensionality representation of the documents
-It is also possible to analyze where documents are disposed on a 2D space (after the dimensionality reduction) for a certain layer, divided by category. This could be essentialy more useful to visualize the impact of the DR algorithm on the activations disposal on the 2D space.
-
-> For comparison purpouses, this method differs from the heatmap representation of activations only by the cut of the 2D representation into a grid. With this approach, it is also posible to compare all documents on a single graph.
-```
-fig_scatter = llm_mri.get_original_map(layer=6)
-```
-![activations_fake_and_true](https://github.com/user-attachments/assets/5a1e9cb2-737e-4814-9dc0-819264649034)
-
-
-
-
+On the graph above (generated with 2D UMAP reduction), each node represents a single activated region on a specific layer. Each height corresponds to a different layer, "higher" nodes being early model layer's activations.
