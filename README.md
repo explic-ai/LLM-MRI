@@ -23,7 +23,7 @@ We encourage you to not only use this toolkit but also to extend it as you see f
   - [Activation Extraction](#activation-extraction)
   - [Heatmap Representation of Activations](#heatmap-representation-of-activations)
   - [Graph Representation of Activations](#graph-representation-of-activations)
-
+  - [Graph Metrics](#complex-network-metrics)
 
 ## Instalation
 
@@ -70,7 +70,7 @@ Next, the user selects the model to be used as a string:
 ```
 model_ckpt = "distilbert/distilbert-base-multilingual-cased"
 ```
-Then, the user instantiates `LLM-MRI`, to apply the methods defined later, on the Functions sections:
+Then, the user instantiates `ActivationAreas`, to apply the methods defined later, on the Functions sections:
 ```
 llm_mri = ActivationAreas(model=model_ckpt, 
                           device="cpu", 
@@ -119,4 +119,13 @@ graph_image = llm_mri.get_graph_image(graph, colormap, fix_node_positions)
 
 ![fake_and_true_graph](https://github.com/user-attachments/assets/7ca1c194-045f-45fd-a2a7-33941fe0dc86)
 
-On the graph above (generated with 2D UMAP reduction), each node represents a single activated region on a specific layer. Each height corresponds to a different layer, "higher" nodes being early model layer's activations.
+*On the graph above (generated with 2D UMAP reduction), each node represents a single activated region on a specific layer. Each height corresponds to a different layer, "higher" nodes being early model layer's activations.*
+
+### Graph Metrics
+The library also provides a set of complex network metrics to be obtained from the generated graphs.
+> The currently available metrics are mean degree, kurt degree, mean strength, skew strength, assortativity, density and center of mass 
+
+```
+metrics = Metrics(graph, model, label)
+metrics_dictionary = metrics.get_basic_metrics()
+```
