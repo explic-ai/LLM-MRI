@@ -90,7 +90,7 @@ As the user inputs the model and corpus to be analyzed, the dimensionality of th
 
 ### Heatmap Representation of Activations:
 This includes the _get_grid_ function, which transforms the NxN grid for a selected layer into a heatmap (grid). In this heatmap, each cell represents the number of activations that the specific reduced region on a determined layer received for the provided corpus. Additionally, users can visualize activations for a specific label.
-> Heatmaps can only be obtained if the number of components is set to 2, since all activations are disposed on a 2-dimensional map.
+> Heatmaps can only be obtained if the number of components is set to 2, since all activations are disposed on a 2-dimensional map. **Note that for a gridsize of N, N^2 NRAGs are generated, as shown on the grid**
   ```
   fig = llm_mri.get_grid(layer, category)
   ```
