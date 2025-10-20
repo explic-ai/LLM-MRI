@@ -18,7 +18,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = PCA(n_components = 5, random_state=42, gridsize=15)
+pca = PCA(n_components = 15, random_state=42, gridsize=15)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -39,10 +39,10 @@ plt.title("Dimensionality Reduction of fake graph by PCA")
 
 g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
 g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True)
-plt.title("Grafo de Ativações para notícias verdadeiras e falsas")
+plt.title("Activations Graph for True and Fake News (fixed positions)")
 
 g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False)
-plt.title("Grafo de Ativações para notícias verdadeiras e falsas (sem fixar)")
+plt.title("Activations Graph for True and Fake News (free positions)")
 
 plt.box(False)
 plt.show()
@@ -53,9 +53,3 @@ metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
 
 print("True metrics: ", metrics_true.get_basic_metrics())
 print("Fake metrics: ", metrics_fake.get_basic_metrics())
-
-# Evaluating the made reduction
-
-# eval = Evaluation(activation_areas=llm_mri)
-# results = eval.evaluate_model()
-# print("Evaluation results: ", results)

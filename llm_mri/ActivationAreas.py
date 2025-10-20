@@ -158,6 +158,7 @@ class ActivationAreas:
 
         # Calls function on graph
         nrag_embeddings, nrag_labels = self.graph_class._get_nrag_embeddings()
+        # -> This code should be implemented using the self.reduced_dataset attribute
 
         return nrag_embeddings, nrag_labels
             
