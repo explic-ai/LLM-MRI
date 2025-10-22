@@ -2,7 +2,7 @@
 
 This repository contains the implementation from the paper [LLM-MRI Python module: a brain scanner for LLMs](https://sol.sbc.org.br/index.php/sbbd_estendido/article/view/30782/30585)
 
-As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM through the generation, visualization and analysis of NRAGs.
+As the everyday use of large language models (LLMs) expands, so does the necessity of understanding how these models achieve their designated outputs. `LLM-MRI` focuses on the activations of the feed-forward layers in a transformer-based LLM through the generation, visualization and analysis of NRAGs (Neural Region Activation Graphs).
 
 By adopting this approach, the library examines the neuron activations produced by the model for each distinct label. The objective of this library is to contribute to LLM interpretability research, enabling users to explore visualization methods, such as heatmaps and graph representations of the hidden layers' activations in transformer-based LLMs.
 
