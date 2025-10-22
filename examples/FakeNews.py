@@ -1,8 +1,9 @@
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-from llm_mri import LLM_MRI
+from llm_mri import ActivationAreas, Metrics, Evaluation
+from llm_mri.dimensionality_reduction import PCA, UMAP, SVD
+import networkx as nx
+
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
 
@@ -16,63 +17,39 @@ dataset_path = os.path.join(dataset_folder, 'dataset_encoded.hf')
 dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
+# Defining the dimensionality reduction method
+pca = PCA(n_components = 15, random_state=42, gridsize=15)
+
 # Beginning Visualization
-llm_mri = LLM_MRI(model=model_ckpt, device="cpu", dataset=dataset)
+llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
 
 # Processing hidden states and activation areas
-llm_mri.process_activation_areas(map_dimension = 10) # Getting activation Areas and Reducing Dimensionality, as a torch dataset
+llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
-# Getting the layer's image for a designed category
-# fig = llm_mri.get_layer_image(layer = 1, category="fake") # Getting the image for a specific layer and specific label category (Ex: label = 0)
-# plt.tight_layout()
-# plt.show()
+# Only if n_components = 2
+# grid = llm_mri.get_grid(layer=6, category_name="true")
 
-# Getting full scatterplot
-# fig_scatter = llm_mri.get_original_map(6)
-# plt.tight_layout()
-# plt.show()
+g_true = llm_mri.get_graph("true") # Gets the graph for the true category
+g_img = llm_mri.get_graph_image(g_true, fix_node_positions=False)
+plt.title("Dimensionality Reduction of true graph by PCA")
 
-# fig = llm_mri.get_layer_image(layer = 1, category="true") # Getting the image for a specific layer and specific label category (Ex: label = 0)
-# plt.tight_layout()
-# plt.show()
+g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
+g_img = llm_mri.get_graph_image(g_fake, fix_node_positions=True)
+plt.title("Dimensionality Reduction of fake graph by PCA")
 
-# g = llm_mri.get_graph()
-# _ = llm_mri.get_graph_image(g)
-# plt.show()
+g_full = llm_mri.get_graph(["true", "fake"]) # Gets the graph for all categories
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True)
+plt.title("Activations Graph for True and Fake News (fixed positions)")
 
-# Getting activation's image as a Graph
-# g = llm_mri.get_graph(category_name="true") # Getting the graph for a designed category
+g_img = llm_mri.get_graph_image(g_full, fix_node_positions=False)
+plt.title("Activations Graph for True and Fake News (free positions)")
 
-# g_full = llm_mri.get_svd_graph() # Gets the graph for all categories
-
-# Getting the image of Graph representation of activations
-# g_img = llm_mri.get_graph_image(g_full, fix_node_positions=True, fix_node_dimensions=False) # Getting the graph image for a determined category
-# plt.title("Dimensionality Reduction of full graph by PCA")
-
-# plt.box(False)
-# plt.show()
-
-# Getting activations of different labels in the same Graph
-print("Reduzindo por UMAP:")
-g_composed = llm_mri.get_composed_graph("true", "fake")
-
-# Generating image of composed graph
-g_composed_img = llm_mri.get_graph_image(g_composed)  # default: coolwarm
-plt.title("Full graph using UMAP as dimensionality reduction")
-plt.box(False)
-# plt.show()
-
-print("Reduzindo por PCA com 50 componentes:")
-# Generating image of svd composed graph
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=50)
-
-svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=False)
-plt.title("Dimensionality Reduction to 50 dimensions of distinct categories by PCA")
-
-print("Reduzindo por PCA com 8 componentes:")
-svd_composed = llm_mri.get_composed_svd_graph("true", "fake", dim=25)
-
-svd_full_img = llm_mri.get_graph_image(svd_composed, fix_node_positions=True, fix_node_dimensions=True)
-plt.title("Dimensionality Reduction to 25 dimensions of distinct categories by PCA")
 plt.box(False)
 plt.show()
+
+# Calculating metrics
+metrics_true = Metrics(g_true, model_name=model_ckpt, label="true")
+metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
+
+print("True metrics: ", metrics_true.get_basic_metrics())
+print("Fake metrics: ", metrics_fake.get_basic_metrics())

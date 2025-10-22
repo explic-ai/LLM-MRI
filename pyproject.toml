@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "llm_mri"
-version = "0.1.10"
+version = "0.2.0"
 description = "Package to visualize LLM's Neural Networks activation regions"
 authors = ["lipecorradini <luizfelipecorradini@gmail.com>"]
 readme = "README.md"
 packages = [
-    { include = "llm_mri" }
+    { include = "llm_mri" },
 ]
 
 
