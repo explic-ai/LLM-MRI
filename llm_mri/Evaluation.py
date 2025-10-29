@@ -6,6 +6,8 @@ from sklearn.model_selection import StratifiedShuffleSplit, cross_validate
 import pandas as pd
 import numpy as np
 from typing import Union
+from sklearn.decomposition import PCA as skPCA
+import matplotlib.pyplot as plt
 
 class Evaluation:
 
@@ -41,6 +43,15 @@ class Evaluation:
                 diff_report[key] = report_full[key] - report_reduced[key]
         return diff_report
 
+    def _reduce(self, X, n_components, random_state):
+        """
+        Helper function to reduce components from activation outputs, if solicited by the user
+        """
+        pca = skPCA(n_components=n_components, random_state=random_state)
+        X_pca = pca.fit_transform(X)
+        columns = [f"pc{i+1}" for i in range(n_components)]
+        return pd.DataFrame(X_pca, columns=columns)
+    
 
     def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None, metrics:Union[list, str] = None):
         """
@@ -64,6 +75,12 @@ class Evaluation:
             raise ValueError("The label vectors have different sizes.")
         if not y_reduced.reset_index(drop=True).equals(y_full.reset_index(drop=True)):
             raise ValueError("The label orders/values differ between Reduced and Full.")
+
+        # Optional: Reducing dimensionality of X_full and X_Reduced so that the number of components is matched
+        if n_components is not None:
+            X_full = self._reduce(X_full, n_components=n_components, random_state=random_state)
+            X_reduced = self._reduce(X_reduced, n_components=n_components, random_state=random_state)
+        
 
         # Resetting indices to ensure alignment
         Xr = X_reduced.reset_index(drop=True)
@@ -109,5 +126,23 @@ class Evaluation:
                 "mean": float(d.mean()),
             }
 
-        return {"delta": delta}
+        return {'delta':delta}
+
+
+    def display_metrics(self, delta:dict):
+        """
+        Builds graph to display the delta values on the classifier's metrics
+        """
+        df = pd.DataFrame(delta, index=["mean"]).T
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        df.plot(kind="bar", ax=ax)             # uses matplotlib under the hood
+        ax.axhline(0, linewidth=0.8)           # baseline at 0
+        ax.set_title("Difference in Metrics (Full - Reduced)")
+        ax.set_ylabel("Difference")
+        ax.tick_params(axis="x", rotation=45)
+        fig.tight_layout()
+
+        return fig
+
 

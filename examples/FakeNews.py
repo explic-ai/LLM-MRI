@@ -3,6 +3,7 @@ import os
 from llm_mri import ActivationAreas, Metrics, Evaluation
 from llm_mri.dimensionality_reduction import PCA, UMAP, SVD
 import networkx as nx
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
@@ -56,6 +57,13 @@ print("Fake metrics: ", metrics_fake.get_basic_metrics())
 
 # Using probing technique to validate if the graph is being able to retain information even after the dimensionality reduction
 evaluation = Evaluation(activation_areas=llm_mri)
-classifier_metrics = evaluation.evaluate_model()
+classifier_metrics = evaluation.evaluate_model(n_components=10)
 
-print(classifier_metrics)
+df = pd.DataFrame(classifier_metrics['delta']).T
+ax = df.plot(kind="bar", figsize=(10,6))
+plt.axhline(0, color="black", linewidth=0.8)  # baseline at 0
+plt.title("Difference in Metrics (Full - Reduced)")
+plt.ylabel("Difference")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
