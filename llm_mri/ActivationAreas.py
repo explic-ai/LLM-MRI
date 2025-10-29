@@ -156,15 +156,27 @@ class ActivationAreas:
         :return: Reduced hidden states as a pandas DataFrame and the labels of the dataset.
         """
 
-        # Calls function on graph
-        nrag_embeddings, nrag_labels = self.graph_class._get_nrag_embeddings()
-        # -> This code should be implemented using the self.reduced_dataset attribute
+        # Sort keys numerically to preserve layer order
+        keys = sorted(self.reduced_dataset.keys(), key=lambda k: int(k.split('_')[-1]))
 
-        return nrag_embeddings, nrag_labels
+        # Concatenate tensors horizontally (to this phase, we consider all reduced layers components as features)
+        concatenated = torch.cat([self.reduced_dataset[k] for k in keys], dim=1)
+
+        # Building column names
+        num_layers = len(keys)
+        embedding_dim = concatenated.shape[1] // num_layers
+        columns = [f"{layer+1}_{feat}" for layer in range(num_layers) for feat in range(embedding_dim)]
+
+        # Convert to DataFrame
+        nrag_embeddings = pd.DataFrame(concatenated.numpy(), columns=columns)
+        labels = pd.DataFrame(self.dataset['label'])
+        
+        return nrag_embeddings, labels
+
             
     def _get_embeddings(self):
         """
-        Returns the values on the last hidden state of the model
+        Returns the values on the last hidden state of the model (embeddings)
         """
 
         return pd.DataFrame(self.hidden_states_dataset[f'hidden_state_{self.num_layers-1}']), pd.DataFrame(self.dataset['label'])

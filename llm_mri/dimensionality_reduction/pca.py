@@ -51,6 +51,5 @@ class PCA(DimensionalityReduction):
         else:
             coords = TorchPCA(n_components=2).fit_transform(X_std)
 
-
         df_emb = pd.DataFrame(coords, columns=["X", "Y"])
         return df_emb

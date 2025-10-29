@@ -53,3 +53,9 @@ metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
 
 print("True metrics: ", metrics_true.get_basic_metrics())
 print("Fake metrics: ", metrics_fake.get_basic_metrics())
+
+# Using probing technique to validate if the graph is being able to retain information even after the dimensionality reduction
+evaluation = Evaluation(activation_areas=llm_mri)
+classifier_metrics = evaluation.evaluate_model()
+
+print(classifier_metrics)
