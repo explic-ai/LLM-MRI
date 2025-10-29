@@ -83,6 +83,7 @@ class Graph2D(Graph):
 
         # Reduced dimensionality through passed DimensionalityReduction object
         df_emb = self.reduction_method.get_reduction(X)
+        df_emb = pd.DataFrame(df_emb, columns=["X", "Y"])
 
         df_emb["label"] = y
         # ------------------------------------------------

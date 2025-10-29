@@ -129,3 +129,33 @@ The library also provides a set of complex network metrics to be obtained from t
 metrics = Metrics(graph, model, label)
 metrics_dictionary = metrics.get_basic_metrics()
 ```
+
+### Graph's Dimensionality Reduction Evaluation
+To assess whether the generated NRAGs still retain meaningful information after dimensionality reduction, the `Evaluation` class provides a mechanism to compare the preserved information between the reduced activations and the original embeddings using a probing-based approach.
+
+The `evaluate_model` method trains two Logistic Regression classifiers—one on the full embeddings and another on the reduced activations—and returns the difference in their evaluation metrics as a dictionary. Each value represents the metric of the embedding-based model minus that of the reduced-activation model: positive values indicate better performance for the original embeddings, while negative values suggest the reduced activations performed better.
+
+```
+evaluation = Evaluation(activation_areas=llm_mri)
+classifier_metrics = evaluation.evaluate_model()
+```
+> #### evaluate_model()
+>**n_splits:** int — number of StratifiedShuffleSplit resamples used for cross-validation.
+>
+>**test_size:** float — fraction of the dataset held out for testing in each split.
+>
+>**random_state:** int
+>
+>**n_components:** int or None — if set, embeddings and full activations are reduced to the same dimensionality prior to training the models.
+>
+>**metrics:** list[str] or str or None — evaluation metric name(s) to score (e.g., "f1_macro"); defaults to a preset list when None.
+
+To automativally display a graph visualization of the obtained metrics, use the `display_metrics` function.
+
+```
+img = evaluation.display_metrics(classifier_metrics)
+plt.show()
+```
+
+![classifier_metrics_image](image.png)
+

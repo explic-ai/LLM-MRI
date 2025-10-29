@@ -47,10 +47,18 @@ class Evaluation:
         """
         Helper function to reduce components from activation outputs, if solicited by the user
         """
-        pca = skPCA(n_components=n_components, random_state=random_state)
-        X_pca = pca.fit_transform(X)
+        # Geting the same dimensionality reduction previously passed by the user, to be used as the reducer
+        reduction_cls = self.activation_areas.reduction_method.__class__
+
+        # Instantiate a new one from that class
+        reducer = reduction_cls(n_components=n_components, random_state=random_state)
+
+        # Fit-transform
+        X_reduced = reducer.get_reduction(X)
+
+        # Build column names
         columns = [f"pc{i+1}" for i in range(n_components)]
-        return pd.DataFrame(X_pca, columns=columns)
+        return pd.DataFrame(X_reduced, columns=columns)
     
 
     def evaluate_model(self, n_splits:int = 5, test_size:float = 0.3, random_state:int = 42, n_components:int = None, metrics:Union[list, str] = None):
@@ -133,7 +141,7 @@ class Evaluation:
         """
         Builds graph to display the delta values on the classifier's metrics
         """
-        df = pd.DataFrame(delta, index=["mean"]).T
+        df = pd.DataFrame(delta['delta'], index=["mean"]).T
 
         fig, ax = plt.subplots(figsize=(10, 6))
         df.plot(kind="bar", ax=ax)             # uses matplotlib under the hood
@@ -141,7 +149,6 @@ class Evaluation:
         ax.set_title("Difference in Metrics (Full - Reduced)")
         ax.set_ylabel("Difference")
         ax.tick_params(axis="x", rotation=45)
-        fig.tight_layout()
 
         return fig
 

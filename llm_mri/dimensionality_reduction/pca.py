@@ -46,10 +46,9 @@ class PCA(DimensionalityReduction):
         X_std = StandardScaler(with_mean=True, with_std=True).fit_transform(dataset)
 
         if self.random_state is not None:
-            coords = TorchPCA(n_components=2, random_state=42).fit_transform(X_std)
+            coords = TorchPCA(n_components=self.n_components, random_state=42).fit_transform(X_std)
         
         else:
-            coords = TorchPCA(n_components=2).fit_transform(X_std)
+            coords = TorchPCA(n_components=self.n_components).fit_transform(X_std)
 
-        df_emb = pd.DataFrame(coords, columns=["X", "Y"])
-        return df_emb
+        return coords
