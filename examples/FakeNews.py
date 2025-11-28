@@ -19,7 +19,7 @@ dataset = load_from_disk(dataset_path)
 dataset.cleanup_cache_files()
 
 # Defining the dimensionality reduction method
-pca = PCA(n_components = 15, random_state=42, gridsize=15)
+pca = UMAP(n_components = 2, random_state=42, gridsize=10)
 
 # Beginning Visualization
 llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduction_method=pca)
@@ -28,10 +28,10 @@ llm_mri = ActivationAreas(model=model_ckpt, device="cpu", dataset=dataset, reduc
 llm_mri.process_activation_areas() # Getting activation Areas and Reducing Dimensionality, as a torch dataset
 
 # Only if n_components = 2
-# grid = llm_mri.get_grid(layer=6, category_name="true")
+grid = llm_mri.get_grid(layer=6, category_name="true")
 
 g_true = llm_mri.get_graph("true") # Gets the graph for the true category
-g_img = llm_mri.get_graph_image(g_true, fix_node_positions=False)
+g_img = llm_mri.get_graph_image(g_true, fix_node_positions=True)
 plt.title("Dimensionality Reduction of true graph by PCA")
 
 g_fake = llm_mri.get_graph("fake") # Gets the graph for the fake category
