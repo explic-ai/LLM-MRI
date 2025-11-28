@@ -3,6 +3,7 @@ import os
 from llm_mri import ActivationAreas, Metrics, Evaluation
 from llm_mri.dimensionality_reduction import PCA, UMAP, SVD
 import networkx as nx
+import pandas as pd
 
 import matplotlib.pyplot as plt
 from datasets import load_from_disk
@@ -53,3 +54,12 @@ metrics_fake = Metrics(g_fake, model_name=model_ckpt, label="fake")
 
 print("True metrics: ", metrics_true.get_basic_metrics())
 print("Fake metrics: ", metrics_fake.get_basic_metrics())
+
+# Using probing technique to validate if the graph is being able to retain information even after the dimensionality reduction
+evaluation = Evaluation(activation_areas=llm_mri)
+classifier_metrics = evaluation.evaluate_model(n_components=10)
+print(classifier_metrics)
+
+classifier_report_img = evaluation.display_metrics(classifier_metrics)
+plt.tight_layout()
+plt.show()

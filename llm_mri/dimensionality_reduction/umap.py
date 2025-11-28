@@ -67,10 +67,7 @@ class UMAP(DimensionalityReduction):
         X_scaled = MinMaxScaler().fit_transform(dataset)
 
         # Defines Mapper
-        mapper = UMAPLibrary(n_components=2, metric=self.metric).fit(
+        mapper = UMAPLibrary(n_components=self.n_components, metric=self.metric).fit(
             X_scaled)
         
-        # Returns coordinates (X,Y) to be displyed on the grid
-        df_emb = pd.DataFrame(mapper.embedding_, columns=["X", "Y"])
-
-        return df_emb
+        return mapper.embedding_

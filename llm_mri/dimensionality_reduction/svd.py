@@ -53,5 +53,5 @@ class SVD(DimensionalityReduction):
         U, S, Vh = torch.linalg.svd(X_t, full_matrices=False)
 
         # 2D coords
-        coords = (U[:, :2] * S[:2]).cpu().numpy()
-        return pd.DataFrame(coords, columns=["X", "Y"])
+        coords = (U[:, :self.n_components] * S[:self.n_components]).cpu().numpy()
+        return coords
