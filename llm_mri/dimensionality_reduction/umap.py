@@ -67,7 +67,6 @@ class UMAP(DimensionalityReduction):
         X_scaled = MinMaxScaler().fit_transform(dataset)
 
         # Defines Mapper
-        mapper = UMAPLibrary(n_components=self.n_components, metric=self.metric).fit(
-            X_scaled)
+        mapper = UMAPLibrary(n_components=self.n_components, metric=self.metric, random_state=self.random_state).fit(X_scaled)
         
         return mapper.embedding_
