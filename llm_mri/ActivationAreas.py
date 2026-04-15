@@ -128,12 +128,12 @@ class ActivationAreas:
                                         class_names=self.class_names,
                                         num_layers=self.num_layers)
             
-    def get_grid(self, layer, category_name):
+    def get_grid(self, layer, category_name, compact_view=True):
         
         if self.reduction_method.n_components != 2: # Grid cannot be obtained
             raise ValueError("Grid can only be obtained if the reduction method has 2 components. Please set the number of dimensions to 2.")
         
-        return self.graph_class.get_grid(layer, category_name)
+        return self.graph_class.get_grid(layer, category_name, compact_view=compact_view)
     
     def get_graph(self, categories: Union[str, List[str]], threshold: float = 0.3, gridsize: int = 10):
         """
