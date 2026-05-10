@@ -10,6 +10,9 @@ import numpy as np
 from typing import Union, List
 import datasets
 from .graph import GraphND, Graph2D
+import collections
+import warnings
+
 
 class ActivationAreas:
 
@@ -43,12 +46,53 @@ class ActivationAreas:
             batch (Dataset): Dataset with column "text" to be tokenized.
 
         Returns:
-            Token: Tokenization of the Dataset, with padding enabled and a maximum length of 512.
+            Token: Tokenization of the Dataset, with padding enabled and a maximum length according to the model's specifications.
         """
         if self.tokenizer.pad_token is None:  # Adding eos as pad token for decoders
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        return self.tokenizer(batch["text"], padding=True, truncation=True, max_length=512)    
+        # Tokenize with overflow tracking enabled
+        tokens = self.tokenizer(
+            batch["text"],
+            padding=True,
+            truncation=True,
+            return_overflowing_tokens=True,
+        )
+
+        # Check for overflowing tokens
+        if "overflow_to_sample_mapping" in tokens:
+            print("[INFO] Checking for tokenization overflow...")
+            overflow_sample_indices = tokens["overflow_to_sample_mapping"]
+
+            # Count how many times each original index appears in the mapping
+            index_counts = collections.Counter(overflow_sample_indices)
+
+            # Keep only the indices that appear more than once (these overflowed)
+            samples_with_overflow = [
+                idx for idx, count in index_counts.items() if count > 1
+            ]
+
+            num_samples_overflowed = len(samples_with_overflow)
+
+            # Calculate how many "extra" chunks were generated
+            total_chunks = len(overflow_sample_indices)
+            original_batch_size = len(batch["text"])
+            extra_chunks = total_chunks - original_batch_size
+
+            if num_samples_overflowed > 0:
+                warnings.warn(
+                    f"[WARNING] Tokenization overflow detected: "
+                    f"{num_samples_overflowed} sample(s) exceeded the model limit of "
+                    f"{self.tokenizer.model_max_length} tokens out of {original_batch_size} total sample(s). "
+                    f"The tokenizer generated {extra_chunks} extra chunk(s) (total chunks: {total_chunks}), "
+                    f"but only the first {self.tokenizer.model_max_length} tokens of each long sequence will be "
+                    f"kept for the final model input."
+                )
+
+        # Remove the overflow tracking key...
+        tokens.pop("overflow_to_sample_mapping", None)
+
+        return self.tokenizer(batch["text"], padding=True, truncation=True)
 
     def _initialize_dataset(self):
         """
