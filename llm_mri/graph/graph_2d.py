@@ -24,21 +24,19 @@ class Graph2D(Graph):
         self.reduced_dataset = self._get_all_grids(self.hidden_states)
         self.full_graph = self.build_graph() # Grafo com todas as categorias
         self.category_list = []
-        
 
-    def get_grid(self, layer, category_name):
+    def get_grid_df(self, layer, category_name, compact_view=True):
         """
         Reduces dimensionality and returns a NxN gridsize, each representing an activation region.
 
         Args:
-            dataset (Dataset): The dataset to be used.
-            gridsize (int): The grid size.
-            hidden_layer_name (str): The hidden layer name, as 'hidden_layer_2'.
-            label (int): The label as an integer.
-            label_name (str): The label name.
+            layer (int): The layer number to be visualized.
+            category_name (str): The name of the category to be visualized.
+            compact_view (bool): When True, removes rows and columns that are entirely zero/NaN, producing a compact view without empty grid lines.
+
 
         Returns:
-            Figure: The activation grid plot for the specified layer and category.
+            Pandas DataFrame: The activation grid dataframe for the specified layer and category.
         """
 
         # Chooses the specific layer
@@ -49,8 +47,32 @@ class Graph2D(Graph):
         df_grid = df_grid.loc[df_grid['label'] == label]
 
         ct = pd.crosstab(df_grid.Y, df_grid.X, normalize=False)
+        
+        if not compact_view:
+            # Create a list of all possible coordinates based on the grid size
+            all_coords = list(range(self.gridsize)) 
+            
+            # Reindexing the crosstab to include all possible coordinates, filling missing values with 0
+            ct = ct.reindex(index=all_coords, columns=all_coords, fill_value=0)
 
         ct = ct.sort_index(ascending=False)
+
+        return ct
+
+    def get_grid(self, layer, category_name, compact_view=True):
+        """
+        Reduces dimensionality and returns a NxN gridsize, each representing an activation region.
+
+        Args:
+            layer (int): The layer number to be visualized.
+            category_name (str): The name of the category to be visualized.
+            compact_view (bool): When True, removes rows and columns that are entirely zero/NaN, producing a compact view without empty grid lines.
+
+        Returns:
+            Figure: The activation grid plot for the specified layer and category.
+        """
+
+        ct = self.get_grid_df(layer, category_name, compact_view)
 
         fig = sns.heatmap(ct, cmap="Blues", cbar=False, annot=True, fmt="d")
 
